@@ -5,6 +5,7 @@
   "main": "dist/final-form-focus.cjs.js",
   "jsnext:main": "dist/final-form-focus.es.js",
   "module": "dist/final-form-focus.es.js",
+  "sideEffects": false,
   "files": [
     "dist"
   ],

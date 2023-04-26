@@ -5,6 +5,7 @@
   "main": "dist/final-form.cjs.js",
   "jsnext:main": "dist/final-form.es.js",
   "module": "dist/final-form.es.js",
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "files": [
     "dist"

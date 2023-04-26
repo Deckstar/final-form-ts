@@ -5,5 +5,9 @@
     "packages": [
       "packages/*"
     ]
+  },
+  "devDependencies": {
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
   }
 }
