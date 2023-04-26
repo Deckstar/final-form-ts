@@ -11,8 +11,7 @@
   ],
   "scripts": {
     "start": "nps",
-    "test": "nps test",
-    "precommit": "lint-staged && npm start validate"
+    "test": "nps test"
   },
   "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
