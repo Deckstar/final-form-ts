@@ -1,0 +1,20 @@
+{
+  "name": "react-final-form-hybrid-synchronous-asynchronous-record-level-validation-example",
+  "version": "1.0.0",
+  "description": "This example demonstrates how you can mix synchronous and asynchronous validation in the same record-level validation function.",
+  "keywords": [
+    "react-final-form",
+    "form",
+    "final-form",
+    "asynchronous",
+    "validation"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "final-form": "4.20.4",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-final-form": "6.5.3",
+    "styled-components": "4.2.0"
+  }
+}
