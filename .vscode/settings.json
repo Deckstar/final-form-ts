@@ -1,0 +1,11 @@
+{
+  "flow.pathToFlow": "${workspaceFolder}/node_modules/.bin/flow",
+  "javascript.validate.enable": false,
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#05444d",
+    "tab.activeBorder": "#05444d",
+    "titleBar.activeBackground": "#05444d",
+    "titleBar.border": "#05444d",
+    "titleBar.inactiveBackground": "#05444d"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "final-form-root",
+  "packageManager": "yarn@3.5.0",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}
