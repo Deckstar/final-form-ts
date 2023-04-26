@@ -1,0 +1,211 @@
+[
+  {
+    "name": "Amazon",
+    "logo": "amazon.svg",
+    "link": "https://www.amazon.com",
+    "pinned": true
+  },
+  {
+    "name": "Apple",
+    "logo": "apple.svg",
+    "link": "https://www.apple.com",
+    "pinned": true
+  },
+  {
+    "name": "Google",
+    "logo": "google.svg",
+    "link": "https://www.google.com",
+    "pinned": true
+  },
+  {
+    "name": "Microsoft",
+    "logo": "microsoft.svg",
+    "link": "https://www.microsoft.com",
+    "pinned": true
+  },
+  {
+    "name": "Atlassian",
+    "logo": "atlassian.svg",
+    "link": "https://www.atlassian.com",
+    "pinned": true
+  },
+  {
+    "name": "Netflix",
+    "logo": "netflix.svg",
+    "link": "https://www.netflix.com/",
+    "pinned": true
+  },
+  {
+    "name": "Salesforce",
+    "logo": "salesforce.svg",
+    "link": "https://www.salesforce.com/",
+    "pinned": true
+  },
+  {
+    "name": "NASA",
+    "logo": "nasa.svg",
+    "link": "https://www.nasa.gov/",
+    "pinned": true
+  },
+  {
+    "name": "Cisco",
+    "logo": "cisco.svg",
+    "link": "https://www.cisco.com/",
+    "pinned": true
+  },
+  {
+    "name": "HSBC",
+    "logo": "hsbc.svg",
+    "link": "https://www.hsbc.com/",
+    "pinned": true
+  },
+  {
+    "name": "Deloitte",
+    "logo": "deloitte.svg",
+    "link": "https://www.deloitte.com",
+    "pinned": true
+  },
+  {
+    "name": "KPMG",
+    "logo": "kpmg.svg",
+    "link": "https://www.kpmg.com/",
+    "pinned": true
+  },
+  {
+    "name": "Nokia",
+    "logo": "nokia.svg",
+    "link": "https://www.nokia.com/",
+    "pinned": true
+  },
+  {
+    "name": "Vodafone",
+    "logo": "vodafone.svg",
+    "link": "https://www.vodafone.com/",
+    "pinned": true
+  },
+  {
+    "name": "TED",
+    "logo": "ted.svg",
+    "link": "https://www.ted.com",
+    "pinned": true
+  },
+  {
+    "name": "Xfinity",
+    "logo": "xfinity.svg",
+    "link": "https://www.xfinity.com",
+    "pinned": true
+  },
+  {
+    "name": "Yandex",
+    "logo": "yandex.svg",
+    "link": "https://www.yandex.com",
+    "pinned": true
+  },
+  {
+    "name": "Konica Minolta",
+    "logo": "konicaminolta.svg",
+    "link": "https://www.konicaminolta.com"
+  },
+  {
+    "name": "World Food Programme",
+    "logo": "world-food-programme.svg",
+    "link": "https://wfp.org",
+    "pinned": true
+  },
+  {
+    "name": "Dick's Sporting Goods",
+    "logo": "dicks.png",
+    "link": "https://www.dickssportinggoods.com"
+  },
+  {
+    "name": "Accenture",
+    "logo": "accenture.svg",
+    "link": "https://www.accenture.com/"
+  },
+  {
+    "name": "Trend Micro",
+    "logo": "trendmicro.svg",
+    "link": "https://www.trendmicro.com/"
+  },
+  {
+    "name": "LiveChat",
+    "logo": "livechat.png",
+    "link": "https://www.livechatinc.com"
+  },
+  {
+    "name": "Smarter Click",
+    "logo": "smarterclick.png",
+    "link": "https://www.smarterclick.com/"
+  },
+  {
+    "name": "HalcyonMobile",
+    "logo": "halcyonmobile.svg",
+    "link": "https://halcyonmobile.com/",
+    "pinned": false
+  },
+  {
+    "name": "Discogs",
+    "logo": "discogs.svg",
+    "link": "https://www.discogs.com/"
+  },
+  {
+    "name": "UnityTee",
+    "logo": "unityt.png",
+    "link": "https://www.unitytee.com/"
+  },
+  {
+    "name": "Makina Corpus",
+    "logo": "makinacorpus.jpg",
+    "link": "https://makina-corpus.com/"
+  },
+  {
+    "name": "EPAM",
+    "logo": "epam.png",
+    "link": "https://www.epam.com/"
+  },
+  {
+    "name": "Stunjelly",
+    "logo": "stunjelly.jpg",
+    "link": "http://stunjelly.com/"
+  },
+  {
+    "name": "Entelect",
+    "logo": "entelect.jpg",
+    "link": "https://www.entelect.co.za/"
+  },
+  {
+    "name": "FINN.no",
+    "logo": "finn.png",
+    "link": "https://www.finn.no/"
+  },
+  {
+    "name": "AMARO",
+    "logo": "amaro.png",
+    "link": "https://amaro.com/"
+  },
+  {
+    "name": "Instrument",
+    "logo": "instrument.jpg",
+    "link": "https://www.instrument.com/"
+  },
+  {
+    "name": "Therms.io",
+    "logo": "therms.png",
+    "link": "https://therms.io/"
+  },
+  {
+    "name": "Grupo Acert",
+    "logo": "grupoacert.png",
+    "link": "https://grupoacert.com.br/"
+  },
+  {
+    "name": "TinaCMS",
+    "logo": "tinacms.svg",
+    "link": "https://tinacms.org"
+  },
+  {
+    "name": "Simpplr",
+    "logo": "simpplr.svg",
+    "link": "https://www.simpplr.com/"
+  }
+]
