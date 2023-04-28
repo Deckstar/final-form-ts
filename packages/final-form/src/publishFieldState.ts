@@ -1,13 +1,14 @@
-// @flow
+import { ARRAY_ERROR } from "./constants";
+import getIn from "./structure/getIn";
 import type { InternalFieldState, InternalFormState } from "./types";
 import type { FieldState, FormValuesShape } from "./types";
-import getIn from "./structure/getIn";
-import { ARRAY_ERROR } from "./constants";
 
 /**
  * Converts internal field state to published field state
  */
-function publishFieldState<FormValues: FormValuesShape>(
+function publishFieldState<
+  FormValues extends FormValuesShape = FormValuesShape,
+>(
   formState: InternalFormState<FormValues>,
   field: InternalFieldState,
 ): FieldState {
@@ -39,7 +40,7 @@ function publishFieldState<FormValues: FormValuesShape>(
   if (error && error[ARRAY_ERROR]) {
     error = error[ARRAY_ERROR];
   }
-  const submitError = submitErrors && getIn((submitErrors: Object), name);
+  const submitError = submitErrors && getIn(submitErrors, name);
   const initial = initialValues && getIn(initialValues, name);
   const pristine = field.isEqual(initial, value);
   const dirtySinceLastSubmit = !!(

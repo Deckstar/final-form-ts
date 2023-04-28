@@ -1,8 +1,12 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "outDir": "./dist"
   },
   "include": ["./src/**/*"]
 }

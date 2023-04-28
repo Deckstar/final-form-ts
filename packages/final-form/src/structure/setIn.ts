@@ -1,8 +1,8 @@
-// @flow
-import toPath from "./toPath";
-import type { SetIn } from "../types";
+import { FormValuesShape } from "src/types";
 
-type State = Object | Array<*> | void;
+import toPath from "./toPath";
+
+type State = { [key: string]: any } | any[] | void;
 
 const setInRecursor = (
   current: State,
@@ -18,6 +18,7 @@ const setInRecursor = (
   const key = path[index];
 
   // determine type of key
+  // @ts-ignore
   if (isNaN(key)) {
     // object set
     if (current === undefined || current === null) {
@@ -33,9 +34,11 @@ const setInRecursor = (
       // delete or create an object
       return result === undefined ? undefined : { [key]: result };
     }
+
     if (Array.isArray(current)) {
       throw new Error("Cannot set a non-numeric property on an array");
     }
+
     // current exists, so make a copy of all its values, and add/update the new one
     const result = setInRecursor(
       current[key],
@@ -44,6 +47,7 @@ const setInRecursor = (
       value,
       destroyArrays,
     );
+
     if (result === undefined) {
       const numKeys = Object.keys(current).length;
       if (current[key] === undefined && numKeys === 0) {
@@ -52,6 +56,7 @@ const setInRecursor = (
       }
       if (current[key] !== undefined && numKeys <= 1) {
         // only key we had was the one we are deleting
+        // @ts-ignore
         if (!isNaN(path[index - 1]) && !destroyArrays) {
           // we are in an array, so return an empty object
           return {};
@@ -62,12 +67,14 @@ const setInRecursor = (
       const { [key]: _removed, ...final } = current;
       return final;
     }
+
     // set result in key
     return {
       ...current,
       [key]: result,
     };
   }
+
   // array set
   const numericKey = Number(key);
   if (current === undefined || current === null) {
@@ -88,11 +95,13 @@ const setInRecursor = (
     // create an array
     const array = [];
     array[numericKey] = result;
-    return (array: Array<*>);
+    return array as any[];
   }
+
   if (!Array.isArray(current)) {
     throw new Error("Cannot set a numeric property on an object");
   }
+
   // recurse
   const existingValue = current[numericKey];
   const result = setInRecursor(
@@ -105,6 +114,7 @@ const setInRecursor = (
 
   // current exists, so make a copy of all its values, and add/update the new one
   const array = [...current];
+
   if (destroyArrays && result === undefined) {
     array.splice(numericKey, 1);
     if (array.length === 0) {
@@ -113,30 +123,59 @@ const setInRecursor = (
   } else {
     array[numericKey] = result;
   }
+
   return array;
 };
 
-const setIn: SetIn = (
-  state: Object,
+export interface SetIn<O extends FormValuesShape = FormValuesShape> {
+  <Key extends keyof O>(
+    state: O,
+    key: Key,
+    value: O[Key],
+    destroyArrays?: boolean,
+  ): O;
+  <Key extends string>(
+    state: O,
+    key: Key,
+    value: any,
+    destroyArrays?: boolean,
+  ): O;
+}
+
+function setIn<O extends FormValuesShape, Key extends keyof O>(
+  state: O,
+  key: Key,
+  value: O[Key],
+  destroyArrays?: boolean,
+): O;
+function setIn<O extends FormValuesShape = FormValuesShape>(
+  state: O,
   key: string,
   value: any,
-  destroyArrays?: boolean = false,
-): Object => {
+  destroyArrays?: boolean,
+): O;
+function setIn<O extends FormValuesShape, Key extends string | keyof O>(
+  state: O,
+  key: Key,
+  value: any,
+  destroyArrays: boolean = false,
+): O {
   if (state === undefined || state === null) {
     throw new Error(`Cannot call setIn() with ${String(state)} state`);
   }
   if (key === undefined || key === null) {
     throw new Error(`Cannot call setIn() with ${String(key)} key`);
   }
+
   // Recursive function needs to accept and return State, but public API should
-  // only deal with Objects
-  return ((setInRecursor(
+  // only deal with objects
+  return setInRecursor(
     state,
     0,
-    toPath(key),
+    toPath(key as string),
     value,
     destroyArrays,
-  ): any): Object);
-};
+  ) as O;
+}
 
 export default setIn;

@@ -1,17 +1,23 @@
-// @flow
 import shallowEqual from "./shallowEqual";
-export default function <T: { [string]: any }>(
+import { FieldSubscription, FormSubscription } from "./types";
+
+function subscriptionFilter<
+  T extends { [key: string]: any },
+  Subscription extends FieldSubscription | FormSubscription,
+>(
   dest: T,
   src: T,
-  previous: ?T,
-  subscription: { [string]: boolean },
-  keys: string[],
+  previous: T | null | undefined,
+  subscription: Subscription,
+  keys: readonly (string & keyof Subscription)[],
   shallowEqualKeys: string[],
 ): boolean {
   let different = false;
+
   keys.forEach((key) => {
     if (subscription[key]) {
       dest[key] = src[key];
+
       if (
         !previous ||
         (~shallowEqualKeys.indexOf(key)
@@ -24,3 +30,5 @@ export default function <T: { [string]: any }>(
   });
   return different;
 }
+
+export default subscriptionFilter;

@@ -1,5 +1,3 @@
-// @flow
-
 const charCodeOfDot = ".".charCodeAt(0);
 const reEscapeChar = /\\(\\)?/g;
 const rePropName = RegExp(
@@ -27,24 +25,33 @@ const rePropName = RegExp(
  * @param {string} string The string to convert.
  * @returns {Array} Returns the property path array.
  */
-const stringToPath = (string) => {
+const stringToPath = (string: string) => {
   const result = [];
+
   if (string.charCodeAt(0) === charCodeOfDot) {
     result.push("");
   }
-  string.replace(rePropName, (match, expression, quote, subString) => {
-    let key = match;
-    if (quote) {
-      key = subString.replace(reEscapeChar, "$1");
-    } else if (expression) {
-      key = expression.trim();
-    }
-    result.push(key);
-  });
+
+  string.replace(
+    rePropName,
+    // @ts-ignore
+    (match: string, expression: string, quote: string, subString: string) => {
+      let key = match;
+
+      if (quote) {
+        key = subString.replace(reEscapeChar, "$1");
+      } else if (expression) {
+        key = expression.trim();
+      }
+
+      result.push(key);
+    },
+  );
+
   return result;
 };
 
-const keysCache: { [string]: string[] } = {};
+const keysCache: { [key: string]: string[] } = {};
 const keysRegex = /[.[\]]+/;
 
 const toPath = (key: string): string[] => {

@@ -1,12 +1,5 @@
 {
-  "extends": "react-app",
-  "rules": {
-    "jsx-a11y/href-no-hash": 0,
-    "import/no-anonymous-default-export": 0
-  },
-  "settings": {
-    "react": {
-      "version": "999.999.999"
-    }
-  }
+  "extends": "./../../.eslintrc.js",
+  "rules": {},
+  "settings": {}
 }

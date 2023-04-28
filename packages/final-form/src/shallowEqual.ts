@@ -1,4 +1,3 @@
-// @flow
 import type { IsEqual } from "./types";
 
 const shallowEqual: IsEqual = (a: any, b: any): boolean => {

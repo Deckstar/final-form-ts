@@ -1,5 +1,4 @@
-// @flow
-export default [
+const formSubscriptionItems = [
   "active",
   "dirty",
   "dirtyFields",
@@ -24,4 +23,6 @@ export default [
   "validating",
   "values",
   "visited",
-];
+] as const;
+
+export default formSubscriptionItems;

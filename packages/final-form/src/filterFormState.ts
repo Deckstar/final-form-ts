@@ -1,4 +1,3 @@
-// @flow
 import formSubscriptionItems from "./formSubscriptionItems";
 import subscriptionFilter from "./subscriptionFilter";
 import type { FormState, FormSubscription, FormValuesShape } from "./types";
@@ -8,13 +7,16 @@ const shallowEqualKeys = ["touched", "visited"];
 /**
  * Filters items in a FormState based on a FormSubscription
  */
-export default function filterFormState<FormValues: FormValuesShape>(
+export default function filterFormState<
+  FormValues extends FormValuesShape = FormValuesShape,
+>(
   state: FormState<FormValues>,
-  previousState: ?FormState<FormValues>,
+  previousState: FormState<FormValues> | null | undefined,
   subscription: FormSubscription,
   force: boolean,
-): ?FormState<FormValues> {
+): FormState<FormValues> | null | undefined {
   const result: FormState<FormValues> = {};
+
   const different =
     subscriptionFilter(
       result,
@@ -24,5 +26,7 @@ export default function filterFormState<FormValues: FormValuesShape>(
       formSubscriptionItems,
       shallowEqualKeys,
     ) || !previousState;
-  return different || force ? result : undefined;
+
+  const stateResult = different || force ? result : undefined;
+  return stateResult;
 }
