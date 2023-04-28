@@ -1,9 +1,12 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "lib": ["es2015", "dom"],
+    "jsx": "react",
     "baseUrl": ".",
     "strict": true,
-    "outDir": "dist",
-    "composite": true
+    "composite": true,
+    "outDir": "dist"
   },
   "include": ["./src/**/*", "./package.json"],
   "references": [{ "path": "../final-form" }]

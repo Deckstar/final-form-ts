@@ -3167,31 +3167,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^5.40.1, @typescript-eslint/eslint-plugin@npm:^5.5.0":
-  version: 5.59.0
-  resolution: "@typescript-eslint/eslint-plugin@npm:5.59.0"
-  dependencies:
-    "@eslint-community/regexpp": ^4.4.0
-    "@typescript-eslint/scope-manager": 5.59.0
-    "@typescript-eslint/type-utils": 5.59.0
-    "@typescript-eslint/utils": 5.59.0
-    debug: ^4.3.4
-    grapheme-splitter: ^1.0.4
-    ignore: ^5.2.0
-    natural-compare-lite: ^1.4.0
-    semver: ^7.3.7
-    tsutils: ^3.21.0
-  peerDependencies:
-    "@typescript-eslint/parser": ^5.0.0
-    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 3b2582fe7baa9bf7733be79c6e35a390806f91c8d5ba5b604f71cb3635fb36abc975b926195c3ef5c6a4018bb94f66e009d727e3af2ce8b92c96aa3ee9ed194a
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/eslint-plugin@npm:^5.59.1":
+"@typescript-eslint/eslint-plugin@npm:^5.40.1, @typescript-eslint/eslint-plugin@npm:^5.5.0, @typescript-eslint/eslint-plugin@npm:^5.59.1":
   version: 5.59.1
   resolution: "@typescript-eslint/eslint-plugin@npm:5.59.1"
   dependencies:
@@ -3286,24 +3262,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.10.0, @typescript-eslint/parser@npm:^5.5.0":
-  version: 5.59.0
-  resolution: "@typescript-eslint/parser@npm:5.59.0"
-  dependencies:
-    "@typescript-eslint/scope-manager": 5.59.0
-    "@typescript-eslint/types": 5.59.0
-    "@typescript-eslint/typescript-estree": 5.59.0
-    debug: ^4.3.4
-  peerDependencies:
-    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 1a442d6b776fc1dca4fe104bac77eae0a59b807ba11cef00dec8f5dbbc0fb4e5fc10519eac03dd94d52e4dd6d814800d0e5c0a3bd43eefce80d829c65ba47ad0
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/parser@npm:^5.59.1":
+"@typescript-eslint/parser@npm:^5.10.0, @typescript-eslint/parser@npm:^5.5.0, @typescript-eslint/parser@npm:^5.59.1":
   version: 5.59.1
   resolution: "@typescript-eslint/parser@npm:5.59.1"
   dependencies:
@@ -3347,23 +3306,6 @@ __metadata:
     "@typescript-eslint/types": 5.59.1
     "@typescript-eslint/visitor-keys": 5.59.1
   checksum: ae7758181d0f18d1ad20abf95164553fa98c20410968d538ac7abd430ec59f69e30d4da16ad968d029feced1ed49abc65daf6685c996eb4529d798e8320204ff
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/type-utils@npm:5.59.0":
-  version: 5.59.0
-  resolution: "@typescript-eslint/type-utils@npm:5.59.0"
-  dependencies:
-    "@typescript-eslint/typescript-estree": 5.59.0
-    "@typescript-eslint/utils": 5.59.0
-    debug: ^4.3.4
-    tsutils: ^3.21.0
-  peerDependencies:
-    eslint: "*"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 811981ea117808315fe37ce8489ae6e20979f588cf0fdef2bd969d58c505ececff0bccf7957f3b178933028433ce28764ebc9fea32a35a4c2da81b5b1e98b454
   languageName: node
   linkType: hard
 
@@ -3469,7 +3411,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:5.59.0, @typescript-eslint/utils@npm:^5.58.0":
+"@typescript-eslint/utils@npm:5.59.0":
   version: 5.59.0
   resolution: "@typescript-eslint/utils@npm:5.59.0"
   dependencies:
@@ -3487,7 +3429,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:5.59.1":
+"@typescript-eslint/utils@npm:5.59.1, @typescript-eslint/utils@npm:^5.58.0":
   version: 5.59.1
   resolution: "@typescript-eslint/utils@npm:5.59.1"
   dependencies:
@@ -8093,7 +8035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"final-form-arrays@^3.0.2, final-form-arrays@workspace:packages/final-form-arrays":
+"final-form-arrays@workspace:packages/final-form-arrays":
   version: 0.0.0-use.local
   resolution: "final-form-arrays@workspace:packages/final-form-arrays"
   dependencies:
@@ -8124,7 +8066,7 @@ __metadata:
     eslint-plugin-import: ^2.16.0
     eslint-plugin-jsx-a11y: ^6.2.1
     eslint-plugin-react: ^7.13.0
-    final-form: ^4.20.8
+    final-form: "workspace:packages/final-form"
     flow-bin: ^0.102.0
     glow: ^1.2.2
     husky: ^3.0.0
@@ -8144,7 +8086,7 @@ __metadata:
     rollup-plugin-uglify: ^6.0.2
     typescript: ^3.5.3
   peerDependencies:
-    final-form: ^4.20.8
+    final-form: "workspace:packages/final-form"
   languageName: unknown
   linkType: soft
 
@@ -8203,7 +8145,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"final-form@^4.11.1, final-form@^4.20.7, final-form@^4.20.8, final-form@workspace:packages/final-form":
+"final-form@^4.11.1, final-form@workspace:packages/final-form":
   version: 0.0.0-use.local
   resolution: "final-form@workspace:packages/final-form"
   dependencies:
@@ -8213,15 +8155,6 @@ __metadata:
     jest: ^27.2.1
   languageName: unknown
   linkType: soft
-
-"final-form@npm:4.20.4":
-  version: 4.20.4
-  resolution: "final-form@npm:4.20.4"
-  dependencies:
-    "@babel/runtime": ^7.10.0
-  checksum: 1f6d4caaf5d1c4e8f8700eac4ffc169a4986527a9e4c45501c1894159910e7e1245f1cda9a2c4f7a79a13d480315b561d4855b858430945cf5b5f0d627fbb4b2
-  languageName: node
-  linkType: hard
 
 "find-up@npm:^1.0.0":
   version: 1.1.2
@@ -15245,8 +15178,8 @@ __metadata:
     eslint-plugin-react: ^7.31.10
     eslint-plugin-react-hooks: ^4.6.0
     fast-check: ^3.2.0
-    final-form: ^4.20.7
-    final-form-arrays: ^3.0.2
+    final-form: "workspace:packages/final-form"
+    final-form-arrays: "workspace:packages/final-form-arrays"
     flow-bin: ^0.190.0
     glow: ^1.2.2
     husky: ^8.0.1
@@ -15261,7 +15194,7 @@ __metadata:
     raf: ^3.4.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-final-form: ^6.5.9
+    react-final-form: "workspace:packages/react-final-form"
     rollup: ^3.2.3
     rollup-plugin-babel: ^4.4.0
     rollup-plugin-commonjs: ^10.1.0
@@ -15271,14 +15204,14 @@ __metadata:
     rollup-plugin-uglify: ^6.0.4
     typescript: ^4.8.4
   peerDependencies:
-    final-form: ^4.15.0
+    final-form: "workspace:packages/final-form"
     final-form-arrays: ">=1.0.4"
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-final-form: ^6.2.1
+    react-final-form: "workspace:packages/react-final-form"
   languageName: unknown
   linkType: soft
 
-"react-final-form@^6.5.9, react-final-form@workspace:packages/react-final-form":
+"react-final-form@workspace:packages/react-final-form":
   version: 0.0.0-use.local
   resolution: "react-final-form@workspace:packages/react-final-form"
   dependencies:
@@ -15312,7 +15245,7 @@ __metadata:
     eslint-plugin-react: ^7.26.0
     eslint-plugin-react-hooks: ^4.2.0
     fast-deep-equal: ^3.1.3
-    final-form: 4.20.4
+    final-form: "workspace:packages/final-form"
     flow-bin: ^0.160.2
     husky: ^4.3.0
     jest: ^27.2.3
@@ -15337,7 +15270,7 @@ __metadata:
     tslint: ^6.1.3
     typescript: ^4.4.3
   peerDependencies:
-    final-form: ^4.20.4
+    final-form: "workspace:packages/final-form"
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   languageName: unknown
   linkType: soft

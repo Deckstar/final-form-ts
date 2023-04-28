@@ -1,14 +1,15 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "lib": ["es2015", "dom"],
     "jsx": "react",
     "baseUrl": ".",
-    "noEmit": true,
     "strict": true,
     "moduleResolution": "node",
-    "paths": {
-      "react-final-form": [".."]
-    }
+    "composite": true
   },
-  "include": ["."]
+  "include": ["."],
+  "paths": {
+    "react-final-form": [".."]
+  }
 }

@@ -33,7 +33,6 @@ import type {
   ValidationErrors,
   ValidationErrorsShape,
 } from "./types";
-export { version } from "../package.json";
 
 export const configOptions: ConfigKey[] = [
   "debug",

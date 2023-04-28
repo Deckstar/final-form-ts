@@ -1,6 +1,6 @@
 export { ARRAY_ERROR, FORM_ERROR } from "./constants";
 export { default as fieldSubscriptionItems } from "./fieldSubscriptionItems";
-export { configOptions, default as createForm, version } from "./FinalForm";
+export { configOptions, default as createForm } from "./FinalForm";
 export { default as formSubscriptionItems } from "./formSubscriptionItems";
 export { default as getIn } from "./structure/getIn";
 export { default as setIn } from "./structure/setIn";

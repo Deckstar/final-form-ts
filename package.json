@@ -1,5 +1,6 @@
 {
   "name": "master-form-root",
+  "private": true,
   "packageManager": "yarn@3.5.0",
   "workspaces": {
     "packages": [

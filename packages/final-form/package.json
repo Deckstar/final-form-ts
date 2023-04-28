@@ -2,11 +2,10 @@
   "name": "final-form",
   "version": "4.20.9",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
-  "main": "dist/final-form.cjs.js",
-  "jsnext:main": "dist/final-form.es.js",
-  "module": "dist/final-form.es.js",
+  "main": "dist",
+  "jsnext:main": "dist",
+  "module": "dist",
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
