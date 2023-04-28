@@ -5,9 +5,10 @@
     "jsx": "react",
     "baseUrl": ".",
     "strict": true,
-    "composite": true,
-    "outDir": "dist"
+    "rootDir": "./src",
+    "outDir": "dist",
+    "composite": true
   },
-  "include": ["./src/**/*", "./package.json"],
+  "include": ["./src/**/*"],
   "references": [{ "path": "../final-form" }]
 }
