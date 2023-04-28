@@ -1,5 +1,4 @@
-import { FormValuesShape } from "src/types";
-
+import { FormValuesShape } from "../types";
 import toPath from "./toPath";
 
 export interface GetIn<O extends FormValuesShape = FormValuesShape> {

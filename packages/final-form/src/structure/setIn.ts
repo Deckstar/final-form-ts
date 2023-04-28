@@ -1,5 +1,4 @@
-import { FormValuesShape } from "src/types";
-
+import { FormValuesShape } from "../types";
 import toPath from "./toPath";
 
 type State = { [key: string]: any } | any[] | void;
