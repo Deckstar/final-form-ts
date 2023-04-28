@@ -1,6 +1,14 @@
-import type { FormState, FieldState } from "final-form";
+import type { FormState, FieldState, FormValuesShape } from "final-form";
+import { AnyObject } from "./types";
 
-const addLazyState = (dest: Object, state: Object, keys: string[]): void => {
+const addLazyState = <
+  FormValues extends FormValuesShape,
+  State extends FieldState | FormState<FormValues>,
+>(
+  dest: AnyObject,
+  state: State,
+  keys: (string & keyof State)[],
+): void => {
   keys.forEach((key) => {
     Object.defineProperty(dest, key, {
       get: () => state[key],
@@ -9,7 +17,10 @@ const addLazyState = (dest: Object, state: Object, keys: string[]): void => {
   });
 };
 
-export const addLazyFormState = (dest: Object, state: FormState): void =>
+export const addLazyFormState = <FormValues extends FormValuesShape>(
+  dest: AnyObject,
+  state: FormState<FormValues>,
+): void =>
   addLazyState(dest, state, [
     "active",
     "dirty",
@@ -37,7 +48,10 @@ export const addLazyFormState = (dest: Object, state: FormState): void =>
     "visited",
   ]);
 
-export const addLazyFieldMetaState = (dest: Object, state: FieldState): void =>
+export const addLazyFieldMetaState = (
+  dest: AnyObject,
+  state: FieldState,
+): void =>
   addLazyState(dest, state, [
     "active",
     "data",

@@ -1,11 +1,18 @@
-// @flow
 import * as React from "react";
 import type { FieldProps as Props, FieldRenderProps } from "./types";
 import renderComponent from "./renderComponent";
 import useField from "./useField";
 
-const Field = React.forwardRef<any, Props>(function Field(
-  {
+function FieldComponent<
+  FieldValue,
+  RP extends FieldRenderProps<FieldValue, T, InputValue>,
+  T extends HTMLElement = HTMLElement,
+  InputValue = FieldValue,
+>(
+  props: Props<FieldValue, RP, T, InputValue>,
+  ref: React.ForwardedRef<React.ReactNode>,
+) {
+  const {
     afterSubmit,
     allowNull,
     beforeSubmit,
@@ -26,10 +33,9 @@ const Field = React.forwardRef<any, Props>(function Field(
     validateFields,
     value,
     ...rest
-  }: Props,
-  ref,
-) {
-  const field: FieldRenderProps = useField(name, {
+  } = props;
+
+  const field: FieldRenderProps<FieldValue, T, InputValue> = useField(name, {
     afterSubmit,
     allowNull,
     beforeSubmit,
@@ -51,7 +57,8 @@ const Field = React.forwardRef<any, Props>(function Field(
   });
 
   if (typeof children === "function") {
-    return (children: Function)({ ...field, ...rest });
+    // @ts-ignore
+    return children({ ...field, ...rest });
   }
 
   if (typeof component === "string") {
@@ -69,10 +76,22 @@ const Field = React.forwardRef<any, Props>(function Field(
   }
 
   return renderComponent(
+    // @ts-ignore
     { children, component, ref, ...rest },
     field,
     `Field(${name})`,
   );
-});
+}
+
+const Field = React.forwardRef(FieldComponent) as <
+  FieldValue,
+  RP extends FieldRenderProps<FieldValue, T, InputValue>,
+  T extends HTMLElement = HTMLElement,
+  InputValue = FieldValue,
+>(
+  props: Props<FieldValue, RP, T, InputValue> & {
+    ref?: React.Ref<React.ReactNode>;
+  },
+) => React.ReactElement;
 
 export default Field;

@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import type { UseFormStateParams } from "./types";
 import type { FormState, FormApi, FormValuesShape } from "final-form";
@@ -6,12 +5,13 @@ import { all } from "./ReactFinalForm";
 import useForm from "./useForm";
 import { addLazyFormState } from "./getters";
 
-function useFormState<FormValues: FormValuesShape>({
+function useFormState<FormValues extends FormValuesShape = FormValuesShape>({
   onChange,
   subscription = all,
 }: UseFormStateParams<FormValues> = {}): FormState<FormValues> {
   const form: FormApi<FormValues> = useForm<FormValues>("useFormState");
   const firstRender = React.useRef(true);
+
   const onChangeRef = React.useRef(onChange);
   onChangeRef.current = onChange;
 
@@ -19,33 +19,45 @@ function useFormState<FormValues: FormValuesShape>({
   const [state, setState] = React.useState<FormState<FormValues>>(
     (): FormState<FormValues> => {
       let initialState: FormState<FormValues> = {};
-      form.subscribe((state) => {
+
+      const unsubscribe = form.subscribe((state) => {
         initialState = state;
-      }, subscription)();
+      }, subscription);
+
+      unsubscribe();
+
       if (onChange) {
         onChange(initialState);
       }
+
       return initialState;
     },
   );
 
   React.useEffect(
-    () =>
-      form.subscribe((newState) => {
+    function initializeSubscription() {
+      const unsubscribe = form.subscribe((newState) => {
         if (firstRender.current) {
           firstRender.current = false;
         } else {
           setState(newState);
+
           if (onChangeRef.current) {
             onChangeRef.current(newState);
           }
         }
-      }, subscription),
+      }, subscription);
+
+      return unsubscribe;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+
   const lazyState = {};
+
   addLazyFormState(lazyState, state);
+
   return lazyState;
 }
 

@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import type { RenderableProps } from "./types";
 
@@ -6,12 +5,13 @@ import type { RenderableProps } from "./types";
 // children render function, or component prop
 export default function renderComponent<T>(
   props: RenderableProps<T> & T,
-  lazyProps: Object,
+  lazyProps: object,
   name: string,
-): React.Node {
+): React.ReactNode {
   const { render, children, component, ...rest } = props;
   if (component) {
     return React.createElement(
+      // @ts-ignore
       component,
       Object.assign(lazyProps, rest, {
         children,
@@ -21,6 +21,7 @@ export default function renderComponent<T>(
   }
   if (render) {
     return render(
+      // @ts-ignore
       children === undefined
         ? Object.assign(lazyProps, rest)
         : // inject children back in
@@ -32,5 +33,6 @@ export default function renderComponent<T>(
       `Must specify either a render prop, a render function as children, or a component prop to ${name}`,
     );
   }
+  // @ts-ignore
   return children(Object.assign(lazyProps, rest));
 }

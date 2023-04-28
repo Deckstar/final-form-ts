@@ -1,4 +1,3 @@
-// @flow
 import renderComponent from "./renderComponent";
 import type {
   FormSpyPropsWithForm as Props,
@@ -9,13 +8,14 @@ import isSyntheticEvent from "./isSyntheticEvent";
 import useForm from "./useForm";
 import useFormState from "./useFormState";
 
-function FormSpy<FormValues: FormValuesShape>({
+function FormSpy<FormValues extends FormValuesShape = FormValuesShape>({
   onChange,
   subscription,
   ...rest
 }: Props<FormValues>) {
   const reactFinalForm = useForm<FormValues>("FormSpy");
   const state = useFormState({ onChange, subscription });
+
   if (onChange) {
     return null;
   }
@@ -33,6 +33,7 @@ function FormSpy<FormValues: FormValuesShape>({
       },
     },
   };
+
   return renderComponent(
     {
       ...rest,

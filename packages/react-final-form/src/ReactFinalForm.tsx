@@ -1,14 +1,10 @@
-// @flow
 import * as React from "react";
-import {
-  createForm,
-  formSubscriptionItems,
-  version as ffVersion,
-} from "final-form";
+import { createForm, formSubscriptionItems } from "final-form";
 import type {
   FormApi,
   Config,
   FormSubscription,
+  FormSubscriptionItem,
   FormState,
   FormValuesShape,
   Unsubscribe,
@@ -19,42 +15,37 @@ import useWhenValueChanges from "./useWhenValueChanges";
 import useConstant from "./useConstant";
 import shallowEqual from "./shallowEqual";
 import isSyntheticEvent from "./isSyntheticEvent";
-import type { FormRenderProps } from "./types.js.flow";
+import type { FormRenderProps } from "./types";
 import ReactFinalFormContext from "./context";
-import useLatest from "./useLatest";
-import { version } from "../package.json";
+
 import { addLazyFormState } from "./getters";
 
-export { version };
+type FullFormSubscription = Record<FormSubscriptionItem, true>;
 
-const versions = {
-  "final-form": ffVersion,
-  "react-final-form": version,
-};
+export const all = formSubscriptionItems.reduce((result, key) => {
+  result[key] = true;
+  return result;
+}, {} as FormSubscription) as FullFormSubscription;
 
-export const all: FormSubscription = formSubscriptionItems.reduce(
-  (result, key) => {
-    result[key] = true;
-    return result;
-  },
-  {},
-);
+function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
+  props: Props<FormValues>,
+) {
+  const {
+    debug,
+    decorators = [],
+    destroyOnUnregister,
+    form: alternateFormApi,
+    initialValues,
+    initialValuesEqual,
+    keepDirtyOnReinitialize,
+    mutators,
+    onSubmit,
+    subscription = all,
+    validate,
+    validateOnBlur,
+    ...rest
+  } = props;
 
-function ReactFinalForm<FormValues: FormValuesShape>({
-  debug,
-  decorators = [],
-  destroyOnUnregister,
-  form: alternateFormApi,
-  initialValues,
-  initialValuesEqual,
-  keepDirtyOnReinitialize,
-  mutators,
-  onSubmit,
-  subscription = all,
-  validate,
-  validateOnBlur,
-  ...rest
-}: Props<FormValues>) {
   const config: Config<FormValues> = {
     debug,
     destroyOnUnregister,
@@ -86,7 +77,7 @@ function ReactFinalForm<FormValues: FormValuesShape>({
 
   // save a copy of state that can break through the closure
   // on the shallowEqual() line below.
-  const stateRef = React.useRef<FormState>(state);
+  const stateRef = React.useRef<FormState<FormValues>>(state);
   stateRef.current = state;
 
   React.useEffect(() => {
@@ -101,7 +92,6 @@ function ReactFinalForm<FormValues: FormValuesShape>({
       ...(decorators
         ? decorators.map((decorator) =>
             // this noop ternary is to appease the flow gods
-            // istanbul ignore next
             decorator(form),
           )
         : []),
@@ -116,7 +106,6 @@ function ReactFinalForm<FormValues: FormValuesShape>({
   }, decorators);
 
   // warn about decorator changes
-  // istanbul ignore next
   if (process.env.NODE_ENV !== "production") {
     // You're never supposed to use hooks inside a conditional, but in this
     // case we can be certain that you're not going to be changing your
@@ -164,7 +153,7 @@ function ReactFinalForm<FormValues: FormValuesShape>({
     form.setConfig("validateOnBlur", validateOnBlur);
   });
 
-  const handleSubmit = (event: ?SubmitEvent) => {
+  const handleSubmit = (event: SubmitEvent | null | undefined) => {
     if (event) {
       // sometimes not true, e.g. React Native
       if (typeof event.preventDefault === "function") {
@@ -192,18 +181,14 @@ function ReactFinalForm<FormValues: FormValuesShape>({
     },
     handleSubmit,
   };
+
   addLazyFormState(renderProps, state);
+
   return React.createElement(
     ReactFinalFormContext.Provider,
     { value: form },
-    renderComponent(
-      {
-        ...rest,
-        __versions: versions,
-      },
-      renderProps,
-      "ReactFinalForm",
-    ),
+    // @ts-ignore
+    renderComponent(rest, renderProps, "ReactFinalForm"),
   );
 }
 

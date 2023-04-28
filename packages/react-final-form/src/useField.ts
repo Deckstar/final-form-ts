@@ -1,12 +1,6 @@
-// @flow
 import * as React from "react";
 import { fieldSubscriptionItems } from "final-form";
-import type {
-  FieldSubscription,
-  FieldState,
-  FormApi,
-  FormValuesShape,
-} from "final-form";
+import type { FieldSubscription, FieldState, FormApi } from "final-form";
 import type {
   UseFieldConfig,
   FieldInputProps,
@@ -22,19 +16,23 @@ import useConstantCallback from "./useConstantCallback";
 const all: FieldSubscription = fieldSubscriptionItems.reduce((result, key) => {
   result[key] = true;
   return result;
-}, {});
+}, {} as FieldSubscription);
 
-const defaultFormat = (value: ?any, name: string) =>
+const defaultFormat = (value: any, name: string) =>
   value === undefined ? "" : value;
-const defaultParse = (value: ?any, name: string) =>
+const defaultParse = (value: any, name: string) =>
   value === "" ? undefined : value;
 
 const defaultIsEqual = (a: any, b: any): boolean => a === b;
 
-function useField<FormValues: FormValuesShape>(
+function useField<
+  FieldValue = any,
+  T extends HTMLElement = HTMLElement,
+  InputValue = FieldValue,
+>(
   name: string,
-  config: UseFieldConfig = {},
-): FieldRenderProps {
+  config: UseFieldConfig<FieldValue, InputValue, T> = {},
+): FieldRenderProps<FieldValue, T, InputValue> {
   const {
     afterSubmit,
     allowNull,
@@ -51,11 +49,15 @@ function useField<FormValues: FormValuesShape>(
     validateFields,
     value: _value,
   } = config;
-  const form: FormApi<FormValues> = useForm<FormValues>("useField");
+
+  const form: FormApi = useForm("useField");
 
   const configRef = useLatest(config);
 
-  const register = (callback: (FieldState) => void, silent: boolean) =>
+  const register = (
+    callback: (fieldState: FieldState) => void,
+    silent: boolean,
+  ) =>
     // avoid using `state` const in any closures created inside `register`
     // because they would refer `state` from current execution context
     // whereas actual `state` would defined in the subsequent `useField` hook
@@ -71,7 +73,7 @@ function useField<FormValues: FormValuesShape>(
         } = configRef.current;
 
         if (formatOnBlur) {
-          const { value } = ((form.getFieldState(name): any): FieldState);
+          const { value } = form.getFieldState(name)!;
           const formatted = format(value, name);
 
           if (formatted !== value) {
@@ -93,22 +95,25 @@ function useField<FormValues: FormValuesShape>(
   const firstRender = React.useRef(true);
 
   // synchronously register and unregister to query field state for our subscription on first render
-  const [state, setState] = React.useState<FieldState>((): FieldState => {
-    let initialState: FieldState = {};
+  const [state, setState] = React.useState<FieldState<FieldValue>>(
+    (): FieldState<FieldValue> => {
+      // @ts-ignore
+      let initialState: FieldState<FieldValue> = {};
 
-    // temporarily disable destroyOnUnregister
-    const destroyOnUnregister = form.destroyOnUnregister;
-    form.destroyOnUnregister = false;
+      // temporarily disable destroyOnUnregister
+      const destroyOnUnregister = form.destroyOnUnregister;
+      form.destroyOnUnregister = false;
 
-    register((state) => {
-      initialState = state;
-    }, true)();
+      register((state) => {
+        initialState = state;
+      }, true)();
 
-    // return destroyOnUnregister to its original value
-    form.destroyOnUnregister = destroyOnUnregister;
+      // return destroyOnUnregister to its original value
+      form.destroyOnUnregister = destroyOnUnregister;
 
-    return initialState;
-  });
+      return initialState;
+    },
+  );
 
   React.useEffect(
     () =>
@@ -136,44 +141,58 @@ function useField<FormValues: FormValuesShape>(
   );
 
   const meta = {};
+
   addLazyFieldMetaState(meta, state);
-  const input: FieldInputProps = {
+
+  const input: FieldInputProps<InputValue, T> = {
     name,
     get value() {
       let value = state.value;
+
       if (formatOnBlur) {
         if (component === "input") {
           value = defaultFormat(value, name);
         }
       } else {
+        // @ts-ignore
         value = format(value, name);
       }
+
       if (value === null && !allowNull) {
+        // @ts-ignore
         value = "";
       }
+
       if (type === "checkbox" || type === "radio") {
-        return _value;
+        return _value as InputValue;
       } else if (component === "select" && multiple) {
-        return value || [];
+        return (value || []) as InputValue;
       }
-      return value;
+
+      return value as InputValue;
     },
     get checked() {
       let value = state.value;
+
       if (type === "checkbox") {
+        // @ts-ignore
         value = format(value, name);
+
         if (_value === undefined) {
           return !!value;
         } else {
           return !!(Array.isArray(value) && ~value.indexOf(_value));
         }
       } else if (type === "radio") {
+        // @ts-ignore
         return format(value, name) === _value;
       }
+
       return undefined;
     },
-    onBlur: useConstantCallback((event: ?SyntheticFocusEvent<*>) => {
+    onBlur: useConstantCallback((_event) => {
       state.blur();
+
       if (formatOnBlur) {
         /**
          * Here we must fetch the value directly from Final Form because we cannot
@@ -186,8 +205,7 @@ function useField<FormValues: FormValuesShape>(
         state.change(format(fieldState.value, state.name));
       }
     }),
-    onChange: useConstantCallback((event: SyntheticInputEvent<*> | any) => {
-      // istanbul ignore next
+    onChange: useConstantCallback((event: React.ChangeEvent<T> | any) => {
       if (process.env.NODE_ENV !== "production" && event && event.target) {
         const targetType = event.target.type;
         const unknown =
@@ -210,25 +228,28 @@ function useField<FormValues: FormValuesShape>(
         }
       }
 
-      const value: any =
+      const value: InputValue =
         event && event.target
           ? getValue(event, state.value, _value, isReactNative)
           : event;
+
       state.change(parse(value, name));
     }),
-    onFocus: useConstantCallback((event: ?SyntheticFocusEvent<*>) =>
-      state.focus(),
-    ),
+    onFocus: useConstantCallback((_event) => state.focus()),
   };
 
   if (multiple) {
     input.multiple = multiple;
   }
+
   if (type !== undefined) {
     input.type = type;
   }
 
-  const renderProps: FieldRenderProps = { input, meta }; // assign to force Flow check
+  const renderProps: FieldRenderProps<FieldValue, T, InputValue> = {
+    input,
+    meta,
+  }; // assign to force Flow check
   return renderProps;
 }
 

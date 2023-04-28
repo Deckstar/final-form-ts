@@ -1,5 +1,6 @@
-// @flow
-const shallowEqual = (a: any, b: any): boolean => {
+type IsEqual = (a: any, b: any) => boolean;
+
+const shallowEqual: IsEqual = (a: any, b: any): boolean => {
   if (a === b) {
     return true;
   }
