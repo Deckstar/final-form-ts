@@ -12,7 +12,7 @@ import React from "react";
  *
  * @param {Function} init - A function to generate the value
  */
-export default function useConstant<T>(init: () => T): T {
+function useConstant<T>(init: () => T): T {
   const ref = React.useRef<T>();
 
   if (!ref.current) {
@@ -21,3 +21,5 @@ export default function useConstant<T>(init: () => T): T {
 
   return ref.current;
 }
+
+export default useConstant;

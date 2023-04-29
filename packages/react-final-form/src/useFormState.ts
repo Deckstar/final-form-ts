@@ -1,9 +1,10 @@
+import type { FormApi, FormState, FormValuesShape } from "final-form";
 import * as React from "react";
-import type { UseFormStateParams } from "./types";
-import type { FormState, FormApi, FormValuesShape } from "final-form";
-import { all } from "./ReactFinalForm";
-import useForm from "./useForm";
+
 import { addLazyFormState } from "./getters";
+import { all } from "./ReactFinalForm";
+import type { UseFormStateParams } from "./types";
+import useForm from "./useForm";
 
 function useFormState<FormValues extends FormValuesShape = FormValuesShape>({
   onChange,
@@ -20,8 +21,8 @@ function useFormState<FormValues extends FormValuesShape = FormValuesShape>({
     (): FormState<FormValues> => {
       let initialState: FormState<FormValues> = {};
 
-      const unsubscribe = form.subscribe((state) => {
-        initialState = state;
+      const unsubscribe = form.subscribe((formState) => {
+        initialState = formState;
       }, subscription);
 
       unsubscribe();

@@ -1,6 +1,7 @@
 import * as React from "react";
-import type { FieldProps as Props, FieldRenderProps } from "./types";
+
 import renderComponent from "./renderComponent";
+import type { FieldProps as Props, FieldRenderProps } from "./types";
 import useField from "./useField";
 
 function FieldComponent<

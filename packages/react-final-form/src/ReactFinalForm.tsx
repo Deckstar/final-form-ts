@@ -1,24 +1,24 @@
-import * as React from "react";
-import { createForm, formSubscriptionItems } from "final-form";
 import type {
-  FormApi,
   Config,
+  FormApi,
+  FormState,
   FormSubscription,
   FormSubscriptionItem,
-  FormState,
   FormValuesShape,
   Unsubscribe,
 } from "final-form";
-import type { FormProps as Props, SubmitEvent } from "./types";
-import renderComponent from "./renderComponent";
-import useWhenValueChanges from "./useWhenValueChanges";
-import useConstant from "./useConstant";
-import shallowEqual from "./shallowEqual";
-import isSyntheticEvent from "./isSyntheticEvent";
-import type { FormRenderProps } from "./types";
-import ReactFinalFormContext from "./context";
+import { createForm, formSubscriptionItems } from "final-form";
+import * as React from "react";
 
+import ReactFinalFormContext from "./context";
 import { addLazyFormState } from "./getters";
+import isSyntheticEvent from "./isSyntheticEvent";
+import renderComponent from "./renderComponent";
+import shallowEqual from "./shallowEqual";
+import type { FormProps as Props, SubmitEvent } from "./types";
+import type { FormRenderProps } from "./types";
+import useConstant from "./useConstant";
+import useWhenValueChanges from "./useWhenValueChanges";
 
 type FullFormSubscription = Record<FormSubscriptionItem, true>;
 
@@ -59,8 +59,10 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
 
   const form: FormApi<FormValues> = useConstant(() => {
     const f = alternateFormApi || createForm<FormValues>(config);
+
     // pause validation until children register all fields on first render (unpaused in useEffect() below)
     f.pauseValidation();
+
     return f;
   });
 
@@ -68,9 +70,11 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
   const [state, setState] = React.useState<FormState<FormValues>>(
     (): FormState<FormValues> => {
       let initialState: FormState<FormValues> = {};
-      form.subscribe((state) => {
-        initialState = state;
+
+      form.subscribe((formState) => {
+        initialState = formState;
       }, subscription)();
+
       return initialState;
     },
   );
@@ -83,10 +87,11 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
   React.useEffect(() => {
     // We have rendered, so all fields are now registered, so we can unpause validation
     form.isValidationPaused() && form.resumeValidation();
+
     const unsubscriptions: Unsubscribe[] = [
-      form.subscribe((s) => {
-        if (!shallowEqual(s, stateRef.current)) {
-          setState(s);
+      form.subscribe((formState) => {
+        if (!shallowEqual(formState, stateRef.current)) {
+          setState(formState);
         }
       }, subscription),
       ...(decorators
@@ -99,6 +104,7 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
 
     return () => {
       form.pauseValidation(); // pause validation so we don't revalidate on every field deregistration
+
       unsubscriptions.reverse().forEach((unsubscribe) => unsubscribe());
       // don't need to resume validation here; either unmounting, or will re-run this hook with new deps
     };
@@ -115,6 +121,7 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     useWhenValueChanges(
       decorators,
       () => {
+        // eslint-disable-next-line no-console
         console.error(
           "Form decorators should not change from one render to the next as new values will be ignored",
         );

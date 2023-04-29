@@ -1,4 +1,5 @@
-import type { FormState, FieldState, FormValuesShape } from "final-form";
+import type { FieldState, FormState, FormValuesShape } from "final-form";
+
 import { AnyObject } from "./types";
 
 const addLazyState = <

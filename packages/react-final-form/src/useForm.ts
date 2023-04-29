@@ -1,5 +1,6 @@
-import * as React from "react";
 import type { FormApi, FormValuesShape } from "final-form";
+import * as React from "react";
+
 import ReactFinalFormContext from "./context";
 
 function useForm<

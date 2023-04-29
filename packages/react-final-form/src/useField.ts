@@ -1,26 +1,27 @@
-import * as React from "react";
+import type { FieldState, FieldSubscription, FormApi } from "final-form";
 import { fieldSubscriptionItems } from "final-form";
-import type { FieldSubscription, FieldState, FormApi } from "final-form";
+import * as React from "react";
+
+import { addLazyFieldMetaState } from "./getters";
+import getValue from "./getValue";
+import isReactNative from "./isReactNative";
 import type {
-  UseFieldConfig,
   FieldInputProps,
   FieldRenderProps,
+  UseFieldConfig,
 } from "./types";
-import isReactNative from "./isReactNative";
-import getValue from "./getValue";
+import useConstantCallback from "./useConstantCallback";
 import useForm from "./useForm";
 import useLatest from "./useLatest";
-import { addLazyFieldMetaState } from "./getters";
-import useConstantCallback from "./useConstantCallback";
 
 const all: FieldSubscription = fieldSubscriptionItems.reduce((result, key) => {
   result[key] = true;
   return result;
 }, {} as FieldSubscription);
 
-const defaultFormat = (value: any, name: string) =>
+const defaultFormat = (value: any, _name: string) =>
   value === undefined ? "" : value;
-const defaultParse = (value: any, name: string) =>
+const defaultParse = (value: any, _name: string) =>
   value === "" ? undefined : value;
 
 const defaultIsEqual = (a: any, b: any): boolean => a === b;
@@ -68,13 +69,13 @@ function useField<
       beforeSubmit: () => {
         const {
           beforeSubmit,
-          formatOnBlur,
-          format = defaultFormat,
+          formatOnBlur: wouldFormatOnBlur,
+          format: formatValue = defaultFormat,
         } = configRef.current;
 
-        if (formatOnBlur) {
+        if (wouldFormatOnBlur) {
           const { value } = form.getFieldState(name)!;
-          const formatted = format(value, name);
+          const formatted = formatValue(value, name);
 
           if (formatted !== value) {
             form.change(name, formatted);
@@ -104,8 +105,8 @@ function useField<
       const destroyOnUnregister = form.destroyOnUnregister;
       form.destroyOnUnregister = false;
 
-      register((state) => {
-        initialState = state;
+      register((fieldState) => {
+        initialState = fieldState;
       }, true)();
 
       // return destroyOnUnregister to its original value
@@ -117,11 +118,11 @@ function useField<
 
   React.useEffect(
     () =>
-      register((state) => {
+      register((fieldState) => {
         if (firstRender.current) {
           firstRender.current = false;
         } else {
-          setState(state);
+          setState(fieldState);
         }
       }, false),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -217,6 +218,7 @@ function useField<
           targetType === "select-multiple" ? state.value : _value;
 
         if (unknown) {
+          // eslint-disable-next-line no-console
           console.error(
             `You must pass \`type="${
               targetType === "select-multiple" ? "select" : targetType

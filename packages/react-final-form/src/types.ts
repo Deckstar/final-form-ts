@@ -1,15 +1,15 @@
-import * as React from "react";
 import type {
-  FormApi,
   Config,
   Decorator,
+  FieldState,
+  FieldSubscription,
+  FieldValidator,
+  FormApi,
   FormState,
   FormSubscription,
   FormValuesShape,
-  FieldSubscription,
-  FieldValidator,
-  FieldState,
 } from "final-form";
+import * as React from "react";
 
 export interface AnyObject {
   [key: string]: any;

@@ -6,9 +6,7 @@ import * as React from "react";
  * calling the most recent version of the function and its
  * closures.
  */
-export default function useConstantCallback<F extends (...args: any[]) => any>(
-  callback: F,
-) {
+function useConstantCallback<F extends (...args: any[]) => any>(callback: F) {
   const ref = React.useRef(callback);
 
   React.useEffect(() => {
@@ -20,3 +18,5 @@ export default function useConstantCallback<F extends (...args: any[]) => any>(
     [],
   ) as F;
 }
+
+export default useConstantCallback;
