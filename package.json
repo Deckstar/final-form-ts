@@ -2,6 +2,11 @@
   "name": "master-form-root",
   "private": true,
   "packageManager": "yarn@3.5.0",
+  "scripts": {
+    "compile": "tsc --build --force tsconfig.json",
+    "clean": "yarn find-dist -exec rm -rf '{}' +",
+    "find-dist": "find \"./packages\" -type d -name \"dist\" -maxdepth 2"
+  },
   "workspaces": {
     "packages": [
       "packages/*"
