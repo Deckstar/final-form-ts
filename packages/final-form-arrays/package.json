@@ -2,11 +2,10 @@
   "name": "final-form-arrays",
   "version": "3.1.0",
   "description": "Array Mutators for 🏁 Final Form",
-  "main": "dist/final-form-arrays.cjs.js",
-  "jsnext:main": "dist/final-form-arrays.es.js",
-  "module": "dist/final-form-arrays.es.js",
+  "main": "dist",
+  "jsnext:main": "dist",
+  "module": "dist",
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
