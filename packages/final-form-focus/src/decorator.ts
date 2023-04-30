@@ -1,66 +1,80 @@
-// @flow
-import type { Decorator, FormApi } from 'final-form'
-import type { GetInputs, FindInput } from './types'
-import getAllInputs from './getAllInputs'
-import defaultFindInput from './findInput'
+import {
+  Decorator,
+  FormApi,
+  FormState,
+  FormValuesShape,
+  ValidationErrors,
+} from "final-form";
 
-const noop = () => {}
+import defaultFindInput from "./findInput";
+import getAllInputs from "./getAllInputs";
+import { FindInput, GetInputs } from "./types";
 
-const createDecorator = (
+const noop = () => {};
+
+const createDecorator = <
+  FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues = Partial<FormValues>
+>(
   getInputs?: GetInputs,
-  findInput?: FindInput
-): Decorator => (form: FormApi) => {
-  const focusOnFirstError = (errors: Object) => {
+  findInput?: FindInput,
+): Decorator<FormValues, InitialFormValues> => (
+  form: FormApi<FormValues, InitialFormValues>,
+) => {
+  const focusOnFirstError = (errors: ValidationErrors) => {
     if (!getInputs) {
-      getInputs = getAllInputs
+      getInputs = getAllInputs;
     }
     if (!findInput) {
-      findInput = defaultFindInput
+      findInput = defaultFindInput;
     }
-    const firstInput = findInput(getInputs(), errors)
+    const firstInput = findInput(getInputs(), errors);
     if (firstInput) {
-      firstInput.focus()
+      firstInput.focus();
     }
-  }
+  };
   // Save original submit function
-  const originalSubmit = form.submit
+  const originalSubmit = form.submit;
 
   // Subscribe to errors, and keep a local copy of them
-  let state: { errors?: Object, submitErrors?: Object } = {}
+  let state: FormState<FormValues, InitialFormValues> = {};
+
   const unsubscribe = form.subscribe(
     nextState => {
-      state = nextState
+      state = nextState;
     },
-    { errors: true, submitErrors: true }
-  )
+    { errors: true, submitErrors: true },
+  );
 
   // What to do after submit
   const afterSubmit = () => {
-    const { errors, submitErrors } = state
+    const { errors, submitErrors } = state;
+
     if (errors && Object.keys(errors).length) {
-      focusOnFirstError(errors)
+      focusOnFirstError(errors);
     } else if (submitErrors && Object.keys(submitErrors).length) {
-      focusOnFirstError(submitErrors)
+      focusOnFirstError(submitErrors);
     }
-  }
+  };
 
   // Rewrite submit function
   form.submit = () => {
-    const result = originalSubmit.call(form)
-    if (result && typeof result.then === 'function') {
+    const result = originalSubmit.call(form);
+    if (result && typeof result.then === "function") {
       // async
-      result.then(afterSubmit, noop)
+      result.then(afterSubmit, noop);
     } else {
       // sync
-      afterSubmit()
+      afterSubmit();
     }
-    return result
-  }
+    return result;
+  };
 
   return () => {
-    unsubscribe()
-    form.submit = originalSubmit
-  }
-}
+    unsubscribe();
 
-export default createDecorator
+    form.submit = originalSubmit;
+  };
+};
+
+export default createDecorator;

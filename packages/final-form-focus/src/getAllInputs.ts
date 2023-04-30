@@ -1,6 +1,5 @@
-// @flow
-import type { GetInputs } from './types'
 import isFocusableInput from './isFocusableInput'
+import type { GetInputs } from './types'
 
 /**
  * Gets all the inputs inside all forms on the page
@@ -9,6 +8,7 @@ const getAllInputs: GetInputs = () => {
   if (typeof document === 'undefined') {
     return []
   }
+
   return Array.prototype.slice
     .call(document.forms)
     .reduce(

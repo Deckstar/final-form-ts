@@ -19,7 +19,7 @@ export type FormSubscriptionItem = ArrayElement<typeof formSubscriptionItems>;
 
 export type FormSubscription = Partial<Record<FormSubscriptionItem, boolean>>;
 
-export type FormBooleanStates<FormValues extends FormValuesShape> = Partial<
+type FormBooleanStates<FormValues extends FormValuesShape> = Partial<
   Record<keyof FormValues | string, boolean>
 >;
 
@@ -248,7 +248,7 @@ export interface FormApi<
   ) => void;
   submit: () => Promise<ValidationErrors> | undefined;
   subscribe: (
-    subscriber: FormSubscriber<FormValues>,
+    subscriber: FormSubscriber<FormValues, InitialFormValues>,
     subscription: FormSubscription,
   ) => Unsubscribe;
 }
