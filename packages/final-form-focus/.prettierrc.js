@@ -1,3 +1,5 @@
-semi: false
-singleQuote: true
-trailingComma: none
+const projectConfig = require("../../.prettierrc.js");
+
+module.exports = {
+  ...projectConfig,
+};
