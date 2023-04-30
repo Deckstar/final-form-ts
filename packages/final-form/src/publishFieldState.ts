@@ -8,10 +8,11 @@ import type { FieldState, FormValuesShape } from "./types";
  */
 function publishFieldState<
   FormValues extends FormValuesShape = FormValuesShape,
+  FieldValue = any,
 >(
   formState: InternalFormState<FormValues>,
-  field: InternalFieldState,
-): FieldState {
+  field: InternalFieldState<FieldValue, FormValues>,
+): FieldState<FieldValue, FormValues> {
   const {
     errors,
     initialValues,
@@ -22,6 +23,7 @@ function publishFieldState<
     submitting,
     values,
   } = formState;
+
   const {
     active,
     blur,
@@ -35,11 +37,14 @@ function publishFieldState<
     validating,
     visited,
   } = field;
+
   const value = getIn(values, name);
+
   let error = getIn(errors, name);
   if (error && error[ARRAY_ERROR]) {
     error = error[ARRAY_ERROR];
   }
+
   const submitError = submitErrors && getIn(submitErrors, name);
   const initial = initialValues && getIn(initialValues, name);
   const pristine = field.isEqual(initial, value);
@@ -47,6 +52,7 @@ function publishFieldState<
     lastSubmittedValues &&
     !field.isEqual(getIn(lastSubmittedValues, name), value)
   );
+
   const valid = !error && !submitError;
   return {
     active,

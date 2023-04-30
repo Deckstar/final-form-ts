@@ -14,6 +14,7 @@ import type {
   Config,
   ConfigKey,
   FieldConfig,
+  FieldState,
   FieldSubscriber,
   FieldSubscription,
   FieldValidator,
@@ -335,17 +336,19 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     return promises;
   };
 
-  const getValidators = (field: InternalFieldState) =>
+  const getValidators = <FieldValue>(
+    field: InternalFieldState<FieldValue, FormValues>,
+  ) =>
     Object.keys(field.validators).reduce((result, index) => {
       const validator = field.validators[Number(index)]();
       if (validator) {
         result.push(validator);
       }
       return result;
-    }, [] as FieldValidator<any>[]);
+    }, [] as FieldValidator<FieldValue, FormValues>[]);
 
-  const runFieldLevelValidation = <T>(
-    field: InternalFieldState<T>,
+  const runFieldLevelValidation = <FieldValue>(
+    field: InternalFieldState<FieldValue, FormValues>,
     setError: (error: any) => void,
   ): Promise<any>[] => {
     const promises: Promise<any>[] = [];
@@ -565,7 +568,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
           fieldSubscriber,
           fieldState,
           lastFieldState,
-          filterFieldState,
+          filterFieldState as StateFilter<FieldState<any, FormValues>>,
           lastFieldState === undefined,
         );
       }
@@ -902,9 +905,9 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
     registerField: (
       name: string,
-      subscriber: FieldSubscriber,
+      subscriber: FieldSubscriber<any, FormValues>,
       subscription: FieldSubscription = {},
-      fieldConfig?: FieldConfig,
+      fieldConfig?: FieldConfig<any, FormValues>,
     ): Unsubscribe => {
       if (!state.fieldSubscribers[name]) {
         state.fieldSubscribers[name] = { index: 0, entries: {} };

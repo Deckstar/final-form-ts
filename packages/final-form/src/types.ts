@@ -64,18 +64,21 @@ export type FormSubscriber<
   InitialFormValues = Partial<FormValues>,
 > = Subscriber<FormState<FormValues, InitialFormValues>>;
 
-export interface FieldState<FieldValue = any> {
+export interface FieldState<
+  FieldValue = any,
+  FormValues extends FormValuesShape = FormValuesShape,
+> {
   active?: boolean;
   blur: () => void;
   change: (value: FieldValue | undefined) => void;
-  data?: FormValuesShape;
+  data?: FormValues;
   dirty?: boolean;
   dirtySinceLastSubmit?: boolean;
   error?: any;
   focus: () => void;
   initial?: FieldValue;
   invalid?: boolean;
-  length?: number;
+  length?: FieldValue extends any[] ? number : undefined;
   modified?: boolean;
   modifiedSinceLastSubmit?: boolean;
   name: string;
@@ -95,9 +98,11 @@ export type FieldSubscriptionItem = ArrayElement<typeof fieldSubscriptionItems>;
 
 export type FieldSubscription = Partial<Record<FieldSubscriptionItem, boolean>>;
 
-export type FieldSubscriber<FieldValue = any> = Subscriber<
-  FieldState<FieldValue>
->;
+export type FieldSubscriber<
+  FieldValue = any,
+  FormValues extends FormValuesShape = FormValuesShape,
+> = Subscriber<FieldState<FieldValue, FormValues>>;
+
 export type Subscribers<T extends Object> = {
   index: number;
   entries: {
@@ -111,21 +116,29 @@ export type Subscribers<T extends Object> = {
 
 export type Unsubscribe = () => void;
 
-export type FieldValidator<FieldValue = any> = (
+export type FieldValidator<
+  FieldValue = any,
+  FormValues extends FormValuesShape = FormValuesShape,
+> = (
   value: FieldValue,
-  allValues: object,
-  meta?: FieldState<FieldValue>,
+  allValues: FormValues,
+  meta?: FieldState<FieldValue, FormValues>,
 ) => any | Promise<any>;
-export type GetFieldValidator<FieldValue = any> = () =>
-  | FieldValidator<FieldValue>
-  | undefined;
 
-export interface FieldConfig<FieldValue = any> {
+export type GetFieldValidator<
+  FieldValue = any,
+  FormValues extends FormValuesShape = FormValuesShape,
+> = () => FieldValidator<FieldValue, FormValues> | undefined;
+
+export interface FieldConfig<
+  FieldValue = any,
+  FormValues extends FormValuesShape = FormValuesShape,
+> {
   afterSubmit?: () => void;
   beforeSubmit?: () => void | false;
   data?: any;
   defaultValue?: any;
-  getValidator?: GetFieldValidator<FieldValue>;
+  getValidator?: GetFieldValidator<FieldValue, FormValues>;
   initialValue?: any;
   isEqual?: IsEqual;
   silent?: boolean;
@@ -135,26 +148,29 @@ export interface FieldConfig<FieldValue = any> {
 export interface RegisterField<FormValues extends FormValuesShape> {
   <F extends keyof FormValues>(
     name: F,
-    subscriber: FieldSubscriber<FormValues[F]>,
+    subscriber: FieldSubscriber<FormValues[F], FormValues>,
     subscription: FieldSubscription,
-    config?: FieldConfig<FormValues[F]>,
+    config?: FieldConfig<FormValues[F], FormValues>,
   ): Unsubscribe;
   <F extends string>(
     name: F,
-    subscriber: FieldSubscriber,
+    subscriber: FieldSubscriber<any, FormValues>,
     subscription: FieldSubscription,
-    config?: FieldConfig,
+    config?: FieldConfig<any, FormValues>,
   ): Unsubscribe;
 }
 
-export interface InternalFieldState<FieldValue = any> {
+export interface InternalFieldState<
+  FieldValue = any,
+  FormValues extends FormValuesShape = FormValuesShape,
+> {
   active: boolean;
   blur: () => void;
   change: (value: any) => void;
-  data: FormValuesShape;
+  data: FormValues;
   focus: () => void;
   isEqual: IsEqual;
-  lastFieldState?: FieldState<FieldValue>;
+  lastFieldState?: FieldState<FieldValue, FormValues>;
   length?: any;
   modified: boolean;
   modifiedSinceLastSubmit: boolean;
@@ -162,7 +178,7 @@ export interface InternalFieldState<FieldValue = any> {
   touched: boolean;
   validateFields?: string[];
   validators: {
-    [index: number]: GetFieldValidator<FieldValue>;
+    [index: number]: GetFieldValidator<FieldValue, FormValues>;
   };
   valid: boolean;
   validating: boolean;
@@ -216,7 +232,7 @@ export interface FormApi<
   isValidationPaused: () => boolean;
   getFieldState: <F extends string>(
     field: F,
-  ) => FieldState<FormValues[F]> | undefined;
+  ) => FieldState<FormValues[F], FormValues> | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
   mutators: Record<string, (...args: any[]) => any>;
@@ -249,9 +265,9 @@ export interface MutableState<
   FormValues extends FormValuesShape,
   InitialFormValues = Partial<FormValues>,
 > {
-  fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> };
+  fieldSubscribers: { [key: string]: Subscribers<FieldState<any, FormValues>> };
   fields: {
-    [key: string]: InternalFieldState<any>;
+    [key: string]: InternalFieldState<any, FormValues>;
   };
   formState: InternalFormState<FormValues>;
   lastFormState?: FormState<FormValues, InitialFormValues>;

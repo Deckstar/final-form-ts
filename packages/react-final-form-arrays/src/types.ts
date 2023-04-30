@@ -1,58 +1,40 @@
-// @flow
-import * as React from 'react'
-import type { FieldSubscription, FieldState } from 'final-form'
+import type { FieldState, FormValuesShape } from "final-form";
+import { Mutators } from "final-form-arrays";
+import { RenderableProps, UseFieldConfig } from "react-final-form";
 
-type Meta = $Shape<{
-  active?: boolean,
-  data?: Object,
-  dirty?: boolean,
-  dirtySinceLastSubmit?: boolean,
-  error?: any,
-  initial?: any,
-  invalid?: boolean,
-  length?: number,
-  modified?: boolean,
-  pristine?: boolean,
-  submitError?: any,
-  submitFailed?: boolean,
-  submitSucceeded?: boolean,
-  submitting?: boolean,
-  touched?: boolean,
-  valid?: boolean,
-  visited?: boolean
-}>
+export type { RenderableProps };
 
-export type FieldArrayRenderProps = {
+export type FieldArrayRenderProps<
+  FieldValue,
+  FormValues extends FormValuesShape = FormValuesShape,
+> = {
   fields: {
-    forEach: (iterator: (name: string, index: number) => void) => void,
-    insert: (index: number, value: any) => void,
-    map: (iterator: (name: string, index: number) => any) => any[],
-    move: (from: number, to: number) => void,
-    name: string,
-    pop: () => any,
-    push: (value: any) => void,
-    remove: (index: number) => any,
-    shift: () => any,
-    swap: (indexA: number, indexB: number) => void,
-    unshift: (value: any) => void,
-    value: any[]
-  },
-  meta: Meta
+    forEach: (iterator: (name: string, index: number) => void) => void;
+    length: number;
+    map: (iterator: (name: string, index: number) => any) => any[];
+    name: string;
+    value: FieldValue[];
+  } & Mutators<FormValues>;
+  meta: Partial<FieldState<FieldValue[]>>;
+};
+
+export interface UseFieldArrayConfig<
+  FieldValue,
+  FormValues extends FormValuesShape = FormValuesShape,
+  T extends HTMLElement = HTMLInputElement,
+> extends UseFieldConfig<FieldValue[], FormValues, FieldValue[], T> {
+  isEqual?: (a: FieldValue[], b: FieldValue[]) => boolean;
 }
 
-export type RenderableProps<T> = $Shape<{
-  children: (props: T) => React.Node,
-  component: React.ComponentType<*>,
-  render: (props: T) => React.Node
-}>
-
-export type UseFieldArrayConfig = {
-  subscription?: FieldSubscription,
-  defaultValue?: any,
-  initialValue?: any,
-  isEqual?: (any[], any[]) => boolean,
-  validate?: (value: ?(any[]), allValues: Object, meta: ?FieldState) => ?any
+export interface FieldArrayProps<
+  FieldValue,
+  FormValues extends FormValuesShape = FormValuesShape,
+  T extends HTMLElement = HTMLInputElement,
+> extends Omit<
+      UseFieldArrayConfig<FieldValue, FormValues, T>,
+      keyof RenderableProps
+    >,
+    RenderableProps<FieldArrayRenderProps<FieldValue, FormValues>> {
+  name: string;
+  [otherProp: string]: any;
 }
-
-export type FieldArrayProps = { name: string } & UseFieldArrayConfig &
-  RenderableProps<FieldArrayRenderProps>

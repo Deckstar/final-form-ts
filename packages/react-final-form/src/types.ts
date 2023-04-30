@@ -26,7 +26,7 @@ export interface ReactContext<
 
 export interface FieldInputProps<
   FieldValue,
-  T extends HTMLElement = HTMLElement,
+  T extends HTMLElement = HTMLInputElement,
 > extends AnyObject {
   name: string;
   onBlur: (event?: React.FocusEvent<T>) => void;
@@ -48,8 +48,8 @@ export type FieldMetaState<FieldValue> = Pick<
 
 export interface FieldRenderProps<
   FieldValue,
-  T extends HTMLElement = HTMLElement,
   InputValue = FieldValue,
+  T extends HTMLElement = HTMLInputElement,
 > {
   input: FieldInputProps<InputValue, T>;
   meta: FieldMetaState<FieldValue>;
@@ -80,10 +80,10 @@ export interface FormSpyRenderProps<
   form: FormApi<FormValues, InitialFormValues>;
 }
 
-export interface RenderableProps<T> {
-  children?: ((props: T) => React.ReactNode) | React.ReactNode;
-  component?: React.ComponentType<T> | SupportedInputs;
-  render?: (props: T) => React.ReactNode;
+export interface RenderableProps<Props = {}> {
+  children?: ((props: Props) => React.ReactNode) | React.ReactNode;
+  component?: React.ComponentType<Props> | SupportedInputs;
+  render?: (props: Props) => React.ReactNode;
 }
 
 export interface FormProps<
@@ -100,13 +100,14 @@ export interface FormProps<
 
 export interface UseFieldConfig<
   FieldValue,
+  FormValues extends FormValuesShape = FormValuesShape,
   InputValue = any,
-  T extends HTMLElement = HTMLElement,
+  T extends HTMLElement = HTMLInputElement,
 > extends Pick<RenderableProps<T>, "children" | "component"> {
   afterSubmit?: () => void;
   allowNull?: boolean;
   beforeSubmit?: () => void | false;
-  data?: AnyObject;
+  data?: FormValues;
   defaultValue?: FieldValue;
   format?: (value: FieldValue, name: string) => InputValue;
   formatOnBlur?: boolean;
@@ -116,17 +117,18 @@ export interface UseFieldConfig<
   parse?: (value: InputValue, name: string) => FieldValue;
   subscription?: FieldSubscription;
   type?: string;
-  validate?: FieldValidator<FieldValue>;
+  validate?: FieldValidator<FieldValue, FormValues>;
   validateFields?: string[];
   value?: FieldValue;
 }
 
 export interface FieldProps<
   FieldValue,
-  RP extends FieldRenderProps<FieldValue, T, InputValue>,
-  T extends HTMLElement = HTMLElement,
+  RP extends FieldRenderProps<FieldValue, InputValue, T>,
+  FormValues extends FormValuesShape = FormValuesShape,
   InputValue = FieldValue,
-> extends UseFieldConfig<FieldValue, InputValue, T>,
+  T extends HTMLElement = HTMLInputElement,
+> extends UseFieldConfig<FieldValue, FormValues, InputValue, T>,
     Omit<RenderableProps<RP>, "children" | "component"> {
   name: string;
   [otherProp: string]: any;

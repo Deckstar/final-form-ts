@@ -1,20 +1,14 @@
-// @flow
-import { version as ffVersion } from 'final-form'
-import { version as rffVersion } from 'react-final-form'
-import type { FieldArrayProps } from './types'
-import renderComponent from './renderComponent'
-import useFieldArray from './useFieldArray'
-import { version } from '../package.json'
+import { FormValuesShape } from "final-form";
 
-export { version }
+import renderComponent from "./renderComponent";
+import type { FieldArrayProps } from "./types";
+import useFieldArray from "./useFieldArray";
 
-const versions = {
-  'final-form': ffVersion,
-  'react-final-form': rffVersion,
-  'react-final-form-arrays': version
-}
-
-const FieldArray = ({
+const FieldArray = <
+  FieldValue,
+  FormValues extends FormValuesShape = FormValuesShape,
+  T extends HTMLElement = HTMLInputElement,
+>({
   name,
   subscription,
   defaultValue,
@@ -22,26 +16,23 @@ const FieldArray = ({
   isEqual,
   validate,
   ...rest
-}: FieldArrayProps) => {
-  const { fields, meta } = useFieldArray(name, {
+}: FieldArrayProps<FieldValue, FormValues, T>) => {
+  const { fields, meta } = useFieldArray<FieldValue, FormValues, T>(name, {
     subscription,
     defaultValue,
     initialValue,
     isEqual,
-    validate
-  })
+    validate,
+  });
 
   return renderComponent(
     {
       fields,
-      meta: {
-        ...meta,
-        __versions: versions
-      },
-      ...rest
+      meta,
+      ...rest,
     },
-    `FieldArray(${name})`
-  )
-}
+    `FieldArray(${name})`,
+  );
+};
 
-export default FieldArray
+export default FieldArray;

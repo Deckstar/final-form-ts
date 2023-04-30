@@ -1,5 +1,4 @@
-// @flow
-import React from 'react'
+import React from "react";
 
 /**
  * A simple hook to create a constant value that lives for
@@ -13,10 +12,14 @@ import React from 'react'
  *
  * @param {Function} init - A function to generate the value
  */
-export default function useConstant<T>(init: () => T): T {
-  const ref = React.useRef<?T>()
+function useConstant<T>(init: () => T): T {
+  const ref = React.useRef<T>();
+
   if (!ref.current) {
-    ref.current = init()
+    ref.current = init();
   }
-  return ref.current
+
+  return ref.current;
 }
+
+export default useConstant;

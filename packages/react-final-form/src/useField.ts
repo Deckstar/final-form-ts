@@ -1,4 +1,9 @@
-import type { FieldState, FieldSubscription, FormApi } from "final-form";
+import type {
+  FieldState,
+  FieldSubscription,
+  FormApi,
+  FormValuesShape,
+} from "final-form";
 import { fieldSubscriptionItems } from "final-form";
 import * as React from "react";
 
@@ -28,12 +33,13 @@ const defaultIsEqual = (a: any, b: any): boolean => a === b;
 
 function useField<
   FieldValue = any,
-  T extends HTMLElement = HTMLElement,
+  FormValues extends FormValuesShape = FormValuesShape,
   InputValue = FieldValue,
+  T extends HTMLElement = HTMLInputElement,
 >(
   name: string,
-  config: UseFieldConfig<FieldValue, InputValue, T> = {},
-): FieldRenderProps<FieldValue, T, InputValue> {
+  config: UseFieldConfig<FieldValue, FormValues, InputValue, T> = {},
+): FieldRenderProps<FieldValue, InputValue, T> {
   const {
     afterSubmit,
     allowNull,
@@ -51,12 +57,12 @@ function useField<
     value: _value,
   } = config;
 
-  const form: FormApi = useForm("useField");
+  const form: FormApi<FormValues> = useForm<FormValues>("useField");
 
   const configRef = useLatest(config);
 
   const register = (
-    callback: (fieldState: FieldState) => void,
+    callback: (fieldState: FieldState<FieldValue, FormValues>) => void,
     silent: boolean,
   ) =>
     // avoid using `state` const in any closures created inside `register`
@@ -75,7 +81,7 @@ function useField<
 
         if (wouldFormatOnBlur) {
           const { value } = form.getFieldState(name)!;
-          const formatted = formatValue(value, name);
+          const formatted = formatValue(value!, name);
 
           if (formatted !== value) {
             form.change(name, formatted);
@@ -248,7 +254,7 @@ function useField<
     input.type = type;
   }
 
-  const renderProps: FieldRenderProps<FieldValue, T, InputValue> = {
+  const renderProps: FieldRenderProps<FieldValue, InputValue, T> = {
     input,
     meta,
   }; // assign to force Flow check
