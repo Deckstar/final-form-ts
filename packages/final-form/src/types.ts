@@ -301,14 +301,24 @@ export interface Tools<
   shallowEqual: IsEqual;
 }
 
+export type MutatorArguments<
+  Arguments extends any[] = any[],
+  FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues = Partial<FormValues>,
+> = [
+  args: Arguments,
+  state: MutableState<FormValues, InitialFormValues>,
+  tools: Tools<FormValues, InitialFormValues>,
+];
+
 export type Mutator<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
+  Arguments extends any[] = any[],
+  Result extends any = void,
 > = (
-  args: any,
-  state: MutableState<FormValues, InitialFormValues>,
-  tools: Tools<FormValues, InitialFormValues>,
-) => any;
+  ...mutatorArgs: MutatorArguments<Arguments, FormValues, InitialFormValues>
+) => Result;
 
 export interface Config<
   FormValues extends FormValuesShape = FormValuesShape,

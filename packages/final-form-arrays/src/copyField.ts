@@ -1,11 +1,10 @@
-// @flow
-import type { InternalFieldState } from 'final-form/dist/types'
+import type { InternalFieldState } from "final-form/dist/types";
 
 function copyField(
-  oldFields: { [string]: InternalFieldState },
+  oldFields: { [fieldName: string]: InternalFieldState },
   oldKey: string,
-  newFields: { [string]: InternalFieldState },
-  newKey: string
+  newFields: { [fieldName: string]: InternalFieldState },
+  newKey: string,
 ) {
   newFields[newKey] = {
     ...oldFields[oldKey],
@@ -16,20 +15,23 @@ function copyField(
     change: oldFields[newKey] && oldFields[newKey].change,
     blur: oldFields[newKey] && oldFields[newKey].blur,
     focus: oldFields[newKey] && oldFields[newKey].focus,
-    lastFieldState: undefined // clearing lastFieldState forces renotification
-  }
+    lastFieldState: undefined, // clearing lastFieldState forces renotification
+  };
 
   if (!newFields[newKey].change) {
-    delete newFields[newKey].change
+    // @ts-ignore
+    delete newFields[newKey].change;
   }
 
   if (!newFields[newKey].blur) {
-    delete newFields[newKey].blur
+    // @ts-ignore
+    delete newFields[newKey].blur;
   }
 
   if (!newFields[newKey].focus) {
-    delete newFields[newKey].focus
+    // @ts-ignore
+    delete newFields[newKey].focus;
   }
 }
 
-export default copyField
+export default copyField;
