@@ -5,7 +5,7 @@
     "baseUrl": ".",
     "outDir": "dist"
   },
-  "include": ["./src/**/*", "./package.json"],
+  "include": ["./src/**/*"],
   "references": [
     { "path": "../final-form" },
     { "path": "../final-form-arrays" },
