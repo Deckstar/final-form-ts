@@ -1,5 +1,5 @@
 // tslint:disable no-console
-import { AnyObject, Config, createForm, Mutator } from "./index";
+import { AnyObject, Config, createForm, Mutator } from "../src/index";
 
 interface FormValues {
   foo: string;
