@@ -1,7 +1,7 @@
 import React from "react";
 import { render, cleanup } from "@testing-library/react";
 import { ErrorBoundary } from "./testUtils";
-import { useFormState, Form } from "./index";
+import { useFormState, Form } from "../src/index";
 
 describe("useField", () => {
   afterEach(cleanup);

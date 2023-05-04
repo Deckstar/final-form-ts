@@ -2,8 +2,8 @@ import React from "react";
 import { render, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import { ErrorBoundary } from "./testUtils";
-import Form from "./ReactFinalForm";
-import { useForm } from "./index";
+import Form from "../src/ReactFinalForm";
+import { useForm } from "../src/index";
 
 const onSubmitMock = (values) => {};
 

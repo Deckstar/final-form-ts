@@ -4,7 +4,7 @@ import "@testing-library/jest-dom/extend-expect";
 import deepEqual from "fast-deep-equal";
 import { ErrorBoundary, Toggle, wrapWith } from "./testUtils";
 import { createForm } from "final-form";
-import { Form, Field, version, withTypes } from ".";
+import { Form, Field, version, withTypes } from "../src";
 
 const onSubmitMock = (values) => {};
 const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

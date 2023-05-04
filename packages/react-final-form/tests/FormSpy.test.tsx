@@ -2,9 +2,9 @@ import React from "react";
 import { render, fireEvent, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import { ErrorBoundary, Toggle, wrapWith } from "./testUtils";
-import Form from "./ReactFinalForm";
-import Field from "./Field";
-import FormSpy from "./FormSpy";
+import Form from "../src/ReactFinalForm";
+import Field from "../src/Field";
+import FormSpy from "../src/FormSpy";
 
 const onSubmitMock = (values) => {};
 const hasFormApi = (props) => {
