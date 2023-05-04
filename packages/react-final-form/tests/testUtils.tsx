@@ -1,14 +1,17 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 
 export const wrapWith =
-  (mock, fn) =>
-  (...args) => {
+  (
+    mock: (...args: any[]) => any,
+    fn: (...args: Parameters<typeof mock>) => any,
+  ) =>
+  (...args: Parameters<typeof mock>) => {
     mock(...args);
     return fn(...args);
   };
 
 /** A simple container component that allows boolean to be toggled with a button */
-export function Toggle({ children }) {
+export function Toggle({ children }: PropsWithChildren<any>) {
   const [on, setOn] = React.useState(false);
   return (
     <div>
@@ -18,8 +21,9 @@ export function Toggle({ children }) {
   );
 }
 
-export class ErrorBoundary extends React.Component {
-  componentDidCatch(error) {
+export class ErrorBoundary extends React.Component<PropsWithChildren<any>> {
+  componentDidCatch(error: any) {
+    // @ts-ignore
     this.props.spy(error);
   }
 
