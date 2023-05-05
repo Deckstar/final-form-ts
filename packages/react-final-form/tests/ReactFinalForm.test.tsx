@@ -583,7 +583,11 @@ describe("ReactFinalForm", () => {
         {({ handleSubmit, form }) => (
           <form onSubmit={handleSubmit}>
             <Field name="name" component="input" data-testid="name" />
-            <button type="button" onClick={form.reset}>
+            <button
+              type="button"
+              // @ts-ignore
+              onClick={form.reset}
+            >
               Reset
             </button>
           </form>

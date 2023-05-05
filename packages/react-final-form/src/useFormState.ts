@@ -13,8 +13,8 @@ import useForm from "./useForm";
 
 export type FormStateHookResult<
   FormValues extends FormValuesShape,
-  InitialFormValues,
-  Subscription extends FormSubscription,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
+  Subscription extends FormSubscription = Required<FormSubscription>,
 > = FormState<FormValues, InitialFormValues> &
   Required<
     Pick<
@@ -25,7 +25,7 @@ export type FormStateHookResult<
 
 function useFormState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   Subscription extends FormSubscription = Required<FormSubscription>,
 >({
   onChange,

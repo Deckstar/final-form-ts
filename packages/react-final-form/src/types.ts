@@ -18,7 +18,7 @@ type SupportedInputs = "input" | "select" | "textarea";
 
 export interface ReactContext<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   reactFinalForm: FormApi<FormValues, InitialFormValues>;
 }
@@ -61,10 +61,10 @@ export type SubmitEvent = Partial<
 
 export interface FormRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > extends FormState<FormValues, InitialFormValues>,
     RenderableProps<FormRenderProps<FormValues>> {
-  form: FormApi<FormValues>;
+  form: FormApi<FormValues, InitialFormValues>;
   handleSubmit: (
     event?: Partial<
       Pick<React.SyntheticEvent, "preventDefault" | "stopPropagation">
@@ -74,7 +74,7 @@ export interface FormRenderProps<
 
 export type FormSpyRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
 > = FormStateHookResult<FormValues, InitialFormValues, FS> & {
   form: FormApi<FormValues, InitialFormValues>;
@@ -88,7 +88,7 @@ export interface RenderableProps<Props = {}> {
 
 export interface FormProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > extends Config<FormValues, InitialFormValues>,
     RenderableProps<FormRenderProps<FormValues, InitialFormValues>> {
   subscription?: FormSubscription;
@@ -148,7 +148,7 @@ export interface FieldProps<
 
 export interface UseFormStateParams<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
 > {
   onChange?: (formState: FormState<FormValues, InitialFormValues>) => void;
@@ -157,14 +157,14 @@ export interface UseFormStateParams<
 
 export interface FormSpyProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
 > extends UseFormStateParams<FormValues, InitialFormValues, FS>,
     RenderableProps<FormSpyRenderProps<FormValues, InitialFormValues, FS>> {}
 
 export type FormSpyPropsWithForm<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
 > = {
   reactFinalForm?: FormApi<FormValues, InitialFormValues>;

@@ -8,9 +8,10 @@ import type { FieldState, FormValuesShape } from "./types";
  */
 function publishFieldState<
   FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FieldValue = any,
 >(
-  formState: InternalFormState<FormValues>,
+  formState: InternalFormState<FormValues, InitialFormValues>,
   field: InternalFieldState<FieldValue, FormValues>,
 ): FieldState<FieldValue, FormValues> {
   const {

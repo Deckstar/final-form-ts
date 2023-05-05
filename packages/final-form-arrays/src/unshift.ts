@@ -17,7 +17,7 @@ export interface Unshift<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface UnshiftMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > extends Mutator<
     FormValues,
     InitialFormValues,

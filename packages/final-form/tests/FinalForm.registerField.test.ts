@@ -1,22 +1,25 @@
+import { MutableState } from "../src";
 import createForm from "../src/FinalForm";
 import { onSubmitMock } from "./testUtils";
 
 describe("FinalForm.registerField", () => {
   it("should fix up field that is created by mutators", () => {
-    const form = createForm({
+    type FormValues = { foo: string };
+
+    const form = createForm<FormValues>({
       onSubmit: onSubmitMock,
       initialValues: {
         foo: "bar",
       },
       mutators: {
-        setFieldState: (args, state) => {
+        setFieldState: (args: any, state: MutableState<FormValues>) => {
           state.fields.foo = {
             active: false,
             // @ts-ignore
             afterSubmit: undefined,
             beforeSubmit: undefined,
-            data: {},
-            isEqual: (a, b) => a === b,
+            data: {} as FormValues,
+            isEqual: (a: any, b: any) => a === b,
             lastFieldState: undefined,
             modified: true,
             modifiedSinceLastSubmit: false,
@@ -31,6 +34,7 @@ describe("FinalForm.registerField", () => {
         },
       },
     });
+    // @ts-expect-error
     form.mutators.setFieldState();
 
     const spy = jest.fn();

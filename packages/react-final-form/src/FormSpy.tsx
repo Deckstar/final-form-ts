@@ -11,7 +11,7 @@ import useFormState from "./useFormState";
 
 function FormSpy<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
 >({
   onChange,

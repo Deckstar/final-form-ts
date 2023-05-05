@@ -32,7 +32,7 @@ type FormBooleanStates<FormValues extends FormValuesShape = FormValuesShape> =
  */
 export interface FormState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   active?: string;
   dirty?: boolean;
@@ -64,7 +64,7 @@ export interface FormState<
 
 export type FormSubscriber<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = Subscriber<FormState<FormValues, InitialFormValues>>;
 
 export interface FieldState<
@@ -191,8 +191,8 @@ export interface InternalFieldState<
 }
 
 export interface InternalFormState<
-  FormValues = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   active?: string;
   asyncErrors: ValidationErrors;
@@ -237,7 +237,7 @@ export interface GetFieldState<
 
 export interface FormApi<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   batch: (fn: () => void) => void;
   blur: (name: string) => void;
@@ -251,7 +251,7 @@ export interface FormApi<
   getFieldState: GetFieldState<FormValues>;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
-  mutators: Record<string, (...args: any[]) => any>;
+  mutators: { [key: string]: BoundMutator<FormValues> };
   pauseValidation: () => void;
   registerField: RegisterField<FormValues>;
   reset: (initialValues?: InitialFormValues) => void;
@@ -260,7 +260,7 @@ export interface FormApi<
   resumeValidation: () => void;
   setConfig: <K extends ConfigKey>(
     name: K,
-    value: Config<FormValues>[K],
+    value: Config<FormValues, InitialFormValues>[K],
   ) => void;
   submit: () => Promise<SubmissionErrors> | undefined;
   subscribe: (
@@ -271,7 +271,7 @@ export interface FormApi<
 
 export type DebugFunction<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (
   state: FormState<FormValues, InitialFormValues>,
   fieldStates: { [key: string]: FieldState<any> },
@@ -279,19 +279,19 @@ export type DebugFunction<
 
 export interface MutableState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   fieldSubscribers: { [key: string]: Subscribers<FieldState<any, FormValues>> };
   fields: {
     [key: string]: InternalFieldState<any, FormValues>;
   };
-  formState: InternalFormState<FormValues>;
+  formState: InternalFormState<FormValues, InitialFormValues>;
   lastFormState?: FormState<FormValues, InitialFormValues>;
 }
 
 export interface ChangeValue<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   <Name extends keyof FormValues>(
     mutableState: MutableState<FormValues, InitialFormValues>,
@@ -306,7 +306,7 @@ export interface ChangeValue<
 }
 export interface RenameField<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   <Name extends keyof FormValues, NewName extends keyof FormValues>(
     mutableState: MutableState<FormValues, InitialFormValues>,
@@ -320,10 +320,32 @@ export interface RenameField<
   ): void;
 }
 
+type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
+
+type DropFirstArg<Func extends (...args: any[]) => any> = (
+  ...argsWithoutFirst: DropFirst<Parameters<Func>>
+) => ReturnType<Func>;
+
+export interface BoundMutator<FormValues> {
+  <Key extends keyof FormValues>(name: Key, ...args: any[]): any;
+  <Key extends string>(name: Key, ...args: any[]): any;
+}
+
+export type BoundMutators<FormValues extends FormValuesShape> = {
+  [mutator: string]: BoundMutator<FormValues>;
+};
+
+export type FieldMutators<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Functions extends BoundMutators<FormValues> = BoundMutators<FormValues>,
+> = {
+  [Func in keyof Functions]: DropFirstArg<Functions[Func]>;
+};
+
 /** Tools that will be passed into the functions used as `mutators`. */
 export interface Tools<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   changeValue: ChangeValue<FormValues, InitialFormValues>;
   getIn: GetIn<FormValues>;
@@ -336,7 +358,7 @@ export interface Tools<
 export type MutatorArguments<
   Arguments extends any = any,
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = [
   args: Arguments,
   state: MutableState<FormValues, InitialFormValues>,
@@ -345,7 +367,7 @@ export type MutatorArguments<
 
 export type Mutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   Arguments extends any = any,
   Result extends any = void,
 > = (
@@ -354,13 +376,15 @@ export type Mutator<
 
 export interface Config<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   debug?: DebugFunction<FormValues, InitialFormValues>;
   destroyOnUnregister?: boolean;
   initialValues?: InitialFormValues;
   keepDirtyOnReinitialize?: boolean;
-  mutators?: { [key: string]: Mutator<FormValues, InitialFormValues> };
+  mutators?:
+    | { [key: string]: Mutator } // Note: these mutators are purposefully flexible regarding the generic parameters. This is so the input could be easier, and so it would accept constant values.
+    | { [key: string]: Mutator<FormValues, InitialFormValues> };
   onSubmit: (
     values: FormValues,
     form: FormApi<FormValues, InitialFormValues>,
@@ -374,5 +398,5 @@ export interface Config<
 
 export type Decorator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (form: FormApi<FormValues, InitialFormValues>) => Unsubscribe;

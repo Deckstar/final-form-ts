@@ -1,35 +1,18 @@
-import type { FieldState, FormValuesShape } from "final-form";
+import type {
+  BoundMutators,
+  FieldMutators,
+  FieldState,
+  FormValuesShape,
+} from "final-form";
 import { Mutators } from "final-form-arrays";
 import { RenderableProps, UseFieldConfig } from "react-final-form";
 
 export type { RenderableProps };
 
-type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
-
-type DropFirstArg<Func extends (...args: any[]) => any> = (
-  ...argsWithoutFirst: DropFirst<Parameters<Func>>
-) => ReturnType<Func>;
-
-export interface FieldMutator<FormValues> {
-  <Key extends keyof FormValues>(name: Key, ...args: any[]): any;
-  <Key extends string>(name: Key, ...args: any[]): any;
-}
-
-export type MutatorsDictionary<FormValues extends FormValuesShape> = {
-  [mutator: string]: FieldMutator<FormValues>;
-};
-
-export type FieldMutators<
-  FormValues extends FormValuesShape = FormValuesShape,
-  Functions extends MutatorsDictionary<FormValues> = Mutators<FormValues>,
-> = {
-  [Func in keyof Functions]: DropFirstArg<Functions[Func]>;
-};
-
 export type FieldArrayRenderProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
-  Functions extends MutatorsDictionary<FormValues> = Mutators<FormValues>,
+  Functions extends BoundMutators<FormValues> = Mutators<FormValues>,
 > = {
   fields: {
     forEach: (iterator: (name: string, index: number) => void) => void;

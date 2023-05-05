@@ -27,9 +27,10 @@ export const all = formSubscriptionItems.reduce((result, key) => {
   return result;
 }, {} as FormSubscription) as FullFormSubscription;
 
-function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
-  props: Props<FormValues>,
-) {
+function ReactFinalForm<
+  FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
+>(props: Props<FormValues, InitialFormValues>) {
   const {
     debug,
     decorators = [],
@@ -46,7 +47,7 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     ...rest
   } = props;
 
-  const config: Config<FormValues> = {
+  const config: Config<FormValues, InitialFormValues> = {
     debug,
     destroyOnUnregister,
     initialValues,
@@ -57,8 +58,8 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     validateOnBlur,
   };
 
-  const form: FormApi<FormValues> = useConstant(() => {
-    const f = alternateFormApi || createForm<FormValues>(config);
+  const form: FormApi<FormValues, InitialFormValues> = useConstant(() => {
+    const f = alternateFormApi || createForm(config);
 
     // pause validation until children register all fields on first render (unpaused in useEffect() below)
     f.pauseValidation();
@@ -174,7 +175,7 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     return form.submit();
   };
 
-  const renderProps: FormRenderProps<FormValues> = {
+  const renderProps: FormRenderProps<FormValues, InitialFormValues> = {
     form: {
       ...form,
       reset: (eventOrValues) => {

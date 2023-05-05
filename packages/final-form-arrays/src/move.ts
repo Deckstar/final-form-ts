@@ -16,7 +16,7 @@ export interface Move<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface MoveMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > extends Mutator<
     FormValues,
     InitialFormValues,

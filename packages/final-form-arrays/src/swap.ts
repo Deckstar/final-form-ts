@@ -15,7 +15,7 @@ export interface Swap<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface SwapMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > extends Mutator<
     FormValues,
     InitialFormValues,

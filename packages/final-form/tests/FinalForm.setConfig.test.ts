@@ -22,7 +22,12 @@ describe("FinalForm.setConfig", () => {
   });
 
   it('should initialize the form on setConfig("initialValues", values)', () => {
-    const form = createForm({
+    type FormValues = {
+      foo?: string;
+      goo: string;
+    };
+
+    const form = createForm<FormValues>({
       onSubmit: onSubmitMock,
       initialValues: {
         foo: "bar",
@@ -344,7 +349,13 @@ describe("FinalForm.setConfig", () => {
   });
 
   it("should reinitialize non-registered values with keepDirtyOnReinitialize, on form reinitalize", () => {
-    const form = createForm({
+    type FormValues = {
+      foo: string;
+      goo: string;
+      john?: string;
+    };
+
+    const form = createForm<FormValues>({
       onSubmit: onSubmitMock,
       keepDirtyOnReinitialize: true,
       initialValues: {

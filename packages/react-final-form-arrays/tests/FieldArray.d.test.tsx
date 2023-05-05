@@ -16,7 +16,7 @@ const basic = () => (
   <Form<FormValues>
     onSubmit={onSubmit}
     mutators={{
-      ...(arrayMutators as unknown as DefaultType<FormValues>),
+      ...arrayMutators,
     }}
   >
     {({
@@ -29,7 +29,7 @@ const basic = () => (
       submitting,
       values,
     }) => {
-      const { push, pop } = mutators as unknown as Mutators<FormValues>;
+      const { push, pop } = mutators as Mutators<FormValues>;
 
       return (
         <form onSubmit={handleSubmit}>

@@ -5,7 +5,7 @@ import ReactFinalFormContext from "./context";
 
 function useForm<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 >(componentName?: string): FormApi<FormValues, InitialFormValues> {
   const form: FormApi<FormValues, InitialFormValues> = React.useContext(
     ReactFinalFormContext,

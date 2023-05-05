@@ -27,7 +27,7 @@ export type { Update, UpdateMutator } from "./update";
 /** The shape of the mutators as passed in to the final-form config. */
 export interface DefaultType<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   insert: InsertMutator<FormValues, InitialFormValues>;
   concat: ConcatMutator<FormValues, InitialFormValues>;

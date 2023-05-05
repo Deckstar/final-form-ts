@@ -144,16 +144,17 @@ const setValue: Mutator<FormValues2> = (
   changeValue(state, name, (_value) => newValue);
 };
 
-type Mutators = {
+type Form2BoundMutators = {
   setValue: (name: string, value: string) => void;
 };
+
 form2 = createForm<FormValues2>({
   mutators: { setValue },
   onSubmit: onSubmit2,
 });
 
 // Get form.mutators cast to Mutators
-const mutators: Mutators = form2.mutators as Mutators;
+const mutators = form2.mutators as Form2BoundMutators;
 mutators.setValue("firstName", "Kevin");
 
 // To get around the "Your test suite must contain at least one test." error

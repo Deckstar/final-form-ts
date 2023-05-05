@@ -10,6 +10,7 @@ import shallowEqual from "./shallowEqual";
 import getIn from "./structure/getIn";
 import setIn from "./structure/setIn";
 import type {
+  BoundMutators,
   ChangeValue,
   Config,
   ConfigKey,
@@ -28,6 +29,7 @@ import type {
   InternalFormState,
   IsEqual,
   MutableState,
+  Mutator,
   RenameField,
   Subscriber,
   Subscribers,
@@ -48,9 +50,12 @@ export const configOptions: ConfigKey[] = [
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b;
 
-type InternalState<FormValues extends FormValuesShape = FormValuesShape> = {
-  subscribers: Subscribers<FormState<FormValues>>;
-} & MutableState<FormValues>;
+type InternalState<
+  FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
+> = {
+  subscribers: Subscribers<FormState<FormValues, InitialFormValues>>;
+} & MutableState<FormValues, InitialFormValues>;
 
 export type StateFilter<T> = (
   state: T,
@@ -75,7 +80,10 @@ const hasAnyError = (errors: FormValuesShape): boolean => {
 
 function convertToExternalFormState<
   FormValues extends FormValuesShape = FormValuesShape,
->(internalState: InternalFormState<FormValues>): FormState<FormValues> {
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
+>(
+  internalState: InternalFormState<FormValues, InitialFormValues>,
+): FormState<FormValues, InitialFormValues> {
   const {
     // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
     active,
@@ -169,9 +177,12 @@ function notify<T extends Object>(
   });
 }
 
-function createForm<FormValues extends FormValuesShape = FormValuesShape>(
-  config: Config<FormValues>,
-): FormApi<FormValues> {
+function createForm<
+  FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
+>(
+  config: Config<FormValues, InitialFormValues>,
+): FormApi<FormValues, InitialFormValues> {
   if (!config) {
     throw new Error("No config specified");
   }
@@ -181,17 +192,21 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     destroyOnUnregister,
     keepDirtyOnReinitialize,
     initialValues,
-    mutators,
+    mutators: _mutatorsProp,
     onSubmit,
     validate,
     validateOnBlur,
   } = config;
 
+  let mutatorsProp = _mutatorsProp as {
+    [key: string]: Mutator<FormValues, InitialFormValues>;
+  };
+
   if (!onSubmit) {
     throw new Error("No onSubmit function specified");
   }
 
-  const state: InternalState<FormValues> = {
+  const state: InternalState<FormValues, InitialFormValues> = {
     subscribers: { index: 0, entries: {} },
     fieldSubscribers: {},
     fields: {},
@@ -210,7 +225,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       valid: true,
       validating: 0,
       values: initialValues
-        ? ({ ...initialValues } as FormValues)
+        ? ({ ...initialValues } as unknown as FormValues)
         : ({} as FormValues),
     },
     lastFormState: undefined,
@@ -229,8 +244,8 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     return result;
   };
 
-  const changeValue: ChangeValue<FormValues> = (
-    mState: MutableState<FormValues>,
+  const changeValue: ChangeValue<FormValues, InitialFormValues> = (
+    mState: MutableState<FormValues, InitialFormValues>,
     name: string,
     mutate: (value: any) => any,
   ) => {
@@ -240,8 +255,8 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     mState.formState.values = setIn(mState.formState.values, name, after) || {};
   };
 
-  const renameField: RenameField<FormValues> = (
-    mState: MutableState<FormValues>,
+  const renameField: RenameField<FormValues, InitialFormValues> = (
+    mState: MutableState<FormValues, InitialFormValues>,
     from: string,
     to: string,
   ) => {
@@ -280,17 +295,17 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
   // bind state to mutators
   const getMutatorApi =
-    (key: keyof NonNullable<typeof mutators>) =>
+    (key: keyof NonNullable<typeof mutatorsProp>) =>
     (...args: any[]) => {
-      if (mutators) {
+      if (mutatorsProp) {
         // ^^ causes branch coverage warning, but needed to appease the Flow gods
-        const mutableState: MutableState<FormValues> = {
+        const mutableState: MutableState<FormValues, InitialFormValues> = {
           formState: state.formState,
           fields: state.fields,
           fieldSubscribers: state.fieldSubscribers,
           lastFormState: state.lastFormState,
         };
-        const returnValue = mutators[key](args, mutableState, {
+        const returnValue = mutatorsProp[key](args, mutableState, {
           changeValue,
           getIn,
           renameField,
@@ -299,8 +314,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
           shallowEqual,
         });
 
-        state.formState =
-          mutableState.formState as InternalFormState<FormValues>;
+        state.formState = mutableState.formState;
         state.fields = mutableState.fields;
         state.fieldSubscribers = mutableState.fieldSubscribers;
         state.lastFormState = mutableState.lastFormState;
@@ -313,8 +327,8 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       }
     };
 
-  const mutatorsApi = mutators
-    ? Object.keys(mutators).reduce((result, key) => {
+  const mutatorsApi: BoundMutators<FormValues> = mutatorsProp
+    ? Object.keys(mutatorsProp).reduce((result, key) => {
         result[key] = getMutatorApi(key);
         return result;
       }, {} as { [mutator: string]: (...args: any[]) => any })
@@ -590,7 +604,10 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
   const hasSyncErrors = () =>
     !!(state.formState.error || hasAnyError(state.formState.errors!));
 
-  const calculateNextFormState = (): FormState<FormValues> => {
+  const calculateNextFormState = (): FormState<
+    FormValues,
+    InitialFormValues
+  > => {
     const { fields, formState, lastFormState } = state;
     const safeFields = { ...fields };
     const safeFieldKeys = Object.keys(safeFields);
@@ -670,7 +687,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     nextFormState.dirtyFields =
       lastFormState && shallowEqual(lastFormState.dirtyFields, dirtyFields)
         ? lastFormState.dirtyFields
-        : (dirtyFields as FormState<FormValues>["dirtyFields"]);
+        : dirtyFields;
     nextFormState.dirtyFieldsSinceLastSubmit =
       lastFormState &&
       shallowEqual(
@@ -678,19 +695,19 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
         dirtyFieldsSinceLastSubmit,
       )
         ? lastFormState.dirtyFieldsSinceLastSubmit
-        : (dirtyFieldsSinceLastSubmit as FormState<FormValues>["dirtyFieldsSinceLastSubmit"]);
+        : dirtyFieldsSinceLastSubmit;
     nextFormState.modified =
       lastFormState && shallowEqual(lastFormState.modified, modified)
         ? lastFormState.modified
-        : (modified as FormState<FormValues>["modified"]);
+        : modified;
     nextFormState.touched =
       lastFormState && shallowEqual(lastFormState.touched, touched)
         ? lastFormState.touched
-        : (touched as FormState<FormValues>["touched"]);
+        : touched;
     nextFormState.visited =
       lastFormState && shallowEqual(lastFormState.visited, visited)
         ? lastFormState.visited
-        : (visited as FormState<FormValues>["visited"]);
+        : visited;
 
     return lastFormState && shallowEqual(lastFormState, nextFormState)
       ? lastFormState
@@ -766,7 +783,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     notifyFormListeners();
   });
 
-  const api: FormApi<FormValues> = {
+  const api: FormApi<FormValues, InitialFormValues> = {
     batch: (fn: () => void) => {
       inBatch++;
       fn();
@@ -853,12 +870,15 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
     getState: () => calculateNextFormState(),
 
-    initialize: (data: Object | ((values: Object) => Object)) => {
+    initialize: (
+      data: InitialFormValues | ((values: FormValues) => InitialFormValues),
+    ) => {
       const { fields, formState } = state;
       const safeFields = { ...fields };
-      const values = typeof data === "function" ? data(formState.values) : data;
+      const values: InitialFormValues =
+        typeof data === "function" ? data(formState.values) : data;
       if (!keepDirtyOnReinitialize) {
-        formState.values = values;
+        formState.values = values as unknown as FormValues;
       }
       /**
        * Hello, inquisitive code reader! Thanks for taking the time to dig in!
@@ -884,7 +904,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
       // update initialValues and values
       formState.initialValues = values;
-      formState.values = values;
+      formState.values = values as unknown as FormValues;
 
       // restore the dirty values
       Object.keys(savedDirtyValues).forEach((key) => {
@@ -975,12 +995,13 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
         if (
           fieldConfig.initialValue !== undefined &&
           (noValueInFormState ||
+            // @ts-ignore
             getIn(state.formState.values, name) ===
               getIn(state.formState.initialValues, name))
           // only initialize if we don't yet have any value for this field
         ) {
           state.formState.initialValues = setIn(
-            state.formState.initialValues || {},
+            state.formState.initialValues || ({} as InitialFormValues),
             name,
             fieldConfig.initialValue,
           );
@@ -1067,7 +1088,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       delete state.formState.submitError;
       delete state.formState.submitErrors;
       delete state.formState.lastSubmittedValues;
-      api.initialize(newInitialValues || {});
+      api.initialize(newInitialValues || ({} as InitialFormValues));
     },
 
     /**
@@ -1147,7 +1168,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
           keepDirtyOnReinitialize = value;
           break;
         case "mutators":
-          mutators = value;
+          mutatorsProp = value;
           if (value) {
             Object.keys(mutatorsApi).forEach((key) => {
               if (!(key in value)) {
@@ -1289,7 +1310,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     },
 
     subscribe: (
-      subscriber: FormSubscriber<FormValues>,
+      subscriber: FormSubscriber<FormValues, InitialFormValues>,
       subscription: FormSubscription,
     ): Unsubscribe => {
       if (!subscriber) {
