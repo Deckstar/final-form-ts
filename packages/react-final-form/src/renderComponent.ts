@@ -8,7 +8,7 @@ export default function renderComponent<T>(
   props: RenderableProps<T> & T,
   lazyProps: object,
   name: string,
-): React.ReactNode {
+): React.ReactElement {
   const { render, children, component, ...rest } = props;
   if (component) {
     return React.createElement(

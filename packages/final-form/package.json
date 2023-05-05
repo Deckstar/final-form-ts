@@ -2,12 +2,12 @@
   "name": "final-form",
   "version": "4.20.9",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
-  "main": "dist",
-  "jsnext:main": "dist",
-  "module": "dist",
+  "main": "dist/src",
+  "jsnext:main": "dist/src",
+  "module": "dist/src",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist/src"
   ],
   "scripts": {
     "start": "nps",
@@ -30,14 +30,7 @@
   "homepage": "https://github.com/final-form/final-form#readme",
   "devDependencies": {
     "@types/node": "^16.10.1",
-    "doctoc": "^2.0.1",
-    "jest": "^27.2.1"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      ".*\\.ts"
-    ]
+    "doctoc": "^2.0.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.10.0"

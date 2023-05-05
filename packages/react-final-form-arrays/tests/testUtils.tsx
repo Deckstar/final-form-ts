@@ -21,7 +21,7 @@ export function Toggle({ children }: PropsWithChildren<any>) {
   );
 }
 
-export class ErrorBoundary extends React.Component {
+export class ErrorBoundary extends React.Component<PropsWithChildren<any>> {
   componentDidCatch(error: any) {
     // @ts-ignore
     this.props.spy(error);

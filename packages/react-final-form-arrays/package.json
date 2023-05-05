@@ -2,12 +2,12 @@
   "name": "react-final-form-arrays",
   "version": "3.1.4",
   "description": "A component for rendering and editing arrays 🏁 React Final Form",
-  "main": "dist",
-  "jsnext:main": "dist",
-  "module": "dist",
+  "main": "dist/src",
+  "jsnext:main": "dist/src",
+  "module": "dist/src",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist/src"
   ],
   "scripts": {
     "start": "nps",
@@ -25,32 +25,13 @@
   "homepage": "https://github.com/final-form/react-final-form-arrays#readme",
   "devDependencies": {
     "doctoc": "^2.2.1",
-    "eslint-config-react-app": "^7.0.1",
-    "eslint-plugin-react": "^7.31.10",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "final-form": "workspace:packages/final-form",
     "final-form-arrays": "workspace:packages/final-form-arrays",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-final-form": "workspace:packages/react-final-form"
   },
   "peerDependencies": {
     "final-form": "workspace:packages/final-form",
     "final-form-arrays": "workspace:packages/final-form-arrays",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-final-form": "workspace:packages/react-final-form"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ],
-    "testPathIgnorePatterns": [
-      ".*\\.tsx?"
-    ]
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.19.4"
   }
 }

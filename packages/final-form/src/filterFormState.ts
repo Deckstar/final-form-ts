@@ -13,7 +13,7 @@ export default function filterFormState<
   state: FormState<FormValues>,
   previousState: FormState<FormValues> | null | undefined,
   subscription: FormSubscription,
-  force: boolean,
+  force?: boolean,
 ): FormState<FormValues> | null | undefined {
   const result: FormState<FormValues> = {};
 

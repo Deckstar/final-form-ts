@@ -1,30 +1,36 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import * as React from 'react'
-import { Form, Field } from 'react-final-form'
-import arrayMutators from 'final-form-arrays'
-import { FieldArray } from './index'
+import arrayMutators, { DefaultType, Mutators } from "final-form-arrays";
+import * as React from "react";
+import { Field, Form } from "react-final-form";
+
+import { FieldArray } from "../src/index";
 
 const onSubmit = async (values: any) => {
-  console.log(values)
-}
+  // eslint-disable-next-line no-console
+  console.log(values);
+};
+
+type FormValues = { customers: any[] };
 
 const basic = () => (
-  <Form
+  <Form<FormValues>
     onSubmit={onSubmit}
     mutators={{
-      ...arrayMutators
+      ...(arrayMutators as unknown as DefaultType<FormValues>),
     }}
   >
     {({
       handleSubmit,
       form: {
-        mutators: { push, pop }, // injected from final-form-arrays above
-        reset
+        mutators, // injected from final-form-arrays above
+        reset,
       },
       pristine,
       submitting,
-      values
+      values,
     }) => {
+      const { push, pop } = mutators as unknown as Mutators<FormValues>;
+
       return (
         <form onSubmit={handleSubmit}>
           <div>
@@ -32,10 +38,10 @@ const basic = () => (
             <Field name="company" component="input" />
           </div>
           <div className="buttons">
-            <button type="button" onClick={() => push('customers', undefined)}>
+            <button type="button" onClick={() => push("customers", undefined)}>
               Add Customer
             </button>
-            <button type="button" onClick={() => pop('customers')}>
+            <button type="button" onClick={() => pop("customers")}>
               Remove Customer
             </button>
           </div>
@@ -56,7 +62,7 @@ const basic = () => (
                   />
                   <span
                     onClick={() => fields.remove(index)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                   >
                     ❌
                   </span>
@@ -71,7 +77,7 @@ const basic = () => (
             </button>
             <button
               type="button"
-              onClick={reset}
+              onClick={() => reset()}
               disabled={submitting || pristine}
             >
               Reset
@@ -79,7 +85,10 @@ const basic = () => (
           </div>
           <pre>{JSON.stringify(values)}</pre>
         </form>
-      )
+      );
     }}
   </Form>
-)
+);
+
+// To get around the "Your test suite must contain at least one test." error
+it("passes", () => {});

@@ -1,4 +1,5 @@
-import filterFormState from "./filterFormState";
+import filterFormState from "../src/filterFormState";
+import { FormState } from "../src/types";
 
 describe("filterFormState", () => {
   const state = {
@@ -19,25 +20,38 @@ describe("filterFormState", () => {
     visited: { foo: true, bar: false },
   };
 
-  const testValue = (key, state, newValue) => {
+  const testValue = (
+    key: keyof FormState,
+    formState: FormState,
+    newValue: any,
+  ) => {
     it(`should not notify when ${key} doesn't change`, () => {
-      const result = filterFormState(state, state, { [key]: true });
+      const result = filterFormState(formState, formState, { [key]: true });
       expect(result).toBeUndefined();
     });
 
     it(`should not notify when ${key} changes`, () => {
-      const result = filterFormState({ ...state, [key]: newValue }, state, {
-        [key]: true,
-      });
+      const result = filterFormState(
+        { ...formState, [key]: newValue },
+        formState,
+        {
+          [key]: true,
+        },
+      );
       expect(result).toEqual({
         [key]: newValue,
       });
     });
 
     it(`should notify when ${key} doesn't change, but is forced`, () => {
-      const result = filterFormState(state, state, { [key]: true }, true);
+      const result = filterFormState(
+        formState,
+        formState,
+        { [key]: true },
+        true,
+      );
       expect(result).toEqual({
-        [key]: state[key],
+        [key]: formState[key],
       });
     });
   };

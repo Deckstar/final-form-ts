@@ -23,6 +23,7 @@ import type {
   FormSubscriber,
   FormSubscription,
   FormValuesShape,
+  GetFieldState,
   InternalFieldState,
   InternalFormState,
   IsEqual,
@@ -47,7 +48,7 @@ export const configOptions: ConfigKey[] = [
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b;
 
-type InternalState<FormValues extends FormValuesShape> = {
+type InternalState<FormValues extends FormValuesShape = FormValuesShape> = {
   subscribers: Subscribers<FormState<FormValues>>;
 } & MutableState<FormValues>;
 
@@ -55,7 +56,7 @@ export type StateFilter<T> = (
   state: T,
   previousState: T | null | undefined,
   subscription: FieldSubscription,
-  force: boolean,
+  force?: boolean,
 ) => T | null | undefined;
 
 type StateFilterParams<T> = Parameters<StateFilter<T>>;
@@ -126,7 +127,7 @@ function notifySubscriber<T extends Object>(
   state: StateFilterParams<T>[0],
   lastState: StateFilterParams<T>[1],
   filter: StateFilter<T>,
-  force: StateFilterParams<T>[3],
+  force?: StateFilterParams<T>[3],
 ): boolean {
   const notification: T | null | undefined = filter(
     state,
@@ -336,7 +337,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     return promises;
   };
 
-  const getValidators = <FieldValue>(
+  const getValidators = <FieldValue = any>(
     field: InternalFieldState<FieldValue, FormValues>,
   ) =>
     Object.keys(field.validators).reduce((result, index) => {
@@ -347,7 +348,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       return result;
     }, [] as FieldValidator<FieldValue, FormValues>[]);
 
-  const runFieldLevelValidation = <FieldValue>(
+  const runFieldLevelValidation = <FieldValue = any>(
     field: InternalFieldState<FieldValue, FormValues>,
     setError: (error: any) => void,
   ): Promise<any>[] => {
@@ -843,10 +844,10 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
     mutators: mutatorsApi,
 
-    getFieldState: (name) => {
+    getFieldState: ((name: string) => {
       const field = state.fields[name];
       return field && field.lastFieldState;
-    },
+    }) as GetFieldState<FormValues>,
 
     getRegisteredFields: () => Object.keys(state.fields),
 

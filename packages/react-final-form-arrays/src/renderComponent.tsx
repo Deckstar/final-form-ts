@@ -7,7 +7,7 @@ import type { RenderableProps } from "./types";
 function renderComponent<Props>(
   props: RenderableProps<Props> & Props,
   name: string,
-): React.ReactNode {
+): React.ReactElement {
   const { render, children, component, ...rest } = props;
 
   if (component) {

@@ -1,18 +1,19 @@
-import createForm, { version } from "./FinalForm";
-
-const onSubmitMock = (values, callback) => {};
+import createForm from "../src/FinalForm";
+import { onSubmitMock } from "./testUtils";
 
 describe("FinalForm.creation", () => {
-  it("should export version", () => {
-    expect(version).toBeDefined();
-  });
-
   it("should throw an error if no config is provided", () => {
-    expect(() => createForm()).toThrowError(/No config/);
+    expect(() =>
+      // @ts-expect-error
+      createForm(),
+    ).toThrowError(/No config/);
   });
 
   it("should throw an error if no onSubmit is provided", () => {
-    expect(() => createForm({})).toThrowError(/No onSubmit/);
+    expect(() =>
+      // @ts-expect-error
+      createForm({}),
+    ).toThrowError(/No onSubmit/);
   });
 
   it("should create a form with no initial values", () => {
@@ -26,6 +27,7 @@ describe("FinalForm.creation", () => {
       foo: "bar",
       cat: 42,
     };
+
     const form = createForm({ onSubmit: onSubmitMock, initialValues });
     expect(form.getState().initialValues).not.toBe(initialValues);
     expect(form.getState().initialValues).toEqual(initialValues);
@@ -40,7 +42,11 @@ describe("FinalForm.creation", () => {
   });
 
   it("should allow a change to an not-yet-registered field when validation is present", () => {
-    const form = createForm({ onSubmit: onSubmitMock, validate: () => {} });
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      // @ts-ignore
+      validate: () => {},
+    });
     form.registerField("whatever", () => {}, { value: true });
     form.change("foo", "bar");
   });
@@ -49,6 +55,7 @@ describe("FinalForm.creation", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const foo = jest.fn();
     const cat = jest.fn();
+
     form.registerField(
       "foo",
       foo,
@@ -57,6 +64,7 @@ describe("FinalForm.creation", () => {
     );
     expect(form.getState().initialValues).toEqual({ foo: "bar" });
     expect(form.getState().values).toEqual({ foo: "bar" });
+
     form.registerField(
       "cat",
       cat,
@@ -83,6 +91,7 @@ describe("FinalForm.creation", () => {
   it("should only initialize field if no field value yet exists", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const foo1 = jest.fn();
+
     form.registerField(
       "foo",
       foo1,
@@ -98,6 +107,7 @@ describe("FinalForm.creation", () => {
       initial: "bar",
       pristine: true,
     });
+
     form.change("foo", "baz");
     expect(foo1).toHaveBeenCalledTimes(2);
     expect(foo1.mock.calls[1][0]).toMatchObject({
@@ -131,6 +141,7 @@ describe("FinalForm.creation", () => {
     const baz = jest.fn();
     const foo = jest.fn();
     const cat = jest.fn();
+
     form.registerField(
       "baz",
       baz,
@@ -139,6 +150,7 @@ describe("FinalForm.creation", () => {
     );
     expect(form.getState().initialValues).toEqual({ baz: "baz" });
     expect(form.getState().values).toEqual({ baz: "baz" });
+
     form.registerField(
       "foo",
       foo,
@@ -147,6 +159,7 @@ describe("FinalForm.creation", () => {
     );
     expect(form.getState().initialValues).toEqual({ baz: "baz", foo: "bar" });
     expect(form.getState().values).toEqual({ baz: "baz", foo: "bar" });
+
     form.registerField(
       "cat",
       cat,
@@ -180,20 +193,22 @@ describe("FinalForm.creation", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const foo = jest.fn();
     const cat = jest.fn();
+
     form.registerField(
       "foo",
       foo,
       { pristine: true, data: true },
       { data: { foo: "bar" } },
     );
-    expect(form.getFieldState("foo").data).toEqual({ foo: "bar" });
+    expect(form.getFieldState("foo")!.data).toEqual({ foo: "bar" });
+
     form.registerField(
       "cat",
       cat,
       { pristine: true, data: true },
       { data: { foo: "fubar" } },
     );
-    expect(form.getFieldState("cat").data).toEqual({ foo: "fubar" });
+    expect(form.getFieldState("cat")!.data).toEqual({ foo: "fubar" });
 
     expect(foo).toHaveBeenCalledTimes(1);
     expect(foo.mock.calls[0][0]).toMatchObject({

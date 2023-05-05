@@ -1,30 +1,34 @@
-// tslint:disable no-console
+import { Config, createForm } from "final-form";
 
-import { Config, createForm, AnyObject } from 'final-form'
-import arrayMutators from './index'
-import { Mutators } from './index'
+import arrayMutators from "../src/index";
+import { Mutators } from "../src/index";
 
-const onSubmit: Config['onSubmit'] = (values, callback) => {}
+const onSubmit: Config["onSubmit"] = (_values, _callback) => {};
 
 const form = createForm({
   mutators: { ...arrayMutators },
-  onSubmit
-})
+  onSubmit,
+});
 
 // Get form.mutators (default as object) and cast to Mutators
-const mutators: Mutators = (form.mutators as any) as Mutators
+const mutators: Mutators = form.mutators as any as Mutators;
 
-mutators.insert('customers', 0, { firstName: '', lastName: '' })
-mutators.concat('customers', [
-  { firstName: '', lastName: '' },
-  { firstName: '', lastName: '' }
-])
-mutators.move('customers', 0, 1)
-const customer = mutators.pop('customers')
-mutators.push('customers', { firstName: '', lastName: '' })
-mutators.removeBatch('customers', [0])
-const removed = mutators.remove('customers', 0)
-const shifted = mutators.shift('customers')
-mutators.swap('customers', 0, 1)
-mutators.update('customers', 0, { firstName: '', lastName: '' })
-mutators.unshift('customers', { firstName: '', lastName: '' })
+mutators.insert("customers", 0, { firstName: "", lastName: "" });
+mutators.concat("customers", [
+  { firstName: "", lastName: "" },
+  { firstName: "", lastName: "" },
+]);
+mutators.move("customers", 0, 1);
+
+const _customer = mutators.pop("customers");
+mutators.push("customers", { firstName: "", lastName: "" });
+mutators.removeBatch("customers", [0]);
+
+const _removed = mutators.remove("customers", 0);
+const _shifted = mutators.shift("customers");
+mutators.swap("customers", 0, 1);
+mutators.update("customers", 0, { firstName: "", lastName: "" });
+mutators.unshift("customers", { firstName: "", lastName: "" });
+
+// To get around the "Your test suite must contain at least one test." error
+it("passes", () => {});

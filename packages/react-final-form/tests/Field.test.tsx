@@ -1,14 +1,17 @@
-import React from "react";
-import { render, fireEvent, cleanup, act } from "@testing-library/react";
+/* eslint-disable no-console */
 import "@testing-library/jest-dom/extend-expect";
-import { ErrorBoundary, Toggle, wrapWith } from "./testUtils";
-import Form from "../src/ReactFinalForm";
+
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
+import React from "react";
+
 import Field from "../src/Field";
+import Form from "../src/ReactFinalForm";
+import { ErrorBoundary, onSubmitMock, Toggle, wrapWith } from "./testUtils";
 
-const onSubmitMock = (values) => {};
+const timeout = (ms?: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
-const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-async function sleep(ms) {
+async function sleep(ms?: number) {
   await act(async () => {
     await timeout(ms);
   });
@@ -30,6 +33,7 @@ describe("Field", () => {
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "useField must be used inside of a <Form> component",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
@@ -54,10 +58,13 @@ describe("Field", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Odie");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Garfield");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Odie");
   });
 
@@ -97,7 +104,7 @@ describe("Field", () => {
       <Form onSubmit={onSubmitMock}>
         {() => (
           <form>
-            <Field
+            <Field<any, any, any, HTMLSelectElement>
               name="color"
               render={({ input, children }) => (
                 <select {...input} data-testid="color">
@@ -254,6 +261,7 @@ describe("Field", () => {
     fireEvent.change(getByTestId("name"), { target: { value: "erikras" } });
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls[1][0].values).toEqual({ name: "erikras" });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("ERIKRAS");
   });
 
@@ -275,13 +283,16 @@ describe("Field", () => {
       </Form>,
     );
     fireEvent.focus(getByTestId("name"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     fireEvent.change(getByTestId("name"), { target: { value: "erikras" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     expect(format).not.toHaveBeenCalled();
     fireEvent.blur(getByTestId("name"));
     expect(format).toHaveBeenCalled();
     expect(format).toHaveBeenCalledTimes(1);
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("ERIKRAS");
   });
 
@@ -311,11 +322,14 @@ describe("Field", () => {
     );
     const inputText = "   erikras";
     fireEvent.focus(getByTestId("name"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     fireEvent.change(getByTestId("name"), { target: { value: inputText } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe(inputText);
     fireEvent.blur(getByTestId("name"));
     expect(format.mock.calls[0][0]).toBe(inputText.toUpperCase());
+    // @ts-ignore
     expect(getByTestId("name").value).toBe(inputText.trim().toUpperCase());
   });
 
@@ -381,6 +395,7 @@ describe("Field", () => {
 
     // This test is mostly for code coverage. Is there a way to assure that the value prop
     // passed to the <select> is []?
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
   });
 
@@ -406,7 +421,8 @@ describe("Field", () => {
   });
 
   it("should pass ref through to the input", () => {
-    const ref = React.createRef();
+    const ref = React.createRef<React.ReactNode>();
+
     render(
       <Form onSubmit={onSubmitMock} subscription={{ values: true }}>
         {() => (
@@ -551,8 +567,8 @@ describe("Field", () => {
   });
 
   it("should allow changing field-level validation function", () => {
-    const simpleValidate = (value) => (value ? undefined : "Required");
-    const complexValidate = (value) => {
+    const simpleValidate = (value: any) => (value ? undefined : "Required");
+    const complexValidate = (value: any) => {
       if (value) {
         if (value !== value.toUpperCase()) {
           return "SHOULD BE UPPERCASE!";
@@ -610,10 +626,10 @@ describe("Field", () => {
    * form.
    */
   it("should ignore changes field-level validation function", () => {
-    const createValidator = (isRequired) =>
-      isRequired ? (value) => (value ? undefined : "Required") : undefined;
+    const createValidator = (isRequired: boolean) =>
+      isRequired ? (value: any) => (value ? undefined : "Required") : undefined;
 
-    const Error = ({ name }) => (
+    const Error = ({ name }: { name: string }) => (
       <Field name={name} subscription={{ error: true }}>
         {({ meta: { error } }) => <div data-testid="error2">{error}</div>}
       </Field>
@@ -656,7 +672,7 @@ describe("Field", () => {
 
   it("should not rerender if validateFields is !== every time", () => {
     // https://github.com/final-form/react-final-form/issues/502
-    const required = (value) => (value ? undefined : "Required");
+    const required = (value: any) => (value ? undefined : "Required");
     const spy = jest.fn();
     const { getByTestId } = render(
       <Form onSubmit={onSubmitMock}>
@@ -706,8 +722,15 @@ describe("Field", () => {
         )}
       </Form>,
     );
+
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("checkbox").type).toBe("checkbox");
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("password").type).toBe("password");
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("radio").type).toBe("radio");
   });
 
@@ -726,9 +749,16 @@ describe("Field", () => {
         )}
       </Form>,
     );
+
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("employed").type).toBe("checkbox");
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("employed").checked).toBe(false);
     fireEvent.change(getByTestId("employed"), { target: { checked: true } });
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("employed").checked).toBe(true);
   });
 
@@ -762,8 +792,14 @@ describe("Field", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("red").checked).toBe(true);
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("green").checked).toBe(false);
+    // @ts-ignore
+    // @ts-ignore
     expect(getByTestId("blue").checked).toBe(true);
   });
 
@@ -841,11 +877,17 @@ describe("Field", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("red").type).toBe("radio");
+    // @ts-ignore
     expect(getByTestId("red").checked).toBe(false);
+    // @ts-ignore
     expect(getByTestId("green").type).toBe("radio");
+    // @ts-ignore
     expect(getByTestId("green").checked).toBe(true);
+    // @ts-ignore
     expect(getByTestId("blue").type).toBe("radio");
+    // @ts-ignore
     expect(getByTestId("blue").checked).toBe(false);
   });
 
@@ -894,7 +936,9 @@ describe("Field", () => {
   });
 
   it("should use isEqual to calculate dirty/pristine", () => {
-    const isEqual = (a, b) => (a && a.toUpperCase()) === (b && b.toUpperCase());
+    const isEqual = (a: any, b: any) =>
+      (a && a.toUpperCase()) === (b && b.toUpperCase());
+
     const { getByTestId } = render(
       <Form onSubmit={onSubmitMock} initialValues={{ name: "bob" }}>
         {() => (
@@ -913,6 +957,7 @@ describe("Field", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("input").value).toBe("bob");
     expect(getByTestId("dirty")).toHaveTextContent("Pristine");
     fireEvent.change(getByTestId("input"), { target: { value: "bobby" } });
@@ -945,6 +990,7 @@ describe("Field", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("input").value).toBe("bob");
     expect(getByTestId("dirty")).toHaveTextContent("Pristine");
     fireEvent.change(getByTestId("input"), { target: { value: "bobby" } });
@@ -989,7 +1035,7 @@ describe("Field", () => {
                 <input type="radio" {...input} data-testid="radio" />
               )}
             </Field>
-            <Field name="selectMultipleInput">
+            <Field<any, any, any, HTMLSelectElement> name="selectMultipleInput">
               {({ input }) => (
                 <select multiple {...input} data-testid="select">
                   <option>{"Option"}</option>
@@ -1060,15 +1106,19 @@ describe("Field", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     fireEvent.focus(getByTestId("name"));
     fireEvent.change(getByTestId("name"), { target: { value: "erik" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erik");
     fireEvent.blur(getByTestId("name"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("ERIK");
 
     fireEvent.focus(getByTestId("name"));
     fireEvent.change(getByTestId("name"), { target: { value: "ERIKras" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("ERIKras");
 
     expect(onSubmit).not.toHaveBeenCalled();
@@ -1085,7 +1135,7 @@ describe("Field", () => {
 
   it("should allow submission to be cancelled in beforeSubmit", () => {
     const onSubmit = jest.fn();
-    const beforeSubmit = jest.fn(() => false);
+    const beforeSubmit = jest.fn<false, []>(() => false);
     const { getByTestId, getByText } = render(
       <Form onSubmit={onSubmit}>
         {({ handleSubmit }) => (
@@ -1101,6 +1151,7 @@ describe("Field", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     fireEvent.focus(getByTestId("name"));
     fireEvent.change(getByTestId("name"), { target: { value: "erik" } });
@@ -1142,6 +1193,7 @@ describe("Field", () => {
 
     await sleep(6);
 
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     fireEvent.focus(getByTestId("name"));
     expect(getByTestId("validating")).toHaveTextContent("Not Validating");
@@ -1197,7 +1249,7 @@ describe("Field", () => {
   it("submit should not throw when field with enabled `formatOnBlur` changes name `prop`", () => {
     const onSubmit = jest.fn();
 
-    const trim = (value) => value && value.trim();
+    const trim = (value: any) => value && value.trim();
 
     const { getByTestId, getByText } = render(
       <Form onSubmit={onSubmit}>
@@ -1236,7 +1288,13 @@ describe("Field", () => {
     render(
       <ErrorBoundary spy={errorSpy}>
         <Form onSubmit={onSubmitMock}>
-          {() => <Field name={undefined} render={() => <input />} />}
+          {() => (
+            <Field
+              // @ts-expect-error
+              name={undefined}
+              render={() => <input />}
+            />
+          )}
         </Form>
       </ErrorBoundary>,
     );
@@ -1246,6 +1304,7 @@ describe("Field", () => {
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "prop name cannot be undefined in <Field> component",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 });

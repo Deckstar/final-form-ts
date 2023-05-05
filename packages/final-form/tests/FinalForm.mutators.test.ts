@@ -1,15 +1,19 @@
-import createForm from "./FinalForm";
-
-const onSubmitMock = (values, callback) => {};
+import type { Mutator } from "../src";
+import { createForm } from "../src";
+import { onSubmitMock } from "./testUtils";
 
 describe("FinalForm.mutators", () => {
   it("should allow mutators to mutate state", () => {
-    const clear = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, () => undefined);
-    });
-    const upper = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, (value) => value && value.toUpperCase());
-    });
+    const clear = jest.fn<void, Parameters<Mutator>>(
+      ([name], state, { changeValue }) => {
+        changeValue(state, name, () => undefined);
+      },
+    ) as Mutator;
+    const upper = jest.fn<void, Parameters<Mutator>>(
+      ([name], state, { changeValue }) => {
+        changeValue(state, name, (value: any) => value && value.toUpperCase());
+      },
+    ) as Mutator;
 
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -45,9 +49,11 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should allow changeValue to modify a non-registered field", () => {
-    const upper = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, (value) => value && value.toUpperCase());
-    });
+    const upper = jest.fn<void, Parameters<Mutator>>(
+      ([name], state, { changeValue }) => {
+        changeValue(state, name, (value: any) => value && value.toUpperCase());
+      },
+    ) as Mutator;
 
     const form = createForm({
       onSubmit: onSubmitMock,

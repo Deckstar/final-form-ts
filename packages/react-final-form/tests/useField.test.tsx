@@ -1,13 +1,14 @@
-import * as React from "react";
-import { render, fireEvent, cleanup } from "@testing-library/react";
+/* eslint-disable no-console */
 import "@testing-library/jest-dom/extend-expect";
-import { ErrorBoundary } from "./testUtils";
-import Form from "../src/ReactFinalForm";
-import Field from "../src/Field";
-import { useField } from "../src/index";
+
+import { cleanup, fireEvent, render } from "@testing-library/react";
+import * as React from "react";
 import { act } from "react-dom/test-utils";
 
-const onSubmitMock = (values) => {};
+import Field from "../src/Field";
+import { RenderableProps, useField } from "../src/index";
+import Form from "../src/ReactFinalForm";
+import { ErrorBoundary, onSubmitMock } from "./testUtils";
 
 describe("useField", () => {
   afterEach(cleanup);
@@ -32,6 +33,7 @@ describe("useField", () => {
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "useField must be used inside of a <Form> component",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
@@ -88,6 +90,7 @@ describe("useField", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     // All forms without restricted subscriptions render twice at first because they
     // need to update their validation and touched/modified/visited maps every time
@@ -96,6 +99,7 @@ describe("useField", () => {
     expect(spy.mock.calls[0][0]).toBe("");
     expect(spy.mock.calls[1][0]).toBe("");
     fireEvent.change(getByTestId("name"), { target: { value: "erikras" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     expect(spy).toHaveBeenCalledTimes(3);
     expect(spy.mock.calls[2][0]).toBe("erikras");
@@ -103,14 +107,20 @@ describe("useField", () => {
 
   it("should allow for creation of render-controlled components", () => {
     const spy = jest.fn();
-    const MemoizedDirtyDisplay = React.memo(({ dirty }) => {
+
+    type DirtyDisplayProps = { dirty?: boolean };
+
+    const MemoizedDirtyDisplay = React.memo(({ dirty }: DirtyDisplayProps) => {
       spy(dirty);
       return <div data-testid="dirty">{dirty ? "Dirty" : "Pristine"}</div>;
     });
+
     const MyFieldListener = () => {
       const field = useField("name", { subscription: { dirty: true } });
+
       return <MemoizedDirtyDisplay dirty={field.meta.dirty} />;
     };
+
     const { getByTestId } = render(
       <Form onSubmit={onSubmitMock}>
         {() => (
@@ -121,15 +131,19 @@ describe("useField", () => {
         )}
       </Form>,
     );
+
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     expect(getByTestId("dirty")).toHaveTextContent("Pristine");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0]).toBe(false);
+
     // simulate typing
     fireEvent.change(getByTestId("name"), { target: { value: "e" } });
     expect(getByTestId("dirty")).toHaveTextContent("Dirty");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls[1][0]).toBe(true);
+
     fireEvent.change(getByTestId("name"), { target: { value: "er" } });
     fireEvent.change(getByTestId("name"), { target: { value: "eri" } });
     fireEvent.change(getByTestId("name"), { target: { value: "erik" } });
@@ -138,6 +152,7 @@ describe("useField", () => {
     fireEvent.change(getByTestId("name"), { target: { value: "erikras" } });
     // dirty flag hasn't changed since the first character
     expect(spy).toHaveBeenCalledTimes(2);
+
     // make pristine again
     fireEvent.change(getByTestId("name"), { target: { value: "" } });
     expect(getByTestId("dirty")).toHaveTextContent("Pristine");
@@ -147,12 +162,16 @@ describe("useField", () => {
 
   it("should give same instance of handlers as value changes", () => {
     const spy = jest.fn();
-    const MyField = ({ name }) => {
+
+    type MyFieldProps = { name: string };
+
+    const MyField = ({ name }: MyFieldProps) => {
       const { input } = useField(name, { subscription: { value: true } });
       const { onChange, onFocus, onBlur } = input;
       spy(onChange, onFocus, onBlur);
       return <input {...input} />;
     };
+
     render(
       <Form onSubmit={onSubmitMock}>
         {() => (
@@ -169,7 +188,7 @@ describe("useField", () => {
     expect(spy.mock.calls[1][2]).toBe(spy.mock.calls[0][2]); // onBlur
 
     const [onChange, onFocus, onBlur] = spy.mock.calls[0];
-    const setValue = (value) => {
+    const setValue = (value: any) => {
       act(() => {
         onFocus();
         onChange(value);
@@ -192,12 +211,16 @@ describe("useField", () => {
 
   it("should give same instance of handlers as name changes", () => {
     const spy = jest.fn();
-    const MyField = ({ name }) => {
+
+    type MyFieldProps = { name: string };
+
+    const MyField = ({ name }: MyFieldProps) => {
       const { input } = useField(name, { subscription: { value: true } });
       const { onChange, onFocus, onBlur } = input;
       spy(onChange, onFocus, onBlur);
       return <input {...input} />;
     };
+
     const { rerender } = render(
       <Form onSubmit={onSubmitMock}>
         {() => (
@@ -234,12 +257,16 @@ describe("useField", () => {
 
   it("should give same instance of handlers as type changes", () => {
     const spy = jest.fn();
-    const MyField = ({ name, type }) => {
+
+    type MyFieldProps = { name: string; type?: string };
+
+    const MyField = ({ name, type }: MyFieldProps) => {
       const { input } = useField(name, { subscription: { value: true }, type });
       const { onChange, onFocus, onBlur } = input;
       spy(onChange, onFocus, onBlur);
       return <input {...input} />;
     };
+
     const { rerender } = render(
       <Form onSubmit={onSubmitMock}>
         {() => (
@@ -276,7 +303,10 @@ describe("useField", () => {
 
   it("should give same instance of handlers as formatOnBlur changes", () => {
     const spy = jest.fn();
-    const MyField = ({ name, formatOnBlur }) => {
+
+    type MyFieldProps = { name: string; formatOnBlur?: boolean };
+
+    const MyField = ({ name, formatOnBlur }: MyFieldProps) => {
       const { input } = useField(name, {
         subscription: { value: true },
         formatOnBlur,
@@ -285,6 +315,7 @@ describe("useField", () => {
       spy(onChange, onFocus, onBlur);
       return <input {...input} />;
     };
+
     const { rerender } = render(
       <Form onSubmit={onSubmitMock}>
         {() => (
@@ -321,7 +352,10 @@ describe("useField", () => {
 
   it("should give same instance of handlers as parse changes", () => {
     const spy = jest.fn();
-    const MyField = ({ name, parse }) => {
+
+    type MyFieldProps = { name: string; parse?: (value: any) => any };
+
+    const MyField = ({ name, parse }: MyFieldProps) => {
       const { input } = useField(name, {
         subscription: { value: true },
         parse,
@@ -330,6 +364,7 @@ describe("useField", () => {
       spy(onChange, onFocus, onBlur);
       return <input {...input} />;
     };
+
     const { rerender } = render(
       <Form onSubmit={onSubmitMock}>
         {() => (
@@ -366,7 +401,10 @@ describe("useField", () => {
 
   it("should give same instance of handlers as format changes", () => {
     const spy = jest.fn();
-    const MyField = ({ name, format }) => {
+
+    type MyFieldProps = { name: string; format?: (value: any) => any };
+
+    const MyField = ({ name, format }: MyFieldProps) => {
       const { input } = useField(name, {
         subscription: { value: true },
         format,
@@ -375,6 +413,7 @@ describe("useField", () => {
       spy(onChange, onFocus, onBlur);
       return <input {...input} />;
     };
+
     const { rerender } = render(
       <Form onSubmit={onSubmitMock}>
         {() => (
@@ -411,7 +450,13 @@ describe("useField", () => {
 
   it("should give same instance of handlers as component changes", () => {
     const spy = jest.fn();
-    const MyField = ({ name, component }) => {
+
+    type MyFieldProps = {
+      name: string;
+      component?: RenderableProps["component"];
+    };
+
+    const MyField = ({ name, component }: MyFieldProps) => {
       const { input } = useField(name, {
         subscription: { value: true },
         component,
@@ -420,6 +465,7 @@ describe("useField", () => {
       spy(onChange, onFocus, onBlur);
       return <input {...input} />;
     };
+
     const { rerender } = render(
       <Form onSubmit={onSubmitMock}>
         {() => (

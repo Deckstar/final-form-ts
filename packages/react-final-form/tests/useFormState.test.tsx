@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
+import { cleanup, render } from "@testing-library/react";
 import React from "react";
-import { render, cleanup } from "@testing-library/react";
+
+import { Form, useFormState } from "../src/index";
 import { ErrorBoundary } from "./testUtils";
-import { useFormState, Form } from "../src/index";
 
 describe("useField", () => {
   afterEach(cleanup);
@@ -12,20 +14,24 @@ describe("useField", () => {
   it("should warn if not used inside a form", () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
     const errorSpy = jest.fn();
+
     const MyFormStateComponent = () => {
       useFormState();
       return <div />;
     };
+
     render(
       <ErrorBoundary spy={errorSpy}>
         <MyFormStateComponent />
       </ErrorBoundary>,
     );
+
     expect(errorSpy).toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "useFormState must be used inside of a <Form> component",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
@@ -35,6 +41,7 @@ describe("useField", () => {
       expect(Object.keys(state).length > 0).toBe(true);
       return <div>It worked</div>;
     };
+
     render(
       <Form onSubmit={() => {}}>
         {({ handleSubmit }) => (

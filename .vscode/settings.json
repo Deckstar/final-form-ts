@@ -10,5 +10,6 @@
     "titleBar.activeBackground": "#05444d",
     "titleBar.border": "#05444d",
     "titleBar.inactiveBackground": "#05444d"
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

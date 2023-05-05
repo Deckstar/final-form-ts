@@ -33,12 +33,19 @@ const defaultIsEqual = (a: any, b: any): boolean => a === b;
 
 function useField<
   FieldValue = any,
-  FormValues extends FormValuesShape = FormValuesShape,
   InputValue = FieldValue,
+  FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
+  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+    FieldValue,
+    InputValue,
+    T
+  >,
 >(
   name: string,
-  config: UseFieldConfig<FieldValue, FormValues, InputValue, T> = {},
+  config: Partial<
+    UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>
+  > = {},
 ): FieldRenderProps<FieldValue, InputValue, T> {
   const {
     afterSubmit,

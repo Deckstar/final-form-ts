@@ -1,4 +1,4 @@
-import isPromise from "./isPromise";
+import isPromise from "../src/isPromise";
 
 var promise = { then: () => {} };
 

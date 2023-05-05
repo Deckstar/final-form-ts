@@ -1,5 +1,6 @@
-import filterFieldState from "./filterFieldState";
-import createForm from "./FinalForm.js";
+import filterFieldState from "../src/filterFieldState";
+import createForm from "../src/FinalForm";
+import { FieldState } from "../src/types";
 
 describe("filterFieldState", () => {
   const name = "foo";
@@ -16,18 +17,24 @@ describe("filterFieldState", () => {
     valid: true,
     value: "cat",
     visited: true,
-  };
+  } as unknown as FieldState;
 
-  const testValue = (key, state, newValue) => {
+  const testValue = (
+    key: keyof FieldState,
+    fieldState: FieldState,
+    newValue: any,
+  ) => {
     it(`should not notify when ${key} doesn't change`, () => {
-      const result = filterFieldState(state, state, { [key]: true });
+      const result = filterFieldState(fieldState, fieldState, { [key]: true });
       expect(result).toBeUndefined();
     });
 
     it(`should not notify when ${key} changes`, () => {
-      const result = filterFieldState({ ...state, [key]: newValue }, state, {
-        [key]: true,
-      });
+      const result = filterFieldState(
+        { ...fieldState, [key]: newValue },
+        fieldState,
+        { [key]: true },
+      );
       expect(result).toEqual({
         [key]: newValue,
         name,
@@ -35,9 +42,14 @@ describe("filterFieldState", () => {
     });
 
     it(`should notify when ${key} doesn't change, but is forced`, () => {
-      const result = filterFieldState(state, state, { [key]: true }, true);
+      const result = filterFieldState(
+        fieldState,
+        fieldState,
+        { [key]: true },
+        true,
+      );
       expect(result).toEqual({
-        [key]: state[key],
+        [key]: fieldState[key],
         name,
       });
     });
@@ -95,14 +107,15 @@ describe("restart", () => {
     const form = createForm({
       onSubmit: () => {},
     });
+    // @ts-ignore
     form.registerField(fieldName, () => {});
 
     function isTouched() {
-      return form.getState().touched[fieldName];
+      return form.getState().touched![fieldName];
     }
 
     function value() {
-      return form.getState().values[fieldName];
+      return form.getState().values![fieldName];
     }
 
     expect(isTouched()).not.toBeTruthy();

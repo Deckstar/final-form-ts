@@ -5,7 +5,7 @@ import type { FieldArrayProps } from "./types";
 import useFieldArray from "./useFieldArray";
 
 const FieldArray = <
-  FieldValue,
+  FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
 >({

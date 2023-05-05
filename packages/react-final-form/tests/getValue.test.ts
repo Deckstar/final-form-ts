@@ -1,5 +1,6 @@
 import { noop } from "lodash";
-import getValue from "./getValue";
+
+import getValue from "../src/getValue";
 
 describe("getValue", () => {
   it("should return event.nativeEvent.text if defined and not react-native", () => {

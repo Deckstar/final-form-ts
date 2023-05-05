@@ -1,6 +1,7 @@
-import memoize from "./memoize";
+import memoize from "../src/memoize";
 
-const add = (...args) => args.reduce((sum, addend) => sum + addend, 0);
+const add = (...args: number[]) =>
+  args.reduce((sum, addend) => sum + addend, 0);
 
 describe("memoize", () => {
   it("should NOT call with same args", () => {

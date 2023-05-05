@@ -1,20 +1,33 @@
-import createForm from "./FinalForm";
-import { FORM_ERROR } from "./constants";
+import { FORM_ERROR } from "../src/constants";
+import createForm from "../src/FinalForm";
+import {
+  Config,
+  FieldState,
+  FormSubscription,
+  Unsubscribe,
+  ValidationErrors,
+} from "../src/types";
+import { onSubmitMock } from "./testUtils";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const onSubmitMock = (values, callback) => {};
+const sleep = (ms?: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("FinalForm.subscribing", () => {
-  const prepareFormSubscriber = (fieldName, subscription, config = {}) => {
+  const prepareFormSubscriber = (
+    fieldName: string,
+    subscription: FormSubscription,
+    config: Omit<Config, "onSubmit"> = {},
+  ) => {
     const form = createForm({ onSubmit: onSubmitMock, ...config });
     const spy = jest.fn();
     form.subscribe(spy, subscription);
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
 
-    let blur;
-    let change;
-    let focus;
+    let blur: FieldState["blur"];
+    let change: FieldState["change"];
+    let focus: FieldState["focus"];
+
     form.registerField(
       fieldName,
       (fieldState) => {
@@ -24,17 +37,25 @@ describe("FinalForm.subscribing", () => {
       },
       {},
     );
+
+    // @ts-ignore
     return { blur, change, focus, spy };
   };
 
   it("should throw an error if no callback is given", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    expect(() => form.subscribe()).toThrowError(/No callback/);
+    expect(() =>
+      // @ts-expect-error
+      form.subscribe(),
+    ).toThrowError(/No callback/);
   });
 
   it("should throw an error if no subscription is given", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    expect(() => form.subscribe(() => {})).toThrowError(/No subscription/);
+    expect(() =>
+      // @ts-expect-error
+      form.subscribe(() => {}),
+    ).toThrowError(/No subscription/);
   });
 
   it("should no longer send form updates after unsubscribing", () => {
@@ -258,7 +279,7 @@ describe("FinalForm.subscribing", () => {
       onSubmit: () => {},
       initialValues: { foo: "bar" },
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (values.foo !== "bar") {
           errors.foo = 'Sorry, only "bar" can pass this step';
         }
@@ -348,21 +369,25 @@ describe("FinalForm.subscribing", () => {
     expect(spy.mock.calls[0][0].modified).toEqual({});
     expect(spy.mock.calls[1][0].modified).toEqual({ foo: false });
 
+    // @ts-ignore
     focus("bar");
 
     // not touched yet
     expect(spy).toHaveBeenCalledTimes(2);
 
+    // @ts-ignore
     blur("bar");
 
     // not touched yet
     expect(spy).toHaveBeenCalledTimes(2);
 
+    // @ts-ignore
     focus("bar");
 
     // not touched yet
     expect(spy).toHaveBeenCalledTimes(2);
 
+    // @ts-ignore
     change("bar", "cow");
 
     // foo is now touched
@@ -380,11 +405,13 @@ describe("FinalForm.subscribing", () => {
     expect(spy.mock.calls[0][0].touched).toEqual({});
     expect(spy.mock.calls[1][0].touched).toEqual({ foo: false });
 
+    // @ts-ignore
     focus("bar");
 
     // not touched yet
     expect(spy).toHaveBeenCalledTimes(2);
 
+    // @ts-ignore
     blur("bar");
 
     // foo is now touched
@@ -402,6 +429,7 @@ describe("FinalForm.subscribing", () => {
     expect(spy.mock.calls[0][0].visited).toEqual({});
     expect(spy.mock.calls[1][0].visited).toEqual({ foo: false });
 
+    // @ts-ignore
     focus("bar");
 
     // foo is now visited
@@ -417,7 +445,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors[FORM_ERROR] = "Why no foo?";
           }
@@ -455,7 +483,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors.foo = "Why no foo?";
           }
@@ -494,7 +522,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors.foo = "Why no foo?";
           }
@@ -527,7 +555,7 @@ describe("FinalForm.subscribing", () => {
 
   it("should allow subscribing to all submit errors", () => {
     const onSubmit = jest.fn((values) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (!values.foo) {
         errors.foo = "Why no foo?";
       }
@@ -550,7 +578,7 @@ describe("FinalForm.subscribing", () => {
 
   it("should allow subscribing to hasSubmitErrors", () => {
     const onSubmit = jest.fn((values) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (!values.foo) {
         errors.foo = "Why no foo?";
       }
@@ -578,7 +606,8 @@ describe("FinalForm.subscribing", () => {
         error: true,
       },
       {
-        validate: (values) => {},
+        // @ts-ignore
+        validate: (_values) => {},
       },
     );
 
@@ -615,7 +644,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors[FORM_ERROR] = "Why no foo?";
           }
@@ -654,7 +683,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -685,10 +714,11 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should allow subscribing to form submitting", async () => {
-    const onSubmit = async (values) => await sleep(2);
+    const onSubmit: Config["onSubmit"] = async (_values) => await sleep(2);
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+
     form.subscribe(spy, {
       submitting: true,
     });
@@ -720,7 +750,7 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should allow subscribing to form submitFailed", () => {
-    const onSubmit = (values) => ({ foo: "Bad foo" });
+    const onSubmit: Config["onSubmit"] = (_values) => ({ foo: "Bad foo" });
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
@@ -785,7 +815,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors[FORM_ERROR] = "Why no foo?";
           }
@@ -824,7 +854,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -858,7 +888,7 @@ describe("FinalForm.subscribing", () => {
     const delay = 2;
     const validate = jest.fn(async (values) => {
       await sleep(delay);
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (values.foo > 3) {
         errors.foo = "Too many";
       }
@@ -948,6 +978,7 @@ describe("FinalForm.subscribing", () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0].active).toBeUndefined();
 
+    // @ts-ignore
     form.focus("notFoo");
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -964,6 +995,7 @@ describe("FinalForm.subscribing", () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0].active).toBeUndefined();
 
+    // @ts-ignore
     form.blur("notFoo");
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -977,7 +1009,7 @@ describe("FinalForm.subscribing", () => {
       },
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.anotherField) {
             errors.anotherField = "Some error";
           }
@@ -1021,7 +1053,7 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should not mind if a field gets unregistered by a field notification", () => {
-    let unregisterBar;
+    let unregisterBar: Unsubscribe;
     const form = createForm({ onSubmit: onSubmitMock });
     const foo = jest.fn(({ value }) => {
       if (value === 42) {
@@ -1057,12 +1089,14 @@ describe("FinalForm.subscribing", () => {
     expect(foo.mock.calls[0][0].touched).toBe(false);
     expect(foo.mock.calls[0][0].visited).toBe(false);
 
+    // @ts-ignore
     form.focus("foo");
 
     expect(foo).toHaveBeenCalledTimes(2);
     expect(foo.mock.calls[1][0].touched).toBe(false);
     expect(foo.mock.calls[1][0].visited).toBe(true);
 
+    // @ts-ignore
     form.blur("foo");
 
     expect(foo).toHaveBeenCalledTimes(3);

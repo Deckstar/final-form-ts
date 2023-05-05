@@ -1,13 +1,16 @@
-import React from "react";
-import { render, fireEvent, cleanup } from "@testing-library/react";
+/* eslint-disable no-console */
 import "@testing-library/jest-dom/extend-expect";
-import { ErrorBoundary, Toggle, wrapWith } from "./testUtils";
-import Form from "../src/ReactFinalForm";
+
+import { cleanup, fireEvent, render } from "@testing-library/react";
+import React from "react";
+
 import Field from "../src/Field";
 import FormSpy from "../src/FormSpy";
+import Form from "../src/ReactFinalForm";
+import { ErrorBoundary, onSubmitMock, Toggle, wrapWith } from "./testUtils";
+import { FormApi } from "final-form/src";
 
-const onSubmitMock = (values) => {};
-const hasFormApi = (props) => {
+const hasFormApi = (props: { form: FormApi }) => {
   expect(props.form).toBeDefined();
   expect(typeof props.form.batch).toBe("function");
   expect(typeof props.form.blur).toBe("function");
@@ -33,6 +36,7 @@ describe("FormSpy", () => {
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "FormSpy must be used inside of a <Form> component",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
@@ -119,7 +123,7 @@ describe("FormSpy", () => {
                       : firstSubscription
                   }
                 >
-                  {wrapWith(spy, (props) => (
+                  {wrapWith(spy, (_props) => (
                     <div />
                   ))}
                 </FormSpy>
@@ -177,7 +181,7 @@ describe("FormSpy", () => {
           <form>
             <Field name="name" component="input" data-testid="name" />
             <FormSpy subscription={{ dirty: true, values: true }}>
-              {wrapWith(spy, (props) => (
+              {wrapWith(spy, (_props) => (
                 <div />
               ))}
             </FormSpy>
@@ -241,7 +245,7 @@ describe("FormSpy", () => {
                 <Field name="name" component="input" />
                 {!hidden && (
                   <FormSpy>
-                    {wrapWith(spy, (props) => (
+                    {wrapWith(spy, (_props) => (
                       <div />
                     ))}
                   </FormSpy>
@@ -306,7 +310,7 @@ describe("FormSpy", () => {
             <FormSpy
               subscription={{ values: true }}
               onChange={(formState) => {
-                spy(values.name, formState.values.name);
+                spy(values.name, formState.values!.name);
               }}
             />
           </form>
@@ -373,12 +377,15 @@ describe("FormSpy", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     fireEvent.change(getByTestId("name"), {
       target: { value: "erikrasmussen" },
     });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikrasmussen");
     fireEvent.click(getByText("Reset"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
   });
 
@@ -406,12 +413,15 @@ describe("FormSpy", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     fireEvent.change(getByTestId("name"), {
       target: { value: "erikrasmussen" },
     });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikrasmussen");
     fireEvent.click(getByText("Reset"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("bob");
   });
 });

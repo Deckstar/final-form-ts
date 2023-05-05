@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
-import { Field, FieldRenderProps } from "react-final-form";
+import { Field, FieldRenderProps } from "../../src";
 
 const NumberInput: React.FC<{ value?: number }> = () => null;
 
-function FormText1({ input }: FieldRenderProps<string, HTMLInputElement>) {
+function FormText1({
+  input,
+}: FieldRenderProps<string, string, HTMLInputElement>) {
   // renders OK because of the used generic
   return <input type="text" {...input} />;
 }
 
-function FormText2({ input }: FieldRenderProps<string, HTMLInputElement>) {
-  // doesnt type check because we can't pass event handlers for `HTMLInputElement` to a <select/> component
-  // $ExpectError
+function FormText2({
+  input,
+}: FieldRenderProps<string, string, HTMLSelectElement>) {
   return <select {...input} />;
 }
 
@@ -25,7 +27,7 @@ function FieldNumberValue() {
 
 function FieldNumberInputValue() {
   return (
-    <Field<string, HTMLElement, number>
+    <Field<string, number>
       name="numberField"
       parse={(value: number) => String(value)}
     >
@@ -33,3 +35,6 @@ function FieldNumberInputValue() {
     </Field>
   );
 }
+
+// To get around the "Your test suite must contain at least one test." error
+it("passes", () => {});

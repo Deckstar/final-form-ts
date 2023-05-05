@@ -1,14 +1,18 @@
-import React from "react";
-import { render, fireEvent, cleanup, act } from "@testing-library/react";
+/* eslint-disable no-console */
 import "@testing-library/jest-dom/extend-expect";
-import deepEqual from "fast-deep-equal";
-import { ErrorBoundary, Toggle, wrapWith } from "./testUtils";
-import { createForm } from "final-form";
-import { Form, Field, version, withTypes } from "../src";
 
-const onSubmitMock = (values) => {};
-const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-async function sleep(ms) {
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
+import deepEqual from "fast-deep-equal";
+import { createForm, Decorator, Mutator, ValidationErrors } from "final-form";
+import React from "react";
+
+import { Field, Form, withTypes } from "../src";
+import { ErrorBoundary, onSubmitMock, Toggle, wrapWith } from "./testUtils";
+
+const timeout = (ms?: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+async function sleep(ms?: number) {
   await act(async () => {
     await timeout(ms);
   });
@@ -16,10 +20,6 @@ async function sleep(ms) {
 
 describe("ReactFinalForm", () => {
   afterEach(cleanup);
-
-  it("should export version", () => {
-    expect(version).toBeDefined();
-  });
 
   it("should export withTypes", () => {
     // mostly for code coverage
@@ -57,6 +57,7 @@ describe("ReactFinalForm", () => {
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "Must specify either a render prop, a render function as children, or a component prop to ReactFinalForm",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
@@ -65,14 +66,17 @@ describe("ReactFinalForm", () => {
     const errorSpy = jest.fn();
     render(
       <ErrorBoundary spy={errorSpy}>
+        {/* @ts-expect-error */}
         <Form render={() => <div data-testid="myDiv" />} />
       </ErrorBoundary>,
     );
+
     expect(errorSpy).toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "No onSubmit function specified",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
@@ -126,32 +130,41 @@ describe("ReactFinalForm", () => {
     );
     const firstName = getByTestId("firstName");
     const active = getByTestId("firstNameActive");
+
     expect(firstName).toBeDefined();
     expect(active).toBeDefined();
+    // @ts-ignore
     expect(firstName.value).toBe("");
     expect(active).toHaveTextContent("inactive");
     // All forms render twice at first because they need to update their validation
     // and touched/modified/visited maps every time new fields are registered.
     expect(formRender).toHaveBeenCalledTimes(2);
     expect(fieldRender).toHaveBeenCalledTimes(2);
+
     fireEvent.focus(firstName);
     expect(formRender).toHaveBeenCalledTimes(3);
     expect(fieldRender).toHaveBeenCalledTimes(3);
     expect(active).toHaveTextContent("active");
+
     fireEvent.change(firstName, { target: { value: "E" } });
     expect(formRender).toHaveBeenCalledTimes(4);
     expect(fieldRender).toHaveBeenCalledTimes(4);
+    // @ts-ignore
     expect(firstName.value).toBe("E");
+
     fireEvent.change(firstName, { target: { value: "Er" } });
     expect(formRender).toHaveBeenCalledTimes(5);
     expect(fieldRender).toHaveBeenCalledTimes(5);
+
     fireEvent.change(firstName, { target: { value: "Eri" } });
     expect(formRender).toHaveBeenCalledTimes(6);
     expect(fieldRender).toHaveBeenCalledTimes(6);
+
     fireEvent.change(firstName, { target: { value: "Erik" } });
     expect(formRender).toHaveBeenCalledTimes(7);
     expect(fieldRender).toHaveBeenCalledTimes(7);
     expect(active).toHaveTextContent("active");
+
     fireEvent.blur(firstName);
     expect(formRender).toHaveBeenCalledTimes(8);
     expect(fieldRender).toHaveBeenCalledTimes(8);
@@ -181,31 +194,40 @@ describe("ReactFinalForm", () => {
     );
     const firstName = getByTestId("firstName");
     const active = getByTestId("firstNameActive");
+
     expect(firstName).toBeDefined();
     expect(active).toBeDefined();
+    // @ts-ignore
     expect(firstName.value).toBe("");
     expect(active).toHaveTextContent("inactive");
     expect(formRender).toHaveBeenCalledTimes(1);
     expect(fieldRender).toHaveBeenCalledTimes(1);
+
     fireEvent.focus(firstName);
     // not subscribing to active, so no rerender!
     expect(formRender).toHaveBeenCalledTimes(1);
     expect(fieldRender).toHaveBeenCalledTimes(1);
     expect(active).toHaveTextContent("inactive");
+
     fireEvent.change(firstName, { target: { value: "E" } });
     expect(formRender).toHaveBeenCalledTimes(1);
     expect(fieldRender).toHaveBeenCalledTimes(2);
+    // @ts-ignore
     expect(firstName.value).toBe("E");
+
     fireEvent.change(firstName, { target: { value: "Er" } });
     expect(formRender).toHaveBeenCalledTimes(1);
     expect(fieldRender).toHaveBeenCalledTimes(3);
+
     fireEvent.change(firstName, { target: { value: "Eri" } });
     expect(formRender).toHaveBeenCalledTimes(1);
     expect(fieldRender).toHaveBeenCalledTimes(4);
+
     fireEvent.change(firstName, { target: { value: "Erik" } });
     expect(formRender).toHaveBeenCalledTimes(1);
     expect(fieldRender).toHaveBeenCalledTimes(5);
     expect(active).toHaveTextContent("inactive");
+
     fireEvent.blur(firstName);
     // no rerender
     expect(formRender).toHaveBeenCalledTimes(1);
@@ -297,17 +319,20 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Jekyll");
     fireEvent.change(getByTestId("name"), { target: { value: "Dr. Watson" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Mr. Hyde");
   });
 
   it("should NOT reinitialize when initialValues prop doesn't change (shallowly) but rerendered", () => {
     const { getByTestId, getByText } = render(
       <Toggle>
-        {(useAlternateInitialValues) => (
+        {(_useAlternateInitialValues) => (
           <Form
             onSubmit={onSubmitMock}
             initialValues={{
@@ -323,10 +348,13 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Jekyll");
     fireEvent.change(getByTestId("name"), { target: { value: "Dr. Watson" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
   });
 
@@ -363,17 +391,20 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Jekyll");
     fireEvent.change(getByTestId("name"), { target: { value: "Dr. Watson" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Mr. Hyde");
   });
 
   it("should not reinitialize if initialValues prop is deep equal", () => {
     const { getByTestId, getByText } = render(
       <Toggle>
-        {(useAlternateInitialValues) => (
+        {(_useAlternateInitialValues) => (
           <Form
             onSubmit={onSubmitMock}
             initialValues={{
@@ -396,10 +427,13 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Jekyll");
     fireEvent.change(getByTestId("name"), { target: { value: "Dr. Watson" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
   });
 
@@ -429,10 +463,13 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Jekyll");
     fireEvent.change(getByTestId("name"), { target: { value: "Dr. Watson" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Dr. Watson");
   });
 
@@ -477,9 +514,10 @@ describe("ReactFinalForm", () => {
   });
 
   it("should warn if decorators change", () => {
-    const decoratorA = (form) => () => {};
-    const decoratorB = (form) => () => {};
-    const decoratorC = (form) => () => {};
+    const decoratorA: Decorator = (_form) => () => {};
+    const decoratorB: Decorator = (_form) => () => {};
+    const decoratorC: Decorator = (_form) => () => {};
+
     const oldDecorators = [decoratorA, decoratorB];
     const newDecorators = [decoratorA, decoratorB, decoratorC];
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
@@ -501,12 +539,15 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+
     expect(errorSpy).not.toHaveBeenCalled();
+
     fireEvent.click(getByText("Toggle"));
     expect(errorSpy).toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledWith(
       "Form decorators should not change from one render to the next as new values will be ignored",
     );
+
     errorSpy.mockRestore();
   });
 
@@ -523,7 +564,7 @@ describe("ReactFinalForm", () => {
             onSubmit={(event) => {
               const promise = handleSubmit(event);
               expect(promise).toBeDefined();
-              expect(typeof promise.then).toBe("function");
+              expect(typeof promise?.then).toBe("function");
             }}
           >
             <Field name="name" component="input" data-testid="name" />
@@ -549,10 +590,13 @@ describe("ReactFinalForm", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("John");
     fireEvent.change(getByTestId("name"), { target: { value: "Paul" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("Paul");
     fireEvent.click(getByText("Reset"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("John");
   });
 
@@ -573,12 +617,15 @@ describe("ReactFinalForm", () => {
         )}
       </Form>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     fireEvent.change(getByTestId("name"), {
       target: { value: "erikrasmussen" },
     });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikrasmussen");
     fireEvent.click(getByText("Reset"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("bob");
   });
 
@@ -608,15 +655,15 @@ describe("ReactFinalForm", () => {
   });
 
   it("should all record level validation function to change", () => {
-    const simpleValidation = (values) => {
-      const errors = {};
+    const simpleValidation = (values: { name: string }) => {
+      const errors: ValidationErrors = {};
       if (!values.name) {
         errors.name = "Required";
       }
       return errors;
     };
-    const complexValidation = (values) => {
-      const errors = {};
+    const complexValidation = (values: { name: string }) => {
+      const errors: ValidationErrors = {};
       if (!values.name) {
         errors.name = "Required";
       } else if (values.name.toUpperCase() !== values.name) {
@@ -650,6 +697,7 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     expect(getByTestId("error")).toHaveTextContent("Required");
     fireEvent.change(getByTestId("name"), { target: { value: "erikras" } });
@@ -789,9 +837,9 @@ describe("ReactFinalForm", () => {
     // this is mostly for code coverage 😰
     const oldMutators = undefined;
     const newMutators = {
-      clearField: ([name], state, { changeValue }) => {
+      clearField: (([name], state, { changeValue }) => {
         changeValue(state, name, () => undefined);
-      },
+      }) as Mutator,
     };
     const spy = jest.fn();
     const { getByTestId, getByText } = render(
@@ -816,19 +864,24 @@ describe("ReactFinalForm", () => {
         )}
       </Toggle>,
     );
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
     fireEvent.change(getByTestId("name"), { target: { value: "erikras" } });
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     fireEvent.click(getByText("Clear Name"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("");
   });
 
   it("should allow handleSubmit to be called with an object that's not an event", () => {
-    const onSubmitMock = jest.fn();
+    const onSubmitMockJest = jest.fn();
+
     const { getByText } = render(
-      <Form onSubmit={onSubmitMock} initialValues={{ name: "erikras" }}>
+      <Form onSubmit={onSubmitMockJest} initialValues={{ name: "erikras" }}>
         {({ handleSubmit }) => (
           <form
             onSubmit={(event) => {
@@ -842,17 +895,20 @@ describe("ReactFinalForm", () => {
         )}
       </Form>,
     );
-    expect(onSubmitMock).not.toHaveBeenCalled();
+
+    expect(onSubmitMockJest).not.toHaveBeenCalled();
+
     fireEvent.click(getByText("Submit"));
-    expect(onSubmitMock).toHaveBeenCalled();
-    expect(onSubmitMock).toHaveBeenCalledTimes(1);
-    expect(onSubmitMock.mock.calls[0][0]).toEqual({ name: "erikras" });
+    expect(onSubmitMockJest).toHaveBeenCalled();
+    expect(onSubmitMockJest).toHaveBeenCalledTimes(1);
+    expect(onSubmitMockJest.mock.calls[0][0]).toEqual({ name: "erikras" });
   });
 
   it("should allow handleSubmit to be called with no parameters", () => {
-    const onSubmitMock = jest.fn();
+    const onSubmitMockJest = jest.fn();
+
     const { getByText } = render(
-      <Form onSubmit={onSubmitMock} initialValues={{ name: "erikras" }}>
+      <Form onSubmit={onSubmitMockJest} initialValues={{ name: "erikras" }}>
         {({ handleSubmit }) => (
           <form
             onSubmit={(event) => {
@@ -866,11 +922,13 @@ describe("ReactFinalForm", () => {
         )}
       </Form>,
     );
-    expect(onSubmitMock).not.toHaveBeenCalled();
+
+    expect(onSubmitMockJest).not.toHaveBeenCalled();
+
     fireEvent.click(getByText("Submit"));
-    expect(onSubmitMock).toHaveBeenCalled();
-    expect(onSubmitMock).toHaveBeenCalledTimes(1);
-    expect(onSubmitMock.mock.calls[0][0]).toEqual({ name: "erikras" });
+    expect(onSubmitMockJest).toHaveBeenCalled();
+    expect(onSubmitMockJest).toHaveBeenCalledTimes(1);
+    expect(onSubmitMockJest.mock.calls[0][0]).toEqual({ name: "erikras" });
   });
 
   it("should set submitting back to false after submit", async () => {
@@ -878,6 +936,7 @@ describe("ReactFinalForm", () => {
       await timeout(1);
     });
     const recordSubmitting = jest.fn();
+
     const { getByText } = render(
       <Form onSubmit={onSubmit} subscription={{ submitting: true }}>
         {({ handleSubmit, submitting }) => {
@@ -891,6 +950,7 @@ describe("ReactFinalForm", () => {
         }}
       </Form>,
     );
+
     expect(onSubmit).not.toHaveBeenCalled();
     expect(recordSubmitting).toHaveBeenCalled();
     expect(recordSubmitting).toHaveBeenCalledTimes(1);
@@ -913,7 +973,9 @@ describe("ReactFinalForm", () => {
     const onSubmit = jest.fn();
     const form = createForm({ onSubmit: onSubmit });
     const formMock = jest.spyOn(form, "registerField");
+
     render(
+      // @ts-expect-error
       <Form form={form}>
         {({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
@@ -927,9 +989,9 @@ describe("ReactFinalForm", () => {
     // called once on first render to get initial state, and then again to subscribe
     expect(formMock).toHaveBeenCalledTimes(2);
     expect(formMock.mock.calls[0][0]).toBe("name");
-    expect(formMock.mock.calls[0][2].active).toBe(true); // default subscription
+    expect(formMock.mock.calls[0][2]!.active).toBe(true); // default subscription
     expect(formMock.mock.calls[1][0]).toBe("name");
-    expect(formMock.mock.calls[1][2].active).toBe(true); // default subscription
+    expect(formMock.mock.calls[1][2]!.active).toBe(true); // default subscription
   });
 
   it("should not destroy on unregister on initial unregister", () => {
@@ -949,8 +1011,10 @@ describe("ReactFinalForm", () => {
     );
 
     expect(getByTestId("name")).toBeDefined();
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     fireEvent.focus(getByTestId("name"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
   });
 
@@ -983,13 +1047,20 @@ describe("ReactFinalForm", () => {
     );
 
     expect(getByTestId("name")).toBeDefined();
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
+
     fireEvent.focus(getByTestId("name"));
+    // @ts-ignore
     expect(getByTestId("name").value).toBe("erikras");
     expect(queryByTestId("password")).toBe(null);
+
     fireEvent.click(getByText("Toggle"));
+    // @ts-ignore
     expect(getByTestId("password").value).toBe("f1nal-f0rm-RULEZ");
+
     fireEvent.focus(getByTestId("password"));
+    // @ts-ignore
     expect(getByTestId("password").value).toBe("f1nal-f0rm-RULEZ");
   });
 });

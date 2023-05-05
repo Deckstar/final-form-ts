@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
-import { useField } from "react-final-form";
+import { useField } from "../../src";
 
 const NumberInput: React.FC<{ value?: number }> = () => null;
 
@@ -16,3 +16,6 @@ function NumberInputValue() {
   });
   return <NumberInput value={input.value} />;
 }
+
+// To get around the "Your test suite must contain at least one test." error
+it("passes", () => {});

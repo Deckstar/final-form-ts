@@ -1,32 +1,41 @@
-import setIn from "./setIn";
+import setIn from "../../src/structure/setIn";
 
 describe("structure.setIn", () => {
   describe("invalid input", () => {
     it("should throw an error when state is undefined", () => {
+      // @ts-expect-error
       expect(() => setIn(undefined, "whatever", "some value")).toThrow(
         /setIn\(\) with undefined state/,
       );
     });
+
     it("should throw an error when state is null", () => {
+      // @ts-expect-error
       expect(() => setIn(null, "whatever", "some value")).toThrow(
         /setIn\(\) with null state/,
       );
     });
+
     it("should throw an error when key is undefined", () => {
+      // @ts-expect-error
       expect(() => setIn({}, undefined, "some value")).toThrow(
         /setIn\(\) with undefined key/,
       );
     });
+
     it("should throw an error when key is null", () => {
+      // @ts-expect-error
       expect(() => setIn({}, null, "some value")).toThrow(
         /setIn\(\) with null key/,
       );
     });
+
     it("should throw an error when trying to set a non-numeric key into an array", () => {
       expect(() => setIn([], "foo", "bar")).toThrow(
         /non-numeric property on an array/,
       );
     });
+
     it("should throw an error when trying to set a numeric key into an object", () => {
       expect(() => setIn({}, "42", "bar")).toThrow(
         /numeric property on an object/,
@@ -40,8 +49,12 @@ describe("structure.setIn", () => {
     const c = {};
     const d = {};
     const e = {};
-    const input = { a, b, c, d };
+
+    type Input = { a: {}; b: {}; c: {}; d: {}; e: {} };
+
+    const input = { a, b, c, d } as Input;
     const output = setIn(input, "e", e);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -58,6 +71,7 @@ describe("structure.setIn", () => {
     const e = {};
     const input = [a, b, c, d];
     const output = setIn(input, "4", e);
+
     expect(input).not.toBe(output);
     expect(output[0]).toBe(a);
     expect(output[1]).toBe(b);
@@ -74,6 +88,7 @@ describe("structure.setIn", () => {
     const newC = {};
     const input = { a, b, c, d };
     const output = setIn(input, "c", newC);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -89,6 +104,7 @@ describe("structure.setIn", () => {
     const newC = {};
     const input = [a, b, c, d];
     const output = setIn(input, "2", newC);
+
     expect(input).not.toBe(output);
     expect(output[0]).toBe(a);
     expect(output[1]).toBe(b);
@@ -100,8 +116,12 @@ describe("structure.setIn", () => {
     const a = {};
     const b = {};
     const deepCDE = {};
-    const input = { a, b };
+
+    type Input = { a: {}; b: {}; c: { d: { e: {} } } };
+
+    const input = { a, b } as Input;
     const output = setIn(input, "c.d.e", deepCDE);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -114,8 +134,12 @@ describe("structure.setIn", () => {
     const a = {};
     const b = {};
     const deepValue = {};
-    const input = { a, b };
+
+    type Input = { a: {}; b: {}; c: { d: any[][] }[] };
+
+    const input = { a, b } as Input;
     const output = setIn(input, "c[2].d[0][1]", deepValue);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -134,6 +158,7 @@ describe("structure.setIn", () => {
     const b = {};
     const input = { a, b, dog: { cat: { rat: "foo" } } };
     const output = setIn(input, "dog.cat.rat", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -145,6 +170,7 @@ describe("structure.setIn", () => {
     const b = {};
     const input = { a, b, dog: {} };
     const output = setIn(input, "dog.cat", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -156,6 +182,7 @@ describe("structure.setIn", () => {
     const b = {};
     const input = { a, b, dog: {} };
     const output = setIn(input, "dog", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -167,6 +194,7 @@ describe("structure.setIn", () => {
     const b = {};
     const input = { a, b };
     const output = setIn(input, "b", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBeUndefined();
@@ -176,6 +204,7 @@ describe("structure.setIn", () => {
     const a = {};
     const input = { a };
     const output = setIn(input, "b", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
   });
@@ -185,6 +214,7 @@ describe("structure.setIn", () => {
     const b = {};
     const input = { a, b, dog: [{ rat: "foo" }] };
     const output = setIn(input, "dog[0].rat", undefined, false);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -199,6 +229,7 @@ describe("structure.setIn", () => {
     const b = {};
     const input = { a, b, dog: [{ rat: "foo" }] };
     const output = setIn(input, "dog[0].rat", undefined, true);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -210,6 +241,7 @@ describe("structure.setIn", () => {
     const b = {};
     const input = { a, b, dog: [{ rat: "foo" }, { rat: "bar" }] };
     const output = setIn(input, "dog[0].rat", undefined, true);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -224,6 +256,7 @@ describe("structure.setIn", () => {
     const d = {};
     const input = { a, b, dog: [c, d] };
     const output = setIn(input, "dog[1]", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -238,6 +271,7 @@ describe("structure.setIn", () => {
     const c = {};
     const input = { a, b, dog: [c] };
     const output = setIn(input, "dog[1]", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
@@ -249,8 +283,12 @@ describe("structure.setIn", () => {
   it("should not create an array structure when setting undefined", () => {
     const a = {};
     const b = {};
-    const input = { a, b };
+
+    type Input = { a: {}; b: {}; dog: { rat: any }[] };
+
+    const input = { a, b } as Input;
     const output = setIn(input, "dog[0].rat", undefined);
+
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);

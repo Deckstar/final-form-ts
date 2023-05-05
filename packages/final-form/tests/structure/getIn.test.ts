@@ -1,24 +1,35 @@
-import getIn from "./getIn";
+import getIn from "../../src/structure/getIn";
 
 describe("structure.getIn", () => {
   describe("invalid input", () => {
     it("should return undefined when state is undefined", () => {
       expect(getIn(undefined, "whatever")).toBeUndefined();
     });
+
     it("should return undefined when state is null", () => {
       expect(getIn(null, "whatever")).toBeUndefined();
     });
+
     it("should return undefined when state is boolean", () => {
+      // @ts-expect-error
       expect(getIn(false, "whatever")).toBeUndefined();
+      // @ts-expect-error
       expect(getIn(true, "whatever")).toBeUndefined();
     });
+
     it("should return undefined when state is number", () => {
+      // @ts-expect-error
       expect(getIn(0, "whatever")).toBeUndefined();
+      // @ts-expect-error
       expect(getIn(42, "whatever")).toBeUndefined();
+      // @ts-expect-error
       expect(getIn(69, "whatever")).toBeUndefined();
     });
+
     it("should return undefined when state is string", () => {
+      // @ts-expect-error
       expect(getIn("Not an array or object", "whatever")).toBeUndefined();
+      // @ts-expect-error
       expect(getIn("", "whatever")).toBeUndefined();
     });
   });

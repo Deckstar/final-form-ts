@@ -1,11 +1,12 @@
-import React from "react";
-import { render, cleanup } from "@testing-library/react";
+/* eslint-disable no-console */
 import "@testing-library/jest-dom/extend-expect";
-import { ErrorBoundary } from "./testUtils";
-import Form from "../src/ReactFinalForm";
-import { useForm } from "../src/index";
 
-const onSubmitMock = (values) => {};
+import { cleanup, render } from "@testing-library/react";
+import React from "react";
+
+import { useForm } from "../src/index";
+import Form from "../src/ReactFinalForm";
+import { ErrorBoundary, onSubmitMock } from "./testUtils";
 
 describe("useForm", () => {
   afterEach(cleanup);
@@ -13,40 +14,48 @@ describe("useForm", () => {
   it("should warn if not used inside a form", () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
     const errorSpy = jest.fn();
+
     const MyFormConsumer = () => {
       useForm();
       return <div />;
     };
+
     render(
       <ErrorBoundary spy={errorSpy}>
         <MyFormConsumer />
       </ErrorBoundary>,
     );
+
     expect(errorSpy).toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "useForm must be used inside of a <Form> component",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
   it("should warn with component name if not used inside a form", () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
     const errorSpy = jest.fn();
+
     const MyFormConsumer = () => {
       useForm("MyFormConsumer");
       return <div />;
     };
+
     render(
       <ErrorBoundary spy={errorSpy}>
         <MyFormConsumer />
       </ErrorBoundary>,
     );
+
     expect(errorSpy).toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0][0].message).toBe(
       "MyFormConsumer must be used inside of a <Form> component",
     );
+    // @ts-ignore
     console.error.mockRestore();
   });
 
@@ -60,9 +69,11 @@ describe("useForm", () => {
         <div data-testid="formCheck">{form ? "Got a form!" : "No form!"}</div>
       );
     };
+
     const { getByTestId } = render(
       <Form onSubmit={onSubmitMock}>{() => <MyFormConsumer />}</Form>,
     );
+
     expect(getByTestId("formCheck")).toHaveTextContent("Got a form!");
   });
 });

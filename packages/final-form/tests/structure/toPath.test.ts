@@ -1,14 +1,17 @@
-import toPath from "./toPath";
+import toPath from "../../src/structure/toPath";
 
 describe("structure.toPath", () => {
   it("should return empty array when key is empty", () => {
+    // @ts-expect-error
     expect(toPath(undefined)).toEqual([]);
+    // @ts-expect-error
     expect(toPath(null)).toEqual([]);
     expect(toPath("")).toEqual([]);
   });
 
   it("should throw an error if key is not a string", () => {
     const pattern = /expects a string/;
+    // @ts-expect-error
     expect(() => toPath(["not", "a", "string"])).toThrow(pattern);
   });
 

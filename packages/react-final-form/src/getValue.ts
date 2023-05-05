@@ -14,7 +14,7 @@ const getSelectedValues = (options: any) => {
 };
 
 const getValue = (
-  event: React.ChangeEvent<any>,
+  event: React.ChangeEvent<any> | any,
   currentValue: any,
   valueProp: any,
   isReactNative: boolean | "",

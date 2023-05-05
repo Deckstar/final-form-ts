@@ -1,4 +1,5 @@
 import type {
+  AnyObject,
   Config,
   Decorator,
   FieldState,
@@ -11,9 +12,7 @@ import type {
 } from "final-form";
 import * as React from "react";
 
-export interface AnyObject {
-  [key: string]: any;
-}
+import { FormStateHookResult } from "./useFormState";
 
 type SupportedInputs = "input" | "select" | "textarea";
 
@@ -25,7 +24,7 @@ export interface ReactContext<
 }
 
 export interface FieldInputProps<
-  FieldValue,
+  FieldValue = any,
   T extends HTMLElement = HTMLInputElement,
 > extends AnyObject {
   name: string;
@@ -47,7 +46,7 @@ export type FieldMetaState<FieldValue> = Pick<
 >;
 
 export interface FieldRenderProps<
-  FieldValue,
+  FieldValue = any,
   InputValue = FieldValue,
   T extends HTMLElement = HTMLInputElement,
 > {
@@ -73,17 +72,18 @@ export interface FormRenderProps<
   ) => Promise<AnyObject | undefined> | undefined;
 }
 
-export interface FormSpyRenderProps<
+export type FormSpyRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
-> extends FormState<FormValues, InitialFormValues> {
+  FS extends FormSubscription = Required<FormSubscription>,
+> = FormStateHookResult<FormValues, InitialFormValues, FS> & {
   form: FormApi<FormValues, InitialFormValues>;
-}
+};
 
 export interface RenderableProps<Props = {}> {
   children?: ((props: Props) => React.ReactNode) | React.ReactNode;
   component?: React.ComponentType<Props> | SupportedInputs;
-  render?: (props: Props) => React.ReactNode;
+  render?: (props: Props) => React.ReactElement;
 }
 
 export interface FormProps<
@@ -99,11 +99,16 @@ export interface FormProps<
 }
 
 export interface UseFieldConfig<
-  FieldValue,
+  FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
   InputValue = any,
   T extends HTMLElement = HTMLInputElement,
-> extends Pick<RenderableProps<T>, "children" | "component"> {
+  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+    FieldValue,
+    InputValue,
+    T
+  >,
+> extends Pick<RP, "children" | "component"> {
   afterSubmit?: () => void;
   allowNull?: boolean;
   beforeSubmit?: () => void | false;
@@ -123,13 +128,20 @@ export interface UseFieldConfig<
 }
 
 export interface FieldProps<
-  FieldValue,
-  RP extends FieldRenderProps<FieldValue, InputValue, T>,
-  FormValues extends FormValuesShape = FormValuesShape,
+  FieldValue = any,
   InputValue = FieldValue,
+  FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
-> extends UseFieldConfig<FieldValue, FormValues, InputValue, T>,
-    Omit<RenderableProps<RP>, "children" | "component"> {
+  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+    FieldValue,
+    InputValue,
+    T
+  >,
+> extends Omit<
+      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>,
+      "children" | "component"
+    >,
+    RenderableProps<RP> {
   name: string;
   [otherProp: string]: any;
 }
@@ -137,19 +149,23 @@ export interface FieldProps<
 export interface UseFormStateParams<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
+  FS extends FormSubscription = Required<FormSubscription>,
 > {
   onChange?: (formState: FormState<FormValues, InitialFormValues>) => void;
-  subscription?: FormSubscription;
+  subscription?: FS;
 }
 
 export interface FormSpyProps<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
-> extends UseFormStateParams<FormValues, InitialFormValues>,
-    RenderableProps<FormSpyRenderProps<FormValues, InitialFormValues>> {}
+  FS extends FormSubscription = Required<FormSubscription>,
+> extends UseFormStateParams<FormValues, InitialFormValues, FS>,
+    RenderableProps<FormSpyRenderProps<FormValues, InitialFormValues, FS>> {}
 
 export type FormSpyPropsWithForm<
   FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues = Partial<FormValues>,
+  FS extends FormSubscription = Required<FormSubscription>,
 > = {
-  reactFinalForm: FormApi<FormValues>;
-} & FormSpyProps<FormValues>;
+  reactFinalForm?: FormApi<FormValues, InitialFormValues>;
+} & FormSpyProps<FormValues, InitialFormValues, FS>;

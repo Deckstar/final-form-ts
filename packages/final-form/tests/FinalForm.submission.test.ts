@@ -1,8 +1,10 @@
-import { FORM_ERROR } from ".";
-import createForm from "./FinalForm";
+import { ValidationErrors } from "../src";
+import { Config, FieldConfig, FORM_ERROR } from "../src";
+import createForm from "../src/FinalForm";
 
-const last = (arr) => (arr.length ? arr[arr.length - 1] : null);
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const last = <T = any>(arr: T[]) => (arr.length ? arr[arr.length - 1] : null);
+const sleep = (ms?: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("FinalForm.submission", () => {
   it("should not submit if form has validation errors", () => {
@@ -10,7 +12,7 @@ describe("FinalForm.submission", () => {
     const form = createForm({
       onSubmit,
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (!values.username) {
           errors.username = "Required";
         }
@@ -49,7 +51,7 @@ describe("FinalForm.submission", () => {
     const form = createForm({
       onSubmit,
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (!values.username) {
           errors.username = "Required";
         }
@@ -102,7 +104,7 @@ describe("FinalForm.submission", () => {
 
   it("should support synchronous submission with errors", () => {
     const onSubmit = jest.fn((values) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (values.foo === "bar") {
         errors.foo = 'Sorry, "bar" is an illegal value';
       }
@@ -111,6 +113,7 @@ describe("FinalForm.submission", () => {
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+
     form.subscribe(spy, {
       valid: true,
       submitSucceeded: true,
@@ -161,7 +164,7 @@ describe("FinalForm.submission", () => {
 
   it("should support synchronous submission with errors via callback", () => {
     const onSubmit = jest.fn((values, form, callback) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (values.foo === "bar") {
         errors.foo = 'Sorry, "bar" is an illegal value';
       }
@@ -170,6 +173,7 @@ describe("FinalForm.submission", () => {
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+
     form.subscribe(spy, {
       valid: true,
       submitSucceeded: true,
@@ -224,8 +228,8 @@ describe("FinalForm.submission", () => {
 
   it("should reset the modifiedSinceLastSubmit flag after submitting with errors", () => {
     const onSubmit = jest.fn();
-    const validate = (values, form, callback) => {
-      const errors = {};
+    const validate: Config["validate"] = (values) => {
+      const errors: ValidationErrors = {};
       if (values.foo === "bar") {
         errors.foo = 'Sorry, "bar" is an illegal value';
       }
@@ -234,6 +238,8 @@ describe("FinalForm.submission", () => {
     const form = createForm({ onSubmit, validate });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+
+    // @ts-ignore
     spy.iAmTheSpySubscriber = true;
     form.subscribe(spy, {
       modifiedSinceLastSubmit: true,
@@ -271,7 +277,7 @@ describe("FinalForm.submission", () => {
   it("should support asynchronous submission with errors via callback", async () => {
     const onSubmit = jest.fn((values, form, callback) => {
       setTimeout(() => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (values.foo === "bar") {
           errors.foo = 'Sorry, "bar" is an illegal value';
         }
@@ -281,6 +287,7 @@ describe("FinalForm.submission", () => {
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+
     form.subscribe(spy, {
       valid: true,
       submitSucceeded: true,
@@ -341,7 +348,7 @@ describe("FinalForm.submission", () => {
   it("should support asynchronous submission with errors via promise", async () => {
     const onSubmit = jest.fn(async (values) => {
       await sleep(2); // no need to wait too long!
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (values.foo === "bar") {
         errors.foo = 'Sorry, "bar" is an illegal value';
       }
@@ -350,6 +357,7 @@ describe("FinalForm.submission", () => {
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+
     form.subscribe(spy, {
       valid: true,
       submitSucceeded: true,
@@ -414,18 +422,20 @@ describe("FinalForm.submission", () => {
     const form = createForm({
       onSubmit: () => ({ username: "Invalid username" }),
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (!values.password) {
           errors.password = "Required";
         }
         return errors;
       },
     });
+
     const username = jest.fn();
     form.registerField("username", username, { touched: true });
     expect(username).toHaveBeenCalled();
     expect(username).toHaveBeenCalledTimes(1);
     expect(username.mock.calls[0][0].touched).toBe(false);
+
     const password = jest.fn();
     form.registerField("password", password, { touched: true });
     expect(password).toHaveBeenCalled();
@@ -442,8 +452,8 @@ describe("FinalForm.submission", () => {
   });
 
   it("should clear submission flags and errors on reset", () => {
-    const onSubmit = jest.fn((values, form) => {
-      const errors = {};
+    const onSubmit = jest.fn((values, _form) => {
+      const errors: ValidationErrors = {};
       if (values.foo === "bar") {
         errors.foo = 'Sorry, "bar" is an illegal value';
       }
@@ -452,6 +462,7 @@ describe("FinalForm.submission", () => {
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+
     form.subscribe(spy, {
       dirtySinceLastSubmit: true,
       modifiedSinceLastSubmit: true,
@@ -468,6 +479,7 @@ describe("FinalForm.submission", () => {
       submitSucceeded: false,
       submitFailed: false,
     });
+
     const foo = jest.fn();
     form.registerField("foo", foo, { submitError: true, valid: true });
     expect(foo).toHaveBeenCalled();
@@ -520,7 +532,7 @@ describe("FinalForm.submission", () => {
   });
 
   it("should clear submitError & submitErrors when submit gets called", async () => {
-    const onSubmit = async (values) => {
+    const onSubmit: Config["onSubmit"] = async (values) => {
       await sleep(2);
 
       if (!("email" in values)) {
@@ -546,7 +558,7 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
     });
     expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "submitError": undefined,
         "submitErrors": undefined,
         "submitFailed": false,
@@ -557,9 +569,9 @@ describe("FinalForm.submission", () => {
 
     await form.submit();
     expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "submitError": "Please fill all fields.",
-        "submitErrors": Object {
+        "submitErrors": {
           "FINAL_FORM/form-error": "Please fill all fields.",
         },
         "submitFailed": true,
@@ -572,7 +584,7 @@ describe("FinalForm.submission", () => {
     form.registerField("email", emailSpy, { submitError: true });
     expect({ submitError: last(emailSpy.mock.calls)[0].submitError })
       .toMatchInlineSnapshot(`
-        Object {
+        {
           "submitError": undefined,
         }
       `);
@@ -580,7 +592,7 @@ describe("FinalForm.submission", () => {
     form.change("email", "erik");
     let submissionPromise = form.submit();
     expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "submitError": undefined,
         "submitErrors": undefined,
         "submitFailed": false,
@@ -591,9 +603,9 @@ describe("FinalForm.submission", () => {
 
     await submissionPromise;
     expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "submitError": undefined,
-        "submitErrors": Object {
+        "submitErrors": {
           "email": "Email must be valid.",
         },
         "submitFailed": true,
@@ -603,7 +615,7 @@ describe("FinalForm.submission", () => {
     `);
     expect({ submitError: last(emailSpy.mock.calls)[0].submitError })
       .toMatchInlineSnapshot(`
-        Object {
+        {
           "submitError": "Email must be valid.",
         }
       `);
@@ -611,7 +623,7 @@ describe("FinalForm.submission", () => {
     form.change("email", "erikr@s");
     submissionPromise = form.submit();
     expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "submitError": undefined,
         "submitErrors": undefined,
         "submitFailed": false,
@@ -621,7 +633,7 @@ describe("FinalForm.submission", () => {
     `);
     expect({ submitError: last(emailSpy.mock.calls)[0].submitError })
       .toMatchInlineSnapshot(`
-        Object {
+        {
           "submitError": undefined,
         }
       `);
@@ -640,7 +652,7 @@ describe("FinalForm.submission", () => {
       }),
       initialValues: { foo: "bar" },
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (values.foo !== "bar") {
           errors.foo = 'Sorry, only "bar" can pass this step';
         }
@@ -675,8 +687,8 @@ describe("FinalForm.submission", () => {
   });
 
   it("should maintain field-level and form-level dirtySinceLastSubmit", () => {
-    const onSubmit = jest.fn((values, form) => {
-      const errors = {};
+    const onSubmit = jest.fn((values, _form) => {
+      const errors: ValidationErrors = {};
       if (values.foo === "bar") {
         errors.foo = 'Sorry, "bar" is an illegal value';
       }
@@ -779,8 +791,8 @@ describe("FinalForm.submission", () => {
   });
 
   it("should maintain field-level and form-level modifiedSinceLastSubmit", () => {
-    const onSubmit = jest.fn((values, form) => {
-      const errors = {};
+    const onSubmit = jest.fn((values, _form) => {
+      const errors: ValidationErrors = {};
       if (values.foo === "bar") {
         errors.foo = 'Sorry, "bar" is an illegal value';
       }
@@ -932,7 +944,7 @@ describe("FinalForm.submission", () => {
     const fieldSubscriptionSpy = jest.fn();
     form.registerField("username", fieldSubscriptionSpy, { submitting: true });
 
-    form.submit().catch((error) => expect(error).toBe("No submit for you!"));
+    form.submit()!.catch((error) => expect(error).toBe("No submit for you!"));
     expect(formSubscriptionSpy).toHaveBeenCalledTimes(2);
     expect(formSubscriptionSpy.mock.calls[1][0]).toEqual({ submitting: true });
     expect(fieldSubscriptionSpy).toHaveBeenCalledTimes(2);
@@ -963,7 +975,7 @@ describe("FinalForm.submission", () => {
     form.registerField("username", () => {}, {});
 
     form
-      .submit()
+      .submit()!
       .catch((error) => expect(error.message).toBe("No submit for you!"));
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls[1][0]).toEqual({ submitting: true });
@@ -1030,9 +1042,9 @@ describe("FinalForm.submission", () => {
   });
 
   it("should allow updates in beforeSubmit", () => {
-    let beforeSubmit;
+    let beforeSubmit: FieldConfig["beforeSubmit"];
 
-    const onSubmit = (values) => {
+    const onSubmit: Config["onSubmit"] = (values) => {
       expect(beforeSubmit).toHaveBeenCalled();
       expect(beforeSubmit).toHaveBeenCalledTimes(1);
       expect(values.name).toBe("ERIKRAS");
@@ -1062,7 +1074,7 @@ describe("FinalForm.submission", () => {
   it("should call allow submission cancelation via beforeSubmit", () => {
     const spy = jest.fn();
     const nameBeforeSubmit = jest.fn();
-    const passwordBeforeSubmit = jest.fn(() => false);
+    const passwordBeforeSubmit = jest.fn<false, []>(() => false);
     const emailBeforeSubmit = jest.fn();
     const onSubmit = jest.fn();
 
@@ -1115,7 +1127,8 @@ describe("FinalForm.submission", () => {
   });
 
   it("should not call onSubmit while already submitting", async () => {
-    let resolve;
+    let resolve: (value?: any) => void;
+
     const onSubmit = jest.fn(() => {
       return new Promise((_resolve) => {
         resolve = _resolve;
@@ -1133,6 +1146,7 @@ describe("FinalForm.submission", () => {
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
 
+    // @ts-ignore
     resolve();
     await submissionPromise;
 
@@ -1141,7 +1155,7 @@ describe("FinalForm.submission", () => {
   });
 
   it("should allow reset in onSubmit", async () => {
-    const onSubmit = (values, form) => {
+    const onSubmit: Config["onSubmit"] = (values, form) => {
       form.reset();
       form.change("foo", "bar");
     };
@@ -1167,7 +1181,7 @@ describe("FinalForm.submission", () => {
   });
 
   it("should allow setTimeout(reset) in onSubmit", async () => {
-    const onSubmit = async (values, form) => {
+    const onSubmit: Config["onSubmit"] = async (values, form) => {
       await sleep(2);
       setTimeout(form.reset);
     };
@@ -1192,7 +1206,7 @@ describe("FinalForm.submission", () => {
   });
 
   it("should allow Error object as error value", () => {
-    const onSubmit = jest.fn((values) => ({
+    const onSubmit = jest.fn((_values) => ({
       foo: Error('Sorry, "bar" is an illegal value'),
     }));
     const form = createForm({ onSubmit });
@@ -1239,7 +1253,7 @@ describe("FinalForm.submission", () => {
       const validationError = new Error("uh oh error during validation");
       const form = createForm({
         onSubmit,
-        validate: async (values) => {
+        validate: async (_values) => {
           throw validationError;
         },
       });
@@ -1254,6 +1268,9 @@ describe("FinalForm.submission", () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       expect(onSubmit).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(validationError);
+
+      // @ts-ignore
+      // eslint-disable-next-line no-console
       console.error.mockRestore();
     });
   });

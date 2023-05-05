@@ -1,23 +1,56 @@
-import createForm from "./FinalForm";
-
-const onSubmitMock = (values, callback) => {};
+import createForm from "../src/FinalForm";
+import {
+  Config,
+  FieldConfig,
+  FieldState,
+  FieldSubscription,
+  FormApi,
+  FormSubscription,
+  FormValuesShape,
+  ValidationErrors,
+} from "../src/types";
+import { onSubmitMock } from "./testUtils";
 
 describe("Field.subscribing", () => {
-  const prepareFieldSubscribers = (
-    formSubscription,
-    fieldSubscriptions,
-    fieldConfig = {},
-    config = {},
-  ) => {
-    const form = createForm({ onSubmit: onSubmitMock, ...config });
+  type FooBarBazForm = { foo: string | string[]; bar: string; baz: string };
+
+  type FieldSubscribersItem<
+    FormValues extends FormValuesShape,
+    Field extends keyof FormValues,
+  > = Pick<
+    FieldState<FormValues[Field], FormValues>,
+    "blur" | "change" | "focus"
+  > & {
+    spy: any;
+  };
+
+  type FieldSubscribers<FormValues extends FormValuesShape> = {
+    [Field in keyof FormValues]: FieldSubscribersItem<FormValues, Field>;
+  };
+
+  const prepareFieldSubscribers = <FormValues extends FormValuesShape>(
+    formSubscription: FormSubscription,
+    fieldSubscriptions: { [Field in keyof FormValues]?: FieldSubscription },
+    fieldConfig: {
+      [Field in keyof FormValues]?: FieldConfig<FormValues[Field], FormValues>;
+    } = {},
+    config: Omit<Config<FormValues>, "onSubmit"> = {},
+  ): {
+    form: FormApi<FormValues>;
+    formSpy: jest.Mock<any, any, any>;
+  } & FieldSubscribers<FormValues> => {
+    const form = createForm<FormValues>({ onSubmit: onSubmitMock, ...config });
     const formSpy = jest.fn();
+
     form.subscribe(formSpy, formSubscription);
     expect(formSpy).toHaveBeenCalled();
     expect(formSpy).toHaveBeenCalledTimes(1);
     expect(formSpy.mock.calls[0][0].values).toBeUndefined();
 
     return {
-      ...Object.keys(fieldSubscriptions).reduce((result, name) => {
+      ...Object.keys(fieldSubscriptions).reduce((result, _name) => {
+        const name = _name as keyof FormValues;
+
         const spy = jest.fn();
         form.registerField(
           name,
@@ -30,7 +63,7 @@ describe("Field.subscribing", () => {
         const { blur, change, focus } = spy.mock.calls[0][0];
         result[name] = { blur, change, focus, spy };
         return result;
-      }, {}),
+      }, {} as FieldSubscribers<FormValues>),
       form,
       formSpy,
     };
@@ -46,9 +79,9 @@ describe("Field.subscribing", () => {
 
   it("should allow register and unregister", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    const config = { 
+    const config = {
       getValidator: () => () => Promise.resolve("err"),
-      silent: true, 
+      silent: true,
     };
     // register
     const unsuscribe = form.registerField("foo", () => {}, {}, config);
@@ -59,19 +92,20 @@ describe("Field.subscribing", () => {
   });
 
   it("should provide a access to field state", () => {
-    const form = createForm({ onSubmit: onSubmitMock });
+    const form = createForm<FooBarBazForm>({ onSubmit: onSubmitMock });
     form.registerField("foo", () => {}, {});
     form.registerField("bar", () => {}, {});
     form.registerField("baz", () => {}, {});
+
     expect(form.getFieldState("foo")).toBeDefined();
-    expect(form.getFieldState("foo").name).toBe("foo");
+    expect(form.getFieldState("foo")!.name).toBe("foo");
     expect(form.getFieldState("notafield")).toBeUndefined();
   });
 
   it("should allow subscribing to active", () => {
     const {
       foo: { blur, focus, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { active: true },
@@ -108,7 +142,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to dirty", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { dirty: true },
@@ -140,7 +174,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to error with whole-record validation", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { error: true },
@@ -148,7 +182,7 @@ describe("Field.subscribing", () => {
       {},
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -182,7 +216,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to error with field-level validation", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { error: true },
@@ -220,7 +254,7 @@ describe("Field.subscribing", () => {
     const {
       form,
       foo: { spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { initial: true },
@@ -253,7 +287,7 @@ describe("Field.subscribing", () => {
     const {
       form,
       foo: { spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { initial: true },
@@ -286,7 +320,7 @@ describe("Field.subscribing", () => {
     const {
       form,
       foo: { spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { initial: true },
@@ -315,7 +349,7 @@ describe("Field.subscribing", () => {
     const {
       form,
       foo: { spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { initial: true },
@@ -343,7 +377,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to invalid with whole-record validation", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { invalid: true },
@@ -351,7 +385,7 @@ describe("Field.subscribing", () => {
       {},
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -385,7 +419,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to invalid with field-level validation", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { invalid: true },
@@ -422,7 +456,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to length", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { length: true },
@@ -448,7 +482,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to pristine", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { pristine: true },
@@ -480,7 +514,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to modified", () => {
     const {
       foo: { blur, change, focus, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { modified: true },
@@ -525,7 +559,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to touched", () => {
     const {
       foo: { blur, focus, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { touched: true },
@@ -558,7 +592,7 @@ describe("Field.subscribing", () => {
   it("should allow field to be marked touched even if it was not active", () => {
     const {
       foo: { blur, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { touched: true },
@@ -579,7 +613,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to valid with whole-record validation", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { valid: true },
@@ -587,7 +621,7 @@ describe("Field.subscribing", () => {
       {},
       {
         validate: (values) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -621,7 +655,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to valid with field-level validation", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { valid: true },
@@ -658,7 +692,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to value", () => {
     const {
       foo: { change, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { value: true },
@@ -690,7 +724,7 @@ describe("Field.subscribing", () => {
   it("should allow subscribing to visited", () => {
     const {
       foo: { blur, focus, spy },
-    } = prepareFieldSubscribers(
+    } = prepareFieldSubscribers<FooBarBazForm>(
       {},
       {
         foo: { visited: true },

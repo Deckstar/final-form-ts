@@ -1,10 +1,14 @@
-import type { FieldState, FormState, FormValuesShape } from "final-form";
-
-import { AnyObject } from "./types";
+import type {
+  AnyObject,
+  FieldState,
+  FormState,
+  FormValuesShape,
+} from "final-form";
 
 const addLazyState = <
-  FormValues extends FormValuesShape,
-  State extends FieldState | FormState<FormValues>,
+  State extends FieldState<FieldValue, FormValues> | FormState<FormValues>,
+  FormValues extends FormValuesShape = FormValuesShape,
+  FieldValue = any,
 >(
   dest: AnyObject,
   state: State,
@@ -18,7 +22,9 @@ const addLazyState = <
   });
 };
 
-export const addLazyFormState = <FormValues extends FormValuesShape>(
+export const addLazyFormState = <
+  FormValues extends FormValuesShape = FormValuesShape,
+>(
   dest: AnyObject,
   state: FormState<FormValues>,
 ): void =>

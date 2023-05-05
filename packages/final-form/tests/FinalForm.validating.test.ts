@@ -1,13 +1,15 @@
-import createForm from "./FinalForm";
-import { ARRAY_ERROR } from "./constants";
+import { ARRAY_ERROR } from "../src/constants";
+import createForm from "../src/FinalForm";
+import { ValidationErrors } from "../src/types";
+import { onSubmitMock } from "./testUtils";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const onSubmitMock = (values, callback) => {};
+const sleep = (ms?: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("Field.validation", () => {
   it("should validate on change when validateOnBlur is false", () => {
     const validate = jest.fn((values) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (!values.foo) {
         errors.foo = "Required";
       }
@@ -30,25 +32,32 @@ describe("Field.validation", () => {
     form.focus("foo");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(validate).toHaveBeenCalledTimes(1); // not called on focus
+
     form.change("foo", "t");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls[1][0].error).toBeUndefined();
     expect(validate).toHaveBeenCalledTimes(2);
+
     form.change("foo", "ty");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(3);
+
     form.change("foo", "typ");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(4);
+
     form.change("foo", "typi");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(5);
+
     form.change("foo", "typin");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(6);
+
     form.change("foo", "typing");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(7);
+
     form.blur("foo");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(7); // not called on blur
@@ -57,17 +66,19 @@ describe("Field.validation", () => {
     form.focus("foo");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(7);
+
     form.change("foo", "");
     expect(spy).toHaveBeenCalledTimes(3);
     expect(spy.mock.calls[2][0].error).toBe("Required");
     expect(validate).toHaveBeenCalledTimes(8);
+
     form.blur("foo");
     expect(validate).toHaveBeenCalledTimes(8);
   });
 
   it("should validate on blur when validateOnBlur is true", () => {
     const validate = jest.fn((values) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (!values.foo) {
         errors.foo = "Required";
       }
@@ -91,24 +102,31 @@ describe("Field.validation", () => {
     form.focus("foo");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(validate).toHaveBeenCalledTimes(1); // not called on focus
+
     form.change("foo", "t");
     expect(spy).toHaveBeenCalledTimes(1); // error not updated
     expect(validate).toHaveBeenCalledTimes(1);
+
     form.change("foo", "ty");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(validate).toHaveBeenCalledTimes(1);
+
     form.change("foo", "typ");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(validate).toHaveBeenCalledTimes(1);
+
     form.change("foo", "typi");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(validate).toHaveBeenCalledTimes(1);
+
     form.change("foo", "typin");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(validate).toHaveBeenCalledTimes(1);
+
     form.change("foo", "typing");
     expect(spy).toHaveBeenCalledTimes(1);
     expect(validate).toHaveBeenCalledTimes(1);
+
     form.blur("foo");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls[1][0].error).toBeUndefined();
@@ -118,9 +136,11 @@ describe("Field.validation", () => {
     form.focus("foo");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(2);
+
     form.change("foo", "");
     expect(spy).toHaveBeenCalledTimes(2);
     expect(validate).toHaveBeenCalledTimes(2);
+
     form.blur("foo");
     expect(spy).toHaveBeenCalledTimes(3);
     expect(spy.mock.calls[2][0].error).toBe("Required");
@@ -192,7 +212,7 @@ describe("Field.validation", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (values.password !== values.confirm) {
           errors.confirm = "Does not match";
         }
@@ -308,7 +328,7 @@ describe("Field.validation", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (!values.foo || values.foo.length < 3) {
           errors.foo = "Too short";
         }
@@ -352,7 +372,7 @@ describe("Field.validation", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: async (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (values.username === "erikras") {
           errors.username = "Username taken";
         }
@@ -410,7 +430,7 @@ describe("Field.validation", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: async (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (values.username === "erikras") {
           errors.username = "Username taken";
         }
@@ -481,7 +501,7 @@ describe("Field.validation", () => {
   it("should ignore old validation promise results", async () => {
     const delay = 10;
     const validate = jest.fn((values) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (values.username === "erikras") {
         errors.username = "Username taken";
         return errors;
@@ -520,7 +540,7 @@ describe("Field.validation", () => {
       spy,
       { validating: true },
       {
-        getValidator: () => (value, allErrors) => {
+        getValidator: () => (value, _allErrors) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           return error;
         },
@@ -539,11 +559,12 @@ describe("Field.validation", () => {
       spy,
       { error: true, validating: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value, _allErrors) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
         },
+        // @ts-ignore
         subscribeToEachFieldsPromise: true,
       },
     );
@@ -595,7 +616,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value, _allErrors) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
@@ -653,7 +674,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors, fieldState) => {
+        getValidator: () => async (value, _allErrors, fieldState) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           expect(fieldState).toBeDefined();
           await sleep(delay);
@@ -712,7 +733,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value, _allErrors) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
@@ -751,7 +772,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value, _allErrors) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
@@ -774,7 +795,7 @@ describe("Field.validation", () => {
   it("should remove field-level validation errors when a field is unregistered", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const spy = jest.fn();
-    form.subscribe(spy, { errors: 1 });
+    form.subscribe(spy, { errors: true });
 
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0].errors).toEqual({});
@@ -782,6 +803,7 @@ describe("Field.validation", () => {
     const unregister = form.registerField(
       "username",
       () => {},
+      // @ts-ignore
       { errors: true },
       {
         getValidator: () => (value) => value ? undefined : "Required",
@@ -799,10 +821,10 @@ describe("Field.validation", () => {
   it("should not remove record-level validation errors when a field is unregistered", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
-      validate: (values) => ({ username: "Required by record-level" }),
+      validate: (_values) => ({ username: "Required by record-level" }),
     });
     const spy = jest.fn();
-    form.subscribe(spy, { errors: 1 });
+    form.subscribe(spy, { errors: true });
 
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0].errors).toEqual({
@@ -812,6 +834,7 @@ describe("Field.validation", () => {
     const unregister = form.registerField(
       "username",
       () => {},
+      // @ts-ignore
       { errors: true },
       {
         getValidator: () => (value) => value ? undefined : "Required",
@@ -832,10 +855,10 @@ describe("Field.validation", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const array = jest.fn();
     const validate = jest.fn(
-      (value) =>
+      (value?: any[]) =>
         value &&
         value.map((customer) => {
-          const errors = {};
+          const errors: ValidationErrors = {};
           if (!customer.firstName) {
             errors.firstName = "Required";
           }
@@ -853,6 +876,7 @@ describe("Field.validation", () => {
         validateFields: [],
       },
     );
+
     expect(validate).toHaveBeenCalledTimes(1);
     expect(validate.mock.calls[0][0]).toBeUndefined();
     expect(array).toHaveBeenCalledTimes(1);
@@ -929,7 +953,7 @@ describe("Field.validation", () => {
     const foo = jest.fn();
     const bar = jest.fn();
     const baz = jest.fn();
-    const required = (value) => (value ? undefined : false);
+    const required = (value: any) => (value ? undefined : false);
     const validateFoo = jest.fn(required);
     const validateBar = jest.fn(required);
     const validateBaz = jest.fn(required);
@@ -990,7 +1014,7 @@ describe("Field.validation", () => {
     const foo = jest.fn();
     const bar = jest.fn();
     const baz = jest.fn();
-    const required = (value) => (value ? undefined : false);
+    const required = (value: any) => (value ? undefined : false);
     const validateFoo = jest.fn(required);
     const validateBar = jest.fn(required);
     const validateBaz = jest.fn(required);
@@ -1055,9 +1079,11 @@ describe("Field.validation", () => {
     const fooValidate = jest.fn();
     const barValidate = jest.fn();
     const bazValidate = jest.fn();
+
     expect(form.isValidationPaused()).toBe(false);
     form.pauseValidation();
     expect(form.isValidationPaused()).toBe(true);
+
     form.registerField(
       "foo",
       () => {},
@@ -1148,8 +1174,8 @@ describe("Field.validation", () => {
   });
 
   it("should allow for array fields to both have errors and for the array itself to have an error", () => {
-    const validate = jest.fn((values) => {
-      const errors = {};
+    const validate = jest.fn((values: { items: any[] }) => {
+      const errors: ValidationErrors = {};
       errors.items = values.items.map((value) =>
         value ? undefined : "Required",
       );
@@ -1169,6 +1195,7 @@ describe("Field.validation", () => {
     const items = jest.fn();
     const items0 = jest.fn();
     const items1 = jest.fn();
+
     form.registerField("items", items, { error: true });
     expect(items).toHaveBeenCalled();
     expect(items).toHaveBeenCalledTimes(1);
@@ -1198,7 +1225,7 @@ describe("Field.validation", () => {
     // https://github.com/final-form/final-form/issues/75
     const form = createForm({ onSubmit: onSubmitMock });
     const config = {
-      getValidator: () => (value) => value ? undefined : "Required",
+      getValidator: () => (value: any) => value ? undefined : "Required",
       validateFields: [],
     };
 
@@ -1225,7 +1252,7 @@ describe("Field.validation", () => {
   it("should mark the form as valid when all required fields are completed", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const config = {
-      getValidator: () => (value) => value ? undefined : "Required",
+      getValidator: () => (value: any) => value ? undefined : "Required",
       validateFields: [],
     };
 
@@ -1292,6 +1319,7 @@ describe("Field.validation", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const spy = jest.fn();
     form.subscribe(spy, { invalid: true });
+
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0].invalid).toBe(false);
@@ -1324,6 +1352,7 @@ describe("Field.validation", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const spy = jest.fn();
     form.subscribe(spy, { validating: true });
+
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0].validating).toBe(false);
@@ -1381,6 +1410,7 @@ describe("Field.validation", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const spy = jest.fn();
     form.subscribe(spy, { validating: true, values: true, valid: true });
+
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0].validating).toBe(false);
@@ -1543,18 +1573,20 @@ describe("Field.validation", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (!values.foo) {
           errors.foo = "Required";
         }
         return errors;
       },
     });
+
     const foo = jest.fn();
     form.registerField("foo", foo, { error: true }, { initialValue: "bar" });
     expect(foo).toHaveBeenCalledTimes(1);
     expect(foo.mock.calls[0][0].error).toBe(undefined);
     expect(form.getState().invalid).toBe(false);
+
     form.change("foo", "");
     expect(foo).toHaveBeenCalledTimes(2);
     expect(foo.mock.calls[1][0].error).toBe("Required");
@@ -1583,9 +1615,9 @@ describe("Field.validation", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
     });
-    const oneArg = jest.fn((val) => {});
-    const twoArg = jest.fn((val, all) => {});
-    const threeArg = jest.fn((val, all, meta) => {});
+    const oneArg = jest.fn((_val) => {});
+    const twoArg = jest.fn((_val, _all) => {});
+    const threeArg = jest.fn((_val, _all, _meta) => {});
 
     form.registerField(
       "foo",
@@ -1608,8 +1640,14 @@ describe("Field.validation", () => {
 
     const meta = form.getFieldState("baz");
 
-    expect(oneArg.mock.calls[0][2]).toBeUndefined();
-    expect(twoArg.mock.calls[0][2]).toBeUndefined();
+    expect(
+      // @ts-expect-error
+      oneArg.mock.calls[0][2],
+    ).toBeUndefined();
+    expect(
+      // @ts-expect-error
+      twoArg.mock.calls[0][2],
+    ).toBeUndefined();
     expect(threeArg.mock.calls[0][2]).toEqual(meta);
   });
 });

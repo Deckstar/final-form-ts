@@ -6,15 +6,19 @@ import type { FieldProps as Props, FieldRenderProps } from "./types";
 import useField from "./useField";
 
 function FieldComponent<
-  FieldValue,
-  RP extends FieldRenderProps<FieldValue, InputValue, T>,
+  FieldValue = any,
+  InputValue = FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
-  InputValue = FieldValue,
+  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+    FieldValue,
+    InputValue,
+    T
+  >,
 >(
-  props: Props<FieldValue, RP, FormValues, InputValue, T>,
+  props: Props<FieldValue, InputValue, FormValues, T, RP>,
   ref: React.ForwardedRef<React.ReactNode>,
-) {
+): React.ReactElement {
   const {
     afterSubmit,
     allowNull,
@@ -87,13 +91,17 @@ function FieldComponent<
 }
 
 const Field = React.forwardRef(FieldComponent) as <
-  FieldValue,
-  RP extends FieldRenderProps<FieldValue, InputValue, T>,
+  FieldValue = any,
+  InputValue = FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
-  InputValue = FieldValue,
+  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+    FieldValue,
+    InputValue,
+    T
+  >,
 >(
-  props: Props<FieldValue, RP, FormValues, InputValue, T> & {
+  props: Props<FieldValue, InputValue, FormValues, T, RP> & {
     ref?: React.Ref<React.ReactNode>;
   },
 ) => React.ReactElement;

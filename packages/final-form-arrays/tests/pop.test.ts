@@ -1,264 +1,309 @@
-import pop from './pop'
-import { getIn, setIn } from 'final-form'
+import { getIn, MutableState, setIn, Tools } from "final-form";
 
-describe('pop', () => {
-  it('should call changeValue once', () => {
-    const changeValue = jest.fn()
+import pop from "../src/pop";
+
+describe("pop", () => {
+  it("should call changeValue once", () => {
+    const changeValue = jest.fn();
+
     const state = {
       formState: {
         values: {
-          foo: ['one', 'two']
-        }
+          foo: ["one", "two"],
+        },
       },
       fields: {
-        'foo[0]': {
-          name: 'foo[0]',
+        "foo[0]": {
+          name: "foo[0]",
           touched: true,
-          error: 'First Error'
+          error: "First Error",
         },
-        'foo[1]': {
-          name: 'foo[1]',
+        "foo[1]": {
+          name: "foo[1]",
           touched: false,
-          error: 'Second Error'
-        }
-      }
-    }
-    const result = pop(['foo'], state, { changeValue, getIn, setIn })
-    expect(result).toBeUndefined()
-    expect(changeValue).toHaveBeenCalled()
-    expect(changeValue).toHaveBeenCalledTimes(1)
-    expect(changeValue.mock.calls[0][0]).toBe(state)
-    expect(changeValue.mock.calls[0][1]).toBe('foo')
-    expect(typeof changeValue.mock.calls[0][2]).toBe('function')
-  })
+          error: "Second Error",
+        },
+      },
+    };
 
-  it('should return undefined if array is undefined', () => {
+    const result = pop(
+      ["foo"],
+      state as unknown as MutableState,
+      { changeValue, getIn, setIn } as unknown as Tools,
+    );
+
+    expect(result).toBeUndefined();
+    expect(changeValue).toHaveBeenCalled();
+    expect(changeValue).toHaveBeenCalledTimes(1);
+    expect(changeValue.mock.calls[0][0]).toBe(state);
+    expect(changeValue.mock.calls[0][1]).toBe("foo");
+    expect(typeof changeValue.mock.calls[0][2]).toBe("function");
+  });
+
+  it("should return undefined if array is undefined", () => {
     // implementation of changeValue taken directly from Final Form
-    const changeValue = (state, name, mutate) => {
-      const before = getIn(state.formState.values, name)
-      const after = mutate(before)
-      state.formState.values = setIn(state.formState.values, name, after) || {}
-    }
+    const changeValue: Tools["changeValue"] = (state, name, mutate) => {
+      const before = getIn(state.formState.values, name);
+      const after = mutate(before);
+      state.formState.values = setIn(state.formState.values, name, after) || {};
+    };
+
     const state = {
       formState: {
         values: {
-          foo: undefined
-        }
+          foo: undefined,
+        },
       },
-      fields: {}
-    }
-    const returnValue = pop(['foo'], state, { changeValue, getIn, setIn })
-    expect(returnValue).toBeUndefined()
-    const result = state.formState.foo
-    expect(result).toBeUndefined()
-  })
+      fields: {},
+    };
 
-  it('should return empty array if array is empty', () => {
+    const returnValue = pop(
+      ["foo"],
+      state as unknown as MutableState,
+      { changeValue, getIn, setIn } as unknown as Tools,
+    );
+    expect(returnValue).toBeUndefined();
+
+    // @ts-expect-error
+    const result = state.formState.foo;
+    expect(result).toBeUndefined();
+  });
+
+  it("should return empty array if array is empty", () => {
     // implementation of changeValue taken directly from Final Form
-    const changeValue = (state, name, mutate) => {
-      const before = getIn(state.formState.values, name)
-      const after = mutate(before)
-      state.formState.values = setIn(state.formState.values, name, after) || {}
-    }
+    const changeValue: Tools["changeValue"] = (state, name, mutate) => {
+      const before = getIn(state.formState.values, name);
+      const after = mutate(before);
+      state.formState.values = setIn(state.formState.values, name, after) || {};
+    };
+
     const state = {
       formState: {
         values: {
-          foo: []
-        }
+          foo: [],
+        },
       },
-      fields: {}
-    }
-    const returnValue = pop(['foo'], state, { changeValue, getIn, setIn })
-    expect(returnValue).toBeUndefined()
-    const result = state.formState.values.foo
-    expect(Array.isArray(result)).toBe(true)
-    expect(result.length).toBe(0)
-  })
+      fields: {},
+    };
 
-  it('should pop value off the end of array and return it', () => {
+    const returnValue = pop(
+      ["foo"],
+      state as unknown as MutableState,
+      { changeValue, getIn, setIn } as unknown as Tools,
+    );
+
+    expect(returnValue).toBeUndefined();
+
+    const result = state.formState.values.foo;
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBe(0);
+  });
+
+  it("should pop value off the end of array and return it", () => {
     // implementation of changeValue taken directly from Final Form
     const changeValue = jest.fn((state, name, mutate) => {
-      const before = getIn(state.formState.values, name)
-      const after = mutate(before)
-      state.formState.values = setIn(state.formState.values, name, after) || {}
-    })  
+      const before = getIn(state.formState.values, name);
+      const after = mutate(before);
+      state.formState.values = setIn(state.formState.values, name, after) || {};
+    });
+
     const state = {
       formState: {
         values: {
-          foo: ['a', 'b', 'c']
-        }
+          foo: ["a", "b", "c"],
+        },
       },
       fields: {
-        'foo[0]': {
-          name: 'foo[0]',
+        "foo[0]": {
+          name: "foo[0]",
           touched: true,
-          error: 'First Error'
+          error: "First Error",
         },
-        'foo[1]': {
-          name: 'foo[1]',
+        "foo[1]": {
+          name: "foo[1]",
           touched: false,
-          error: 'Second Error'
-        }
-      }
-    }
-    const returnValue = pop(['foo'], state, { changeValue, getIn, setIn })
-    const result = state.formState.values.foo
-    expect(returnValue).toBe('c')
-    expect(Array.isArray(result)).toBe(true)
-    expect(result).toEqual(['a', 'b'])
-  })
+          error: "Second Error",
+        },
+      },
+    };
 
-  it('should pop value off the end of array and return it', () => {
-    const array = ['a', 'b', 'c', 'd']
+    const returnValue = pop(
+      ["foo"],
+      state as unknown as MutableState,
+      { changeValue, getIn, setIn } as unknown as Tools,
+    );
+    const result = state.formState.values.foo;
+
+    expect(returnValue).toBe("c");
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toEqual(["a", "b"]);
+  });
+
+  it("should pop value off the end of array and return it", () => {
+    const array = ["a", "b", "c", "d"];
     // implementation of changeValue taken directly from Final Form
-    const changeValue = (state, name, mutate) => {
-      const before = getIn(state.formState.values, name)
-      const after = mutate(before)
-      state.formState.values = setIn(state.formState.values, name, after) || {}
-    }
+    const changeValue: Tools["changeValue"] = (state, name, mutate) => {
+      const before = getIn(state.formState.values, name);
+      const after = mutate(before);
+      state.formState.values = setIn(state.formState.values, name, after) || {};
+    };
+
     const state = {
       formState: {
         values: {
           foo: array,
-          anotherField: 42
-        }
+          anotherField: 42,
+        },
       },
       fields: {
-        'foo[0]': {
-          name: 'foo[0]',
+        "foo[0]": {
+          name: "foo[0]",
           touched: true,
-          error: 'A Error'
+          error: "A Error",
         },
-        'foo[1]': {
-          name: 'foo[1]',
+        "foo[1]": {
+          name: "foo[1]",
           touched: false,
-          error: 'B Error'
+          error: "B Error",
         },
-        'foo[2]': {
-          name: 'foo[2]',
+        "foo[2]": {
+          name: "foo[2]",
           touched: true,
-          error: 'C Error'
+          error: "C Error",
         },
-        'foo[3]': {
-          name: 'foo[3]',
+        "foo[3]": {
+          name: "foo[3]",
           touched: false,
-          error: 'D Error'
+          error: "D Error",
         },
         anotherField: {
-          name: 'anotherField',
-          touched: false
-        }
-      }
-    }
-    const returnValue = pop(['foo'], state, { changeValue, getIn, setIn })
-    expect(returnValue).toBe('d')
-    expect(Array.isArray(state.formState.values.foo)).toBe(true)
-    expect(state.formState.values.foo).not.toBe(array) // copied
+          name: "anotherField",
+          touched: false,
+        },
+      },
+    };
+
+    const returnValue = pop(
+      ["foo"],
+      state as unknown as MutableState,
+      { changeValue, getIn, setIn } as unknown as Tools,
+    );
+
+    expect(returnValue).toBe("d");
+    expect(Array.isArray(state.formState.values.foo)).toBe(true);
+    expect(state.formState.values.foo).not.toBe(array); // copied
     expect(state).toEqual({
       formState: {
         values: {
-          foo: ['a', 'b', 'c'],
-          anotherField: 42
-        }
+          foo: ["a", "b", "c"],
+          anotherField: 42,
+        },
       },
       fields: {
-        'foo[0]': {
-          name: 'foo[0]',
+        "foo[0]": {
+          name: "foo[0]",
           touched: true,
-          error: 'A Error'
+          error: "A Error",
         },
-        'foo[1]': {
-          name: 'foo[1]',
+        "foo[1]": {
+          name: "foo[1]",
           touched: false,
-          error: 'B Error'
+          error: "B Error",
         },
-        'foo[2]': {
-          name: 'foo[2]',
+        "foo[2]": {
+          name: "foo[2]",
           touched: true,
-          error: 'C Error'
+          error: "C Error",
         },
         anotherField: {
-          name: 'anotherField',
-          touched: false
-        }
-      }
-    })
-  })
+          name: "anotherField",
+          touched: false,
+        },
+      },
+    });
+  });
 
-  it('should pop value off the end of array and return it (nested arrays)', () => {
-    const array = ['a', 'b', 'c', 'd']
+  it("should pop value off the end of array and return it (nested arrays)", () => {
+    const array = ["a", "b", "c", "d"];
     // implementation of changeValue taken directly from Final Form
-    const changeValue = (state, name, mutate) => {
-      const before = getIn(state.formState.values, name)
-      const after = mutate(before)
-      state.formState.values = setIn(state.formState.values, name, after) || {}
-    }
+    const changeValue: Tools["changeValue"] = (state, name, mutate) => {
+      const before = getIn(state.formState.values, name);
+      const after = mutate(before);
+      state.formState.values = setIn(state.formState.values, name, after) || {};
+    };
+
     const state = {
       formState: {
         values: {
           foo: [array],
-          anotherField: 42
-        }
+          anotherField: 42,
+        },
       },
       fields: {
-        'foo[0][0]': {
-          name: 'foo[0][0]',
+        "foo[0][0]": {
+          name: "foo[0][0]",
           touched: true,
-          error: 'A Error'
+          error: "A Error",
         },
-        'foo[0][1]': {
-          name: 'foo[0][1]',
+        "foo[0][1]": {
+          name: "foo[0][1]",
           touched: false,
-          error: 'B Error'
+          error: "B Error",
         },
-        'foo[0][2]': {
-          name: 'foo[0][2]',
+        "foo[0][2]": {
+          name: "foo[0][2]",
           touched: true,
-          error: 'C Error'
+          error: "C Error",
         },
-        'foo[0][3]': {
-          name: 'foo[0][3]',
+        "foo[0][3]": {
+          name: "foo[0][3]",
           touched: false,
-          error: 'D Error'
+          error: "D Error",
         },
         anotherField: {
-          name: 'anotherField',
-          touched: false
-        }
-      }
-    }
-    const returnValue = pop(['foo[0]'], state, { changeValue, getIn, setIn })
-    expect(returnValue).toBe('d')
-    expect(Array.isArray(state.formState.values.foo)).toBe(true)
-    expect(state.formState.values.foo).not.toBe(array) // copied
+          name: "anotherField",
+          touched: false,
+        },
+      },
+    };
+
+    const returnValue = pop(
+      ["foo[0]"],
+      state as unknown as MutableState,
+      { changeValue, getIn, setIn } as unknown as Tools,
+    );
+
+    expect(returnValue).toBe("d");
+    expect(Array.isArray(state.formState.values.foo)).toBe(true);
+    expect(state.formState.values.foo).not.toBe(array); // copied
     expect(state).toEqual({
       formState: {
         values: {
-          foo: [['a', 'b', 'c']],
-          anotherField: 42
-        }
+          foo: [["a", "b", "c"]],
+          anotherField: 42,
+        },
       },
       fields: {
-        'foo[0][0]': {
-          name: 'foo[0][0]',
+        "foo[0][0]": {
+          name: "foo[0][0]",
           touched: true,
-          error: 'A Error'
+          error: "A Error",
         },
-        'foo[0][1]': {
-          name: 'foo[0][1]',
+        "foo[0][1]": {
+          name: "foo[0][1]",
           touched: false,
-          error: 'B Error'
+          error: "B Error",
         },
-        'foo[0][2]': {
-          name: 'foo[0][2]',
+        "foo[0][2]": {
+          name: "foo[0][2]",
           touched: true,
-          error: 'C Error'
+          error: "C Error",
         },
         anotherField: {
-          name: 'anotherField',
-          touched: false
-        }
-      }
-    })
-  })
-})
+          name: "anotherField",
+          touched: false,
+        },
+      },
+    });
+  });
+});

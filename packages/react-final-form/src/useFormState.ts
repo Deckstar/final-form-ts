@@ -1,4 +1,9 @@
-import type { FormApi, FormState, FormValuesShape } from "final-form";
+import type {
+  FormApi,
+  FormState,
+  FormSubscription,
+  FormValuesShape,
+} from "final-form";
 import * as React from "react";
 
 import { addLazyFormState } from "./getters";
@@ -6,34 +11,57 @@ import { all } from "./ReactFinalForm";
 import type { UseFormStateParams } from "./types";
 import useForm from "./useForm";
 
-function useFormState<FormValues extends FormValuesShape = FormValuesShape>({
+export type FormStateHookResult<
+  FormValues extends FormValuesShape,
+  InitialFormValues,
+  Subscription extends FormSubscription,
+> = FormState<FormValues, InitialFormValues> &
+  Required<
+    Pick<
+      FormState<FormValues, InitialFormValues>,
+      keyof FormState<FormValues, InitialFormValues> & keyof Subscription
+    >
+  >;
+
+function useFormState<
+  FormValues extends FormValuesShape = FormValuesShape,
+  InitialFormValues = Partial<FormValues>,
+  Subscription extends FormSubscription = Required<FormSubscription>,
+>({
   onChange,
-  subscription = all,
-}: UseFormStateParams<FormValues> = {}): FormState<FormValues> {
-  const form: FormApi<FormValues> = useForm<FormValues>("useFormState");
+  subscription = all as Required<Subscription>,
+}: UseFormStateParams<
+  FormValues,
+  InitialFormValues,
+  Subscription
+> = {}): FormStateHookResult<FormValues, InitialFormValues, Subscription> {
+  const form: FormApi<FormValues, InitialFormValues> = useForm<
+    FormValues,
+    InitialFormValues
+  >("useFormState");
   const firstRender = React.useRef(true);
 
   const onChangeRef = React.useRef(onChange);
   onChangeRef.current = onChange;
 
   // synchronously register and unregister to query field state for our subscription on first render
-  const [state, setState] = React.useState<FormState<FormValues>>(
-    (): FormState<FormValues> => {
-      let initialState: FormState<FormValues> = {};
+  const [state, setState] = React.useState<
+    FormState<FormValues, InitialFormValues>
+  >((): FormState<FormValues, InitialFormValues> => {
+    let initialState: FormState<FormValues, InitialFormValues> = {};
 
-      const unsubscribe = form.subscribe((formState) => {
-        initialState = formState;
-      }, subscription);
+    const unsubscribe = form.subscribe((formState) => {
+      initialState = formState;
+    }, subscription);
 
-      unsubscribe();
+    unsubscribe();
 
-      if (onChange) {
-        onChange(initialState);
-      }
+    if (onChange) {
+      onChange(initialState);
+    }
 
-      return initialState;
-    },
-  );
+    return initialState;
+  });
 
   React.useEffect(
     function initializeSubscription() {
@@ -57,9 +85,14 @@ function useFormState<FormValues extends FormValuesShape = FormValuesShape>({
 
   const lazyState = {};
 
+  // @ts-ignore
   addLazyFormState(lazyState, state);
 
-  return lazyState;
+  return lazyState as FormStateHookResult<
+    FormValues,
+    InitialFormValues,
+    Subscription
+  >;
 }
 
 export default useFormState;

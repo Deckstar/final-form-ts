@@ -7,6 +7,7 @@ export { default as getIn } from "./structure/getIn";
 export type { SetIn } from "./structure/setIn";
 export { default as setIn } from "./structure/setIn";
 export type {
+  AnyObject,
   ChangeValue,
   Config,
   ConfigKey,

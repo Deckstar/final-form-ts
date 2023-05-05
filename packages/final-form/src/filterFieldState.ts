@@ -12,7 +12,7 @@ const filterFieldState: StateFilter<FieldState> = (
   state: FieldState,
   previousState: FieldState | null | undefined,
   subscription: FieldSubscription,
-  force: boolean,
+  force?: boolean,
 ): FieldState | null | undefined => {
   const result: FieldState = {
     blur: state.blur,

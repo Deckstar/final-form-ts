@@ -1,6 +1,6 @@
-import createForm from "./FinalForm";
-
-const onSubmitMock = (values, callback) => {};
+import createForm from "../src/FinalForm";
+import { Mutator, ValidationErrors } from "../src/types";
+import { onSubmitMock } from "./testUtils";
 
 describe("FinalForm.setConfig", () => {
   it('should update debug callback on setConfig("debug", fn)', () => {
@@ -56,12 +56,16 @@ describe("FinalForm.setConfig", () => {
   });
 
   it('should update mutators on setConfig("mutators", mutators)', () => {
-    const clear = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, () => undefined);
-    });
-    const upper = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, (value) => value && value.toUpperCase());
-    });
+    const clear = jest.fn<void, Parameters<Mutator>>(
+      ([name], state, { changeValue }) => {
+        changeValue(state, name, () => undefined);
+      },
+    ) as Mutator;
+    const upper = jest.fn<void, Parameters<Mutator>>(
+      ([name], state, { changeValue }) => {
+        changeValue(state, name, (value) => value && value.toUpperCase());
+      },
+    ) as Mutator;
 
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -133,7 +137,7 @@ describe("FinalForm.setConfig", () => {
     const form = createForm({
       onSubmit,
       validate: (values) => {
-        const errors = {};
+        const errors: ValidationErrors = {};
         if (!values.username) {
           errors.username = "Required";
         }
@@ -164,7 +168,7 @@ describe("FinalForm.setConfig", () => {
 
   it('should replace validateOnBlur on setConfig("validateOnBlur", value)', () => {
     const validate = jest.fn((values) => {
-      const errors = {};
+      const errors: ValidationErrors = {};
       if (!values.foo) {
         errors.foo = "Required";
       }
@@ -216,7 +220,11 @@ describe("FinalForm.setConfig", () => {
       onSubmit: onSubmitMock,
     });
     expect(() => {
-      form.setConfig("whatever", false);
+      form.setConfig(
+        // @ts-expect-error
+        "whatever",
+        false,
+      );
     }).toThrowError("Unrecognised option whatever");
   });
 

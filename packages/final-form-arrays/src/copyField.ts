@@ -1,4 +1,4 @@
-import type { InternalFieldState } from "final-form/dist/types";
+import type { InternalFieldState } from "final-form";
 
 function copyField(
   oldFields: { [fieldName: string]: InternalFieldState },

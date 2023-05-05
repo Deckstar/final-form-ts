@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
-import { FormSpy } from "react-final-form";
+import { FormSpy } from "../../src";
 
 function submitButtonSpy() {
   return (
@@ -15,3 +15,6 @@ function submitButtonSpy() {
     </FormSpy>
   );
 }
+
+// To get around the "Your test suite must contain at least one test." error
+it("passes", () => {});

@@ -3,6 +3,10 @@ import formSubscriptionItems from "./formSubscriptionItems";
 import { GetIn } from "./structure/getIn";
 import { SetIn } from "./structure/setIn";
 
+export interface AnyObject {
+  [key: string]: any;
+}
+
 export type Subscriber<V = any> = (value: V) => void;
 export type IsEqual = (a: any, b: any) => boolean;
 
@@ -19,16 +23,15 @@ export type FormSubscriptionItem = ArrayElement<typeof formSubscriptionItems>;
 
 export type FormSubscription = Partial<Record<FormSubscriptionItem, boolean>>;
 
-type FormBooleanStates<FormValues extends FormValuesShape> = Partial<
-  Record<keyof FormValues | string, boolean>
->;
+type FormBooleanStates<FormValues extends FormValuesShape = FormValuesShape> =
+  Partial<Record<keyof FormValues | string, boolean>>;
 
 /**
  * By default: all values are subscribed. If subscription is
  * specified, some values may be `undefined`.
  */
 export interface FormState<
-  FormValues extends FormValuesShape,
+  FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
 > {
   active?: string;
@@ -60,7 +63,7 @@ export interface FormState<
 }
 
 export type FormSubscriber<
-  FormValues extends FormValuesShape,
+  FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
 > = Subscriber<FormState<FormValues, InitialFormValues>>;
 
@@ -145,17 +148,19 @@ export interface FieldConfig<
   validateFields?: string[];
 }
 
-export interface RegisterField<FormValues extends FormValuesShape> {
+export interface RegisterField<
+  FormValues extends FormValuesShape = FormValuesShape,
+> {
   <F extends keyof FormValues>(
     name: F,
     subscriber: FieldSubscriber<FormValues[F], FormValues>,
-    subscription: FieldSubscription,
+    subscription?: FieldSubscription,
     config?: FieldConfig<FormValues[F], FormValues>,
   ): Unsubscribe;
   <F extends string>(
     name: F,
     subscriber: FieldSubscriber<any, FormValues>,
-    subscription: FieldSubscription,
+    subscription?: FieldSubscription,
     config?: FieldConfig<any, FormValues>,
   ): Unsubscribe;
 }
@@ -212,9 +217,22 @@ export interface InternalFormState<
 
 export type ConfigKey = keyof Config;
 
-interface Change<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Change<FormValues extends FormValuesShape = FormValuesShape> {
   <F extends keyof FormValues>(name: F, value?: FormValues[F]): void;
   <F extends string>(name: F, value?: any): void;
+}
+
+type NonOptionalKeys<T> = {
+  [Key in keyof T]-?: undefined extends T[Key] ? never : Key;
+}[keyof T];
+
+export interface GetFieldState<
+  FormValues extends FormValuesShape = FormValuesShape,
+> {
+  <F extends keyof FormValues>(field: F): F extends NonOptionalKeys<FormValues>
+    ? FieldState<FormValues[F], FormValues>
+    : FieldState<FormValues[F], FormValues> | undefined;
+  <F extends string>(field: F): FieldState<unknown, FormValues> | undefined;
 }
 
 export interface FormApi<
@@ -230,9 +248,7 @@ export interface FormApi<
     data: InitialFormValues | ((values: FormValues) => InitialFormValues),
   ) => void;
   isValidationPaused: () => boolean;
-  getFieldState: <F extends string>(
-    field: F,
-  ) => FieldState<FormValues[F], FormValues> | undefined;
+  getFieldState: GetFieldState<FormValues>;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
   mutators: Record<string, (...args: any[]) => any>;
@@ -246,7 +262,7 @@ export interface FormApi<
     name: K,
     value: Config<FormValues>[K],
   ) => void;
-  submit: () => Promise<ValidationErrors> | undefined;
+  submit: () => Promise<SubmissionErrors> | undefined;
   subscribe: (
     subscriber: FormSubscriber<FormValues, InitialFormValues>,
     subscription: FormSubscription,
@@ -254,7 +270,7 @@ export interface FormApi<
 }
 
 export type DebugFunction<
-  FormValues extends FormValuesShape,
+  FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
 > = (
   state: FormState<FormValues, InitialFormValues>,
@@ -262,7 +278,7 @@ export type DebugFunction<
 ) => void;
 
 export interface MutableState<
-  FormValues extends FormValuesShape,
+  FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
 > {
   fieldSubscribers: { [key: string]: Subscribers<FieldState<any, FormValues>> };
@@ -306,7 +322,7 @@ export interface RenameField<
 
 /** Tools that will be passed into the functions used as `mutators`. */
 export interface Tools<
-  FormValues extends FormValuesShape,
+  FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
 > {
   changeValue: ChangeValue<FormValues, InitialFormValues>;
@@ -318,7 +334,7 @@ export interface Tools<
 }
 
 export type MutatorArguments<
-  Arguments extends any[] = any[],
+  Arguments extends any = any,
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
 > = [
@@ -330,7 +346,7 @@ export type MutatorArguments<
 export type Mutator<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues = Partial<FormValues>,
-  Arguments extends any[] = any[],
+  Arguments extends any = any,
   Result extends any = void,
 > = (
   ...mutatorArgs: MutatorArguments<Arguments, FormValues, InitialFormValues>
@@ -352,7 +368,7 @@ export interface Config<
   ) => SubmissionErrors | Promise<SubmissionErrors> | void;
   validate?: (
     values: FormValues,
-  ) => ValidationErrors | Promise<ValidationErrors>;
+  ) => ValidationErrors | Promise<ValidationErrors> | undefined;
   validateOnBlur?: boolean;
 }
 

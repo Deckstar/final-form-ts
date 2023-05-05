@@ -1,6 +1,6 @@
-import publishFieldState from "./publishFieldState";
+import publishFieldState from "../src/publishFieldState";
 
-const check = (error, initial, value, submitError) => {
+const check = (error?: any, initial?: any, value?: any, submitError?: any) => {
   // mock placeholder values to check ===
   const active = {};
   const blur = {};
@@ -22,8 +22,11 @@ const check = (error, initial, value, submitError) => {
       submitErrors: {
         foo: submitError,
       },
+      // @ts-expect-error
       submitFailed,
+      // @ts-expect-error
       submitSucceeded,
+      // @ts-expect-error
       submitting,
       values: {
         foo: value,

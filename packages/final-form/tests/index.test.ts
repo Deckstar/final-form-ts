@@ -1,4 +1,4 @@
-// tslint:disable no-console
+/* eslint-disable no-console */
 import { AnyObject, Config, createForm, Mutator } from "../src/index";
 
 interface FormValues {
@@ -85,12 +85,12 @@ console.log(
 );
 console.log(formState.dirtySinceLastSubmit as boolean);
 console.log(
-  formState.error.foo,
+  formState.error?.foo,
   formState.error as string,
   formState.error as boolean,
 );
-console.log(formState.errors as AnyObject, formState.errors!.foo);
-console.log(formState.initialValues as AnyObject, formState.initialValues.foo);
+console.log(formState.errors as AnyObject, formState.errors?.foo);
+console.log(formState.initialValues as AnyObject, formState.initialValues?.foo);
 console.log(formState.invalid as boolean);
 console.log(formState.pristine as boolean);
 console.log(
@@ -98,14 +98,14 @@ console.log(
   formState.submitError as object,
   formState.submitError as undefined,
 );
-console.log(formState.submitErrors as AnyObject, formState.submitErrors!.foo);
+console.log(formState.submitErrors as AnyObject, formState.submitErrors?.foo);
 console.log(formState.submitFailed as boolean);
 console.log(formState.submitSucceeded as boolean);
 console.log(formState.submitSucceeded as boolean);
 console.log(formState.submitting as boolean);
 console.log(formState.valid as boolean);
 console.log(formState.validating as boolean);
-console.log(formState.values as AnyObject, formState.values.foo);
+console.log(formState.values as AnyObject, formState.values?.foo);
 
 interface FormValues2 {
   a: string;
@@ -129,7 +129,7 @@ console.log(formState2.dirty as boolean);
 // subscription
 form2 = createForm<FormValues2>({ onSubmit: onSubmit2, initialValues });
 form2.subscribe(
-  (state) => {
+  (_state) => {
     // noop
   },
   { pristine: true },
@@ -141,7 +141,7 @@ const setValue: Mutator<FormValues2> = (
   state,
   { changeValue },
 ) => {
-  changeValue(state, name, (value) => newValue);
+  changeValue(state, name, (_value) => newValue);
 };
 
 type Mutators = {
@@ -155,3 +155,6 @@ form2 = createForm<FormValues2>({
 // Get form.mutators cast to Mutators
 const mutators: Mutators = form2.mutators as Mutators;
 mutators.setValue("firstName", "Kevin");
+
+// To get around the "Your test suite must contain at least one test." error
+it("passes", () => {});

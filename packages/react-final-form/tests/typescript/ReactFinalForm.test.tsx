@@ -1,14 +1,15 @@
-/* tslint:disable: no-shadowed-variable */
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Decorator, Mutator } from "final-form";
 import * as React from "react";
-import { Field, Form } from "react-final-form";
+import { Field, Form } from "../../src";
 
 const noop = () => {};
 // missing required props
 const C1 = () => {
-  // $ExpectError
+  // @ts-expect-error
   return <Form />;
 };
 
@@ -16,7 +17,6 @@ const C1 = () => {
 const C2 = () => <Form onSubmit={noop} />;
 
 const onSubmit = async (values: any) => {
-  // tslint:disable-next-line no-console
   console.log(values);
 };
 
@@ -139,7 +139,6 @@ interface UserForm {
 }
 
 const typedOnSubmit = (values: UserForm) => {
-  // tslint:disable-next-line no-console
   console.log(values);
 };
 
@@ -166,6 +165,7 @@ function withTypedFormData() {
 }
 
 const decorator: Decorator<UserForm> = (form) => {
+  // @ts-ignore
   return form.subscribe(({ values: { firstName } }) => firstName, {
     values: true,
   });
@@ -180,9 +180,12 @@ function withTypedDecorator() {
 function withWrongTypedDecorator() {
   return (
     <Form<Omit<UserForm, "firstName">>
-      // $ExpectError
+      // @ts-expect-error
       decorators={[decorator]}
       onSubmit={noop}
     />
   );
 }
+
+// To get around the "Your test suite must contain at least one test." error
+it("passes", () => {});

@@ -43,9 +43,7 @@ export interface DefaultType<
 }
 
 /** The shape of the mutators once final-form has bound them to state. */
-export interface Mutators<
-  FormValues extends FormValuesShape = FormValuesShape,
-> {
+export type Mutators<FormValues extends FormValuesShape = FormValuesShape> = {
   insert: Insert<FormValues>;
   concat: Concat<FormValues>;
   move: Move<FormValues>;
@@ -57,7 +55,7 @@ export interface Mutators<
   swap: Swap<FormValues>;
   update: Update<FormValues>;
   unshift: Unshift<FormValues>;
-}
+};
 
 const mutators = {
   insert,
