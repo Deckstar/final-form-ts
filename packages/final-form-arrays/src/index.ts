@@ -29,31 +29,53 @@ export interface DefaultType<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
+  /** Inserts a value into the specified index of the field array. */
   insert: InsertMutator<FormValues, InitialFormValues>;
+  /** Concatenates an array at the end of the field array. */
   concat: ConcatMutator<FormValues, InitialFormValues>;
+  /** Moves a value from one index to another index in the field array. */
   move: MoveMutator<FormValues, InitialFormValues>;
+  /** Pops a value off the end of an field array. Returns the value. */
   pop: PopMutator<FormValues, InitialFormValues>;
+  /** Pushes a value onto the end of an field array. */
   push: PushMutator<FormValues, InitialFormValues>;
+  /** Removes a value from the specified index of the field array. Returns the removed value. */
   remove: RemoveMutator<FormValues, InitialFormValues>;
+  /** Removes the values at the specified indexes of the field array. */
   removeBatch: RemoveBatchMutator<FormValues, InitialFormValues>;
+  /** Removes a value from the beginning of the field array. Returns the value. */
   shift: ShiftMutator<FormValues, InitialFormValues>;
+  /** Swaps the position of two values in the field array. */
   swap: SwapMutator<FormValues, InitialFormValues>;
+  /** Updates a value of the specified index of the field array. */
   update: UpdateMutator<FormValues, InitialFormValues>;
+  /** Inserts a value onto the beginning of the field array. */
   unshift: UnshiftMutator<FormValues, InitialFormValues>;
 }
 
 /** The shape of the mutators once final-form has bound them to state. */
 export type Mutators<FormValues extends FormValuesShape = FormValuesShape> = {
+  /** Inserts a value into the specified index of the field array. */
   insert: Insert<FormValues>;
+  /** Concatenates an array at the end of the field array. */
   concat: Concat<FormValues>;
+  /** Moves a value from one index to another index in the field array. */
   move: Move<FormValues>;
+  /** Pops a value off the end of an field array. Returns the value. */
   pop: Pop<FormValues>;
+  /** Pushes a value onto the end of an field array. */
   push: Push<FormValues>;
+  /** Removes a value from the specified index of the field array. Returns the removed value. */
   remove: Remove<FormValues>;
+  /** Removes the values at the specified indexes of the field array. */
   removeBatch: RemoveBatch<FormValues>;
+  /** Removes a value from the beginning of the field array. Returns the value. */
   shift: Shift<FormValues>;
+  /** Swaps the position of two values in the field array. */
   swap: Swap<FormValues>;
+  /** Updates a value of the specified index of the field array. */
   update: Update<FormValues>;
+  /** Inserts a value onto the beginning of the field array. */
   unshift: Unshift<FormValues>;
 };
 

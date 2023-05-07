@@ -4,7 +4,7 @@ import type { InternalFieldState, InternalFormState } from "./types";
 import type { FieldState, FormValuesShape } from "./types";
 
 /**
- * Converts internal field state to published field state
+ * Converts internal field state to published field state.
  */
 function publishFieldState<
   FormValues extends FormValuesShape = FormValuesShape,

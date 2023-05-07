@@ -31,6 +31,31 @@ const defaultParse = (value: any, _name: string) =>
 
 const defaultIsEqual = (a: any, b: any): boolean => a === b;
 
+type UseFieldHookConfigParam<
+  FieldValue,
+  FormValues extends FormValuesShape,
+  InputValue,
+  T extends HTMLElement,
+  RP extends FieldRenderProps<FieldValue, InputValue, T>,
+> = Omit<
+  UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>,
+  "children" | "component"
+> &
+  Partial<
+    Pick<
+      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>,
+      "children" | "component"
+    >
+  >;
+
+/**
+ * `useField()` returns `FieldRenderProps`. It will
+ * manage the rerendering of any component you use it in,
+ * i.e. the component will only rerender if the field
+ * state subscribed to via `useField()` changes.
+ *
+ * `useField()` is used internally inside `<Field/>`.
+ */
 function useField<
   FieldValue = any,
   InputValue = FieldValue,
@@ -42,9 +67,18 @@ function useField<
     T
   >,
 >(
+  /** The name of the field. */
   name: string,
-  config: Partial<
-    UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>
+  /**
+   * An object that looks just like `FieldProps`, except
+   * without the name.
+   */
+  config: UseFieldHookConfigParam<
+    FieldValue,
+    FormValues,
+    InputValue,
+    T,
+    RP
   > = {},
 ): FieldRenderProps<FieldValue, InputValue, T> {
   const {

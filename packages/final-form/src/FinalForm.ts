@@ -177,6 +177,11 @@ function notify<T extends Object>(
   });
 }
 
+/**
+ * Creates a form instance.
+ *
+ * It takes a `Config` and returns a `FormApi`.
+ */
 function createForm<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,

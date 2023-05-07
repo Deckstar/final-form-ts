@@ -1,3 +1,8 @@
+/**
+ * An _à la carte_ list of all the possible things you
+ * can subscribe to for a field. Useful for subscribing
+ * to everything.
+ */
 const fieldSubscriptionItems = [
   "active",
   "data",
