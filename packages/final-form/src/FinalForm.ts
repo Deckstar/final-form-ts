@@ -340,11 +340,12 @@ function createForm<
     : {};
 
   const runRecordLevelValidation = (
-    setErrors: (errors: object | undefined, async: boolean) => void,
+    setErrors: (errors: object | undefined, isAsync: boolean) => void,
   ): Promise<any>[] => {
     const promises = [];
     if (validate) {
       const errorsOrPromise = validate({ ...state.formState.values }); // clone to avoid writing
+
       if (isPromise(errorsOrPromise)) {
         promises.push(
           errorsOrPromise.then((errors) => setErrors(errors, true)),
@@ -488,6 +489,7 @@ function createForm<
           ? asyncRecordLevelErrors // new async errors
           : formState.asyncErrors), // previous async errors
       };
+
       const forEachError = (fn: (name: string, error: any) => void) => {
         fieldKeys.forEach((name) => {
           if (fields[name]) {
@@ -510,9 +512,11 @@ function createForm<
           }
         });
       };
+
       forEachError((name, error) => {
         merged = setIn(merged, name, error) || {};
       });
+
       forEachError((name, error) => {
         if (error && error[ARRAY_ERROR]) {
           const existing = getIn(merged, name);
@@ -521,6 +525,7 @@ function createForm<
           merged = setIn(merged, name, copy);
         }
       });
+
       if (!shallowEqual(formState.errors, merged)) {
         formState.errors = merged;
       }

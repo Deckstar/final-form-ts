@@ -456,12 +456,14 @@ export interface FieldConfig<
    * An array of field names to validate when this field
    * changes.
    *
-   * If `undefined`, _every_ field will be validated when
-   * this one changes; if `[]`, _only this field_ will
-   * have its field-level validation function called when
-   * it changes; if other field names are specified,
-   * those fields _and this one_ will be validated when
-   * this field changes.
+   * - If `undefined`, _every_ field will be validated
+   * when this one changes;
+   * - if `[]`, _only this field_ will have its
+   * field-level validation function called when it
+   * changes;
+   * - if other field names are specified, those fields
+   * _and this one_ will be validated when this field
+   * changes.
    */
   validateFields?: string[];
 }
@@ -492,26 +494,32 @@ export interface RegisterField<
 export interface InternalFieldState<
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
-> {
-  active: boolean;
-  blur: () => void;
-  change: (value: any) => void;
-  data: FormValues;
-  focus: () => void;
-  isEqual: IsEqual;
+> extends Partial<Pick<FieldState<FieldValue, FormValues>, "length">>,
+    Required<
+      Pick<
+        FieldState<FieldValue, FormValues>,
+        | "active"
+        | "blur"
+        | "change"
+        | "data"
+        | "focus"
+        | "modified"
+        | "modifiedSinceLastSubmit"
+        | "name"
+        | "touched"
+        | "valid"
+        | "validating"
+        | "visited"
+      >
+    >,
+    Partial<Pick<FieldConfig<FieldValue, FormValues>, "validateFields">>,
+    Required<Pick<FieldConfig<FieldValue, FormValues>, "isEqual">> {
+  /** The previous state of the field. */
   lastFieldState?: FieldState<FieldValue, FormValues>;
-  length?: any;
-  modified: boolean;
-  modifiedSinceLastSubmit: boolean;
-  name: string;
-  touched: boolean;
-  validateFields?: string[];
+  /** Functions for validating this field. */
   validators: {
     [index: number]: GetFieldValidator<FieldValue, FormValues>;
   };
-  valid: boolean;
-  validating: boolean;
-  visited: boolean;
 }
 
 /**
@@ -522,26 +530,53 @@ export interface InternalFieldState<
 export interface InternalFormState<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> {
-  active?: string;
+> extends Partial<
+      Pick<
+        FormState<FormValues, InitialFormValues>,
+        | "active"
+        | "error"
+        | "initialValues"
+        | "invalid"
+        | "submitError"
+        | "submitErrors"
+      >
+    >,
+    Required<
+      Pick<
+        FormState<FormValues, InitialFormValues>,
+        | "dirtySinceLastSubmit"
+        | "errors"
+        | "pristine"
+        | "submitFailed"
+        | "submitSucceeded"
+        | "submitting"
+        | "valid"
+        | "values"
+      >
+    > {
+  /** Potential errors that are still being awaited. */
   asyncErrors: ValidationErrors;
-  dirtySinceLastSubmit: boolean;
+  /**
+   * Whether any fields have been modified since the
+   * last submit.
+   */
   modifiedSinceLastSubmit: boolean;
-  error?: any;
-  errors: ValidationErrors;
-  initialValues?: InitialFormValues;
-  invalid?: boolean;
+  /**
+   * The form values at the last time the form was
+   * submitted.
+   */
   lastSubmittedValues?: FormValues;
-  pristine: boolean;
+  /**
+   * Whether the form was reset while in the process
+   * of being submitted (i.e. while `submitting` was
+   * `true`).
+   */
   resetWhileSubmitting: boolean;
-  submitError?: any;
-  submitErrors?: SubmissionErrors;
-  submitFailed: boolean;
-  submitSucceeded: boolean;
-  submitting: boolean;
-  valid: boolean;
+  /**
+   * The total count of asynchronous validations that are
+   * currently being awaited.
+   */
   validating: number;
-  values: FormValues;
 }
 
 export type ConfigKey = keyof Config;
