@@ -340,7 +340,7 @@ function createForm<
     : {};
 
   const runRecordLevelValidation = (
-    setErrors: (errors: object | undefined, isAsync: boolean) => void,
+    setErrors: (errors: ValidationErrors, isAsync: boolean) => void,
   ): Promise<any>[] => {
     const promises = [];
     if (validate) {

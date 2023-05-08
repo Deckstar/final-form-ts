@@ -1,12 +1,13 @@
 import * as React from "react";
 
 import type { RenderableProps } from "./types";
+import { AnyObject } from "final-form";
 
 // shared logic between components that use either render prop,
 // children render function, or component prop
-export default function renderComponent<T>(
+function renderComponent<T>(
   props: RenderableProps<T> & T,
-  lazyProps: object,
+  lazyProps: AnyObject,
   name: string,
 ): React.ReactElement {
   const { render, children, component, ...rest } = props;
@@ -37,3 +38,5 @@ export default function renderComponent<T>(
   // @ts-ignore
   return children(Object.assign(lazyProps, rest));
 }
+
+export default renderComponent;
