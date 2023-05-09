@@ -145,6 +145,17 @@ export interface FormState<
    */
   pristine?: boolean;
   /**
+   * A top-level status object that you can use to
+   * represent form state that can't otherwise be
+   * expressed/stored with other methods.
+   *
+   * Some examples where this can be useful:
+   * - for tracking "step stages" in a multi-step wizard form;
+   * - for capturing and passing through API responses to your
+   * inner component;
+   */
+  status?: any; // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Status` type. Probably easier for everyone involved to just cast it with `as Type`.
+  /**
    * The whole-form submission error returned by
    * `onSubmit` under the `FORM_ERROR` key.
    */
@@ -547,6 +558,7 @@ export interface InternalFormState<
         | "dirtySinceLastSubmit"
         | "errors"
         | "pristine"
+        | "status"
         | "submitFailed"
         | "submitSucceeded"
         | "submitting"
@@ -740,6 +752,17 @@ export interface FormApi<
     value: Config<FormValues, InitialFormValues>[K],
   ) => void;
   /**
+   * Set a top-level status to anything you want imperatively.
+   *
+   * Useful for controlling arbitrary top-level state related to
+   * your form. For example:
+   * - you can use it to track "step stages" in a multi-step
+   * wizard form.
+   * - you can use it to pass API responses back into your
+   * component in `handleSubmit`.
+   */
+  setStatus: <Status extends any = undefined>(newStatus: Status) => void;
+  /**
    * Submits the form if there are currently no
    * validation errors. It may return `undefined` or a
    * `Promise` depending on the nature of the `onSubmit`
@@ -857,7 +880,7 @@ export type FieldMutators<
 export interface Tools<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> {
+> extends Pick<FormApi, "resetFieldState" | "setStatus"> {
   /**
    * A utility function to modify a single field value
    * in form state. `mutate()` takes the old value and
@@ -888,8 +911,10 @@ export interface Tools<
   /**
    * A utility function to reset all of a field's flags
    * (e.g. `touched`, `visited`, etc.) to their initial
-   * state. This can be useful for inserting a new field
-   * that has the same name as an existing field.
+   * state.
+   *
+   * This can be useful for inserting a new field that
+   * has the same name as an existing field.
    */
   resetFieldState: (name: string) => void;
   /**
@@ -956,6 +981,11 @@ export interface Config<
    * where only form values displayed need be submitted.
    */
   destroyOnUnregister?: boolean;
+  /**
+   * An arbitrary value for the initial status of the form. If
+   * the form is reset, this value will be restored.
+   */
+  initialStatus?: any; // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Status` type.
   /**
    * The initial values of your form. These will also be
    * used to compare against the current values to

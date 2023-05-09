@@ -3,27 +3,30 @@ import { FormState } from "../src/types";
 
 describe("filterFormState", () => {
   const state = {
-    active: "foo",
-    dirty: false,
-    error: "some error",
-    invalid: false,
-    initialValues: { dog: "cat" },
-    pristine: true,
-    submitting: false,
-    submitFailed: false,
-    submitSucceeded: false,
-    submitError: "some submit error",
-    touched: { foo: true, bar: false },
-    valid: true,
-    validating: false,
-    values: { foo: "bar" },
-    visited: { foo: true, bar: false },
-  };
+    active: "foo" as string | undefined,
+    dirty: false as boolean,
+    error: "some error" as string,
+    invalid: false as boolean,
+    initialValues: { dog: "cat" } as { dog: string },
+    pristine: true as boolean,
+    status: "Step 1" as "Step 1" | "Step 2",
+    submitting: false as boolean,
+    submitFailed: false as boolean,
+    submitSucceeded: false as boolean,
+    submitError: "some submit error" as string | undefined,
+    touched: { foo: true as boolean, bar: false as boolean },
+    valid: true as boolean,
+    validating: false as boolean,
+    values: { foo: "bar" as string },
+    visited: { foo: true as boolean, bar: false as boolean },
+  } as const satisfies FormState<
+    { dog: string } | { cat: string } | { foo: string }
+  >;
 
-  const testValue = (
-    key: keyof FormState,
-    formState: FormState,
-    newValue: any,
+  const testValue = <Key extends keyof FormState, State extends FormState>(
+    key: Key,
+    formState: State,
+    newValue: State[Key],
   ) => {
     it(`should not notify when ${key} doesn't change`, () => {
       const result = filterFormState(formState, formState, { [key]: true });
@@ -57,7 +60,7 @@ describe("filterFormState", () => {
   };
 
   describe("filterFormState.active", () => {
-    testValue("active", state, !state.active);
+    testValue("active", state, undefined);
   });
 
   describe("filterFormState.dirty", () => {
@@ -80,6 +83,10 @@ describe("filterFormState", () => {
     testValue("pristine", state, !state.pristine);
   });
 
+  describe("filterFormState.status", () => {
+    testValue("status", state, "Step 2");
+  });
+
   describe("filterFormState.submitting", () => {
     testValue("submitting", state, !state.submitting);
   });
@@ -93,7 +100,7 @@ describe("filterFormState", () => {
   });
 
   describe("filterFormState.submitError", () => {
-    testValue("submitError", state, !state.submitError);
+    testValue("submitError", state, undefined);
   });
 
   describe("filterFormState.touched", () => {

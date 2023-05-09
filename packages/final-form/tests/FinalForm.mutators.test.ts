@@ -1,4 +1,4 @@
-import type { Mutator } from "../src";
+import type { Mutator, MutatorArguments } from "../src";
 import { createForm } from "../src";
 import { onSubmitMock } from "./testUtils";
 
@@ -81,9 +81,11 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should allow renameField to rename a registered field", () => {
-    const rename = jest.fn(([from, to], state, { renameField }) => {
-      renameField(state, from, to);
-    });
+    const rename = jest.fn<void, MutatorArguments<[from: string, to: string]>>(
+      ([from, to], state, { renameField }) => {
+        renameField(state, from, to);
+      },
+    );
 
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -126,9 +128,11 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should do nothing when renameField called with nonexistent field", () => {
-    const rename = jest.fn(([from, to], state, { renameField }) => {
-      renameField(state, from, to);
-    });
+    const rename = jest.fn<void, MutatorArguments<[from: string, to: string]>>(
+      ([from, to], state, { renameField }) => {
+        renameField(state, from, to);
+      },
+    );
 
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -152,9 +156,11 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should not throw when renamed field is unregistered", () => {
-    const rename = jest.fn(([from, to], state, { renameField }) => {
-      renameField(state, from, to);
-    });
+    const rename = jest.fn<void, MutatorArguments<[from: string, to: string]>>(
+      ([from, to], state, { renameField }) => {
+        renameField(state, from, to);
+      },
+    );
 
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -164,5 +170,36 @@ describe("FinalForm.mutators", () => {
     const unregisterFoo = form.registerField("foo", () => {});
     form.mutators.rename("foo", "renamedFoo");
     expect(() => unregisterFoo()).not.toThrowError();
+  });
+
+  it("should allow mutators to change status", () => {
+    const goToStep2 = jest.fn<void, MutatorArguments>(
+      ([], state, { setStatus }) => {
+        setStatus("Step 2");
+      },
+    );
+
+    const form = createForm({
+      initialStatus: "Step 1" as "Step 1" | "Step 2",
+      onSubmit: onSubmitMock,
+      mutators: { goToStep2 },
+    });
+
+    type Subscriber = Parameters<typeof form.subscribe>[0];
+
+    const formListener = jest.fn<
+      ReturnType<Subscriber>,
+      Parameters<Subscriber>
+    >();
+    form.subscribe(formListener, { status: true });
+
+    expect(formListener).toHaveBeenCalledTimes(1);
+    expect(formListener.mock.calls[0][0].status).toEqual("Step 1");
+
+    // @ts-expect-error
+    form.mutators.goToStep2();
+
+    expect(formListener).toHaveBeenCalledTimes(2);
+    expect(formListener.mock.calls[1][0].status).toEqual("Step 2");
   });
 });

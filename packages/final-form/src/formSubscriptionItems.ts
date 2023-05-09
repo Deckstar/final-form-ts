@@ -18,6 +18,7 @@ const formSubscriptionItems = [
   "modified",
   "modifiedSinceLastSubmit",
   "pristine",
+  "status",
   "submitting",
   "submitError",
   "submitErrors",

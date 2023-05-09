@@ -93,6 +93,7 @@ function convertToExternalFormState<
     errors,
     initialValues,
     pristine,
+    status,
     submitting,
     submitFailed,
     submitSucceeded,
@@ -118,6 +119,7 @@ function convertToExternalFormState<
     invalid: !valid,
     initialValues,
     pristine,
+    status,
     submitting,
     submitFailed,
     submitSucceeded,
@@ -197,6 +199,7 @@ function createForm<
     destroyOnUnregister,
     keepDirtyOnReinitialize,
     initialValues,
+    initialStatus,
     mutators: _mutatorsProp,
     onSubmit,
     validate,
@@ -223,6 +226,7 @@ function createForm<
       initialValues: initialValues && { ...initialValues },
       invalid: false,
       pristine: true,
+      status: initialStatus,
       submitting: false,
       submitFailed: false,
       submitSucceeded: false,
@@ -303,19 +307,20 @@ function createForm<
     (key: keyof NonNullable<typeof mutatorsProp>) =>
     (...args: any[]) => {
       if (mutatorsProp) {
-        // ^^ causes branch coverage warning, but needed to appease the Flow gods
         const mutableState: MutableState<FormValues, InitialFormValues> = {
           formState: state.formState,
           fields: state.fields,
           fieldSubscribers: state.fieldSubscribers,
           lastFormState: state.lastFormState,
         };
+
         const returnValue = mutatorsProp[key](args, mutableState, {
           changeValue,
           getIn,
           renameField,
           resetFieldState: api.resetFieldState,
           setIn,
+          setStatus: api.setStatus,
           shallowEqual,
         });
 
@@ -737,12 +742,14 @@ function createForm<
 
   let notifying: boolean = false;
   let scheduleNotification: boolean = false;
+
   const notifyFormListeners = () => {
     if (notifying) {
       scheduleNotification = true;
     } else {
       notifying = true;
       callDebug();
+
       if (
         !inBatch &&
         !(validationPaused && preventNotificationWhileValidationPaused)
@@ -759,7 +766,9 @@ function createForm<
           );
         }
       }
+
       notifying = false;
+
       if (scheduleNotification) {
         scheduleNotification = false;
         notifyFormListeners();
@@ -911,6 +920,9 @@ function createForm<
             return result;
           }, {} as Partial<FormValues>)
         : {};
+
+      // update status
+      formState.status = initialStatus;
 
       // update initialValues and values
       formState.initialValues = values;
@@ -1210,6 +1222,12 @@ function createForm<
         default:
           throw new Error("Unrecognised option " + name);
       }
+    },
+
+    setStatus: (newStatus: typeof state.formState.status) => {
+      const { formState } = state;
+
+      formState.status = newStatus;
     },
 
     submit: () => {
