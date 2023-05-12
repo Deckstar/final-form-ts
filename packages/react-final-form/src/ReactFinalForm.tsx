@@ -20,7 +20,7 @@ import type { FormRenderProps } from "./types";
 import useConstant from "./useConstant";
 import useWhenValueChanges from "./useWhenValueChanges";
 
-type FullFormSubscription = Record<FormSubscriptionItem, true>;
+export type FullFormSubscription = Record<FormSubscriptionItem, true>;
 
 export const all = formSubscriptionItems.reduce((result, key) => {
   result[key] = true;

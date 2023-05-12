@@ -7,19 +7,20 @@ import type {
 import * as React from "react";
 
 import { addLazyFormState } from "./getters";
-import { all } from "./ReactFinalForm";
-import type { UseFormStateParams } from "./types";
+import { all, FullFormSubscription } from "./ReactFinalForm";
+import type { KeyOfTypeTest, UseFormStateParams } from "./types";
 import useForm from "./useForm";
 
 export type FormStateHookResult<
   FormValues extends FormValuesShape,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-  Subscription extends FormSubscription = Required<FormSubscription>,
+  Subscription extends FormSubscription = FullFormSubscription,
 > = FormState<FormValues, InitialFormValues> &
   Required<
     Pick<
       FormState<FormValues, InitialFormValues>,
-      keyof FormState<FormValues, InitialFormValues> & keyof Subscription
+      keyof FormState<FormValues, InitialFormValues> &
+        KeyOfTypeTest<Subscription, true>
     >
   >;
 
@@ -34,10 +35,10 @@ export type FormStateHookResult<
 function useFormState<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-  Subscription extends FormSubscription = Required<FormSubscription>,
+  Subscription extends FormSubscription = FullFormSubscription,
 >({
   onChange,
-  subscription = all as Required<Subscription>,
+  subscription = all as Subscription,
 }: UseFormStateParams<
   FormValues,
   InitialFormValues,

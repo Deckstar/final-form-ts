@@ -271,7 +271,7 @@ export interface FieldState<
    * The initial value of the field. `undefined` if it
    * was never initialized.
    */
-  initial?: FieldValue;
+  initial?: FieldValue | undefined;
   /**
    * `true` if the field has a validation error or a
    * submission error. `false` otherwise.

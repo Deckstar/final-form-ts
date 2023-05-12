@@ -2,17 +2,26 @@ import type {
   BoundMutators,
   FieldMutators,
   FieldState,
+  FieldSubscription,
   FormValuesShape,
 } from "final-form";
 import { Mutators } from "final-form-arrays";
-import { RenderableProps, UseFieldConfig } from "react-final-form";
+import {
+  FieldMetaState,
+  FieldRenderProps,
+  FullFieldSubscription,
+  RenderableProps,
+  UseFieldConfig,
+} from "react-final-form";
 
 export type { RenderableProps };
 
 export type FieldArrayRenderProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
-  Functions extends BoundMutators<FormValues> = Mutators<FormValues>,
+  Functions extends BoundMutators<FormValues> &
+    Mutators<FormValues> = Mutators<FormValues>,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 > = {
   fields: {
     forEach: (iterator: (name: string, index: number) => void) => void;
@@ -21,20 +30,40 @@ export type FieldArrayRenderProps<
     name: string;
     value: FieldValue[];
   } & FieldMutators<FormValues, Functions>;
-  meta: Partial<FieldState<FieldValue[]>>;
+  meta: Omit<FieldMetaState<FieldValue[], Subscription>, "length">;
 };
 
 export interface UseFieldArrayConfig<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
+  RP extends FieldRenderProps<FieldValue[], FieldValue[], T> = FieldRenderProps<
+    FieldValue[],
+    FieldValue[],
+    T
+  >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 > extends Omit<
-      UseFieldConfig<FieldValue[], FormValues, FieldValue[], T>,
+      UseFieldConfig<
+        FieldValue[],
+        FormValues,
+        FieldValue[],
+        T,
+        RP,
+        Subscription
+      >,
       "children" | "component"
     >,
     Partial<
       Pick<
-        UseFieldConfig<FieldValue[], FormValues, FieldValue[], T>,
+        UseFieldConfig<
+          FieldValue[],
+          FormValues,
+          FieldValue[],
+          T,
+          RP,
+          Subscription
+        >,
         "children" | "component"
       >
     > {
@@ -45,11 +74,21 @@ export interface FieldArrayProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
+  Functions extends BoundMutators<FormValues> &
+    Mutators<FormValues> = Mutators<FormValues>,
+  RP extends FieldRenderProps<FieldValue[], FieldValue[], T> = FieldRenderProps<
+    FieldValue[],
+    FieldValue[],
+    T
+  >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 > extends Omit<
-      UseFieldArrayConfig<FieldValue, FormValues, T>,
+      UseFieldArrayConfig<FieldValue, FormValues, T, RP, Subscription>,
       keyof RenderableProps
     >,
-    RenderableProps<FieldArrayRenderProps<FieldValue, FormValues>> {
+    RenderableProps<
+      FieldArrayRenderProps<FieldValue, FormValues, Functions, Subscription>
+    > {
   name: string;
   [otherProp: string]: any;
 }

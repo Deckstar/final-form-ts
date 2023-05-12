@@ -1,6 +1,10 @@
 import FormSpy from "./FormSpy";
 import Form from "./ReactFinalForm";
 
+export type { FullFormSubscription } from "./ReactFinalForm";
+export { all as fullFormSubscription } from "./ReactFinalForm";
+export type { FullFieldSubscription } from "./useField";
+export { all as fullFieldSubscription } from "./useField";
 export { default as Field } from "./Field";
 export { default as FormSpy } from "./FormSpy";
 export { default as Form } from "./ReactFinalForm";

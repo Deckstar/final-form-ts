@@ -1,10 +1,11 @@
 import type {
+  FieldConfig,
   FieldState,
   FieldSubscription,
   FormApi,
   FormValuesShape,
 } from "final-form";
-import { fieldSubscriptionItems } from "final-form";
+import { fieldSubscriptionItems, FieldSubscriptionItem } from "final-form";
 import * as React from "react";
 
 import { addLazyFieldMetaState } from "./getters";
@@ -12,6 +13,7 @@ import getValue from "./getValue";
 import isReactNative from "./isReactNative";
 import type {
   FieldInputProps,
+  FieldMetaState,
   FieldRenderProps,
   UseFieldConfig,
 } from "./types";
@@ -19,10 +21,15 @@ import useConstantCallback from "./useConstantCallback";
 import useForm from "./useForm";
 import useLatest from "./useLatest";
 
-const all: FieldSubscription = fieldSubscriptionItems.reduce((result, key) => {
-  result[key] = true;
-  return result;
-}, {} as FieldSubscription);
+export type FullFieldSubscription = Record<FieldSubscriptionItem, true>;
+
+export const all: FullFieldSubscription = fieldSubscriptionItems.reduce(
+  (result, key) => {
+    result[key] = true;
+    return result;
+  },
+  {} as FullFieldSubscription,
+);
 
 const defaultFormat = (value: any, _name: string) =>
   value === undefined ? "" : value;
@@ -37,13 +44,14 @@ type UseFieldHookConfigParam<
   InputValue,
   T extends HTMLElement,
   RP extends FieldRenderProps<FieldValue, InputValue, T>,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 > = Omit<
-  UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>,
+  UseFieldConfig<FieldValue, FormValues, InputValue, T, RP, Subscription>,
   "children" | "component"
 > &
   Partial<
     Pick<
-      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>,
+      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP, Subscription>,
       "children" | "component"
     >
   >;
@@ -66,6 +74,7 @@ function useField<
     InputValue,
     T
   >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 >(
   /** The name of the field. */
   name: string,
@@ -78,20 +87,23 @@ function useField<
     FormValues,
     InputValue,
     T,
-    RP
+    RP,
+    Subscription
   > = {},
-): FieldRenderProps<FieldValue, InputValue, T> {
+): FieldRenderProps<FieldValue, InputValue, T, Subscription> {
+  type ConfigParam = typeof config;
+
   const {
     afterSubmit,
     allowNull,
     component,
     data,
     defaultValue,
-    format = defaultFormat,
+    format = defaultFormat as NonNullable<ConfigParam["format"]>,
     formatOnBlur,
     initialValue,
     multiple,
-    parse = defaultParse,
+    parse = defaultParse as NonNullable<ConfigParam["parse"]>,
     subscription = all,
     type,
     validateFields,
@@ -102,9 +114,13 @@ function useField<
 
   const configRef = useLatest(config);
 
+  /**
+   * Handles registering the field in the form
+   * subscriptions.
+   */
   const register = (
     callback: (fieldState: FieldState<FieldValue, FormValues>) => void,
-    silent: boolean,
+    silent: FieldConfig<FieldValue, FormValues>["silent"],
   ) =>
     // avoid using `state` const in any closures created inside `register`
     // because they would refer `state` from current execution context
@@ -188,7 +204,7 @@ function useField<
     ],
   );
 
-  const meta = {};
+  const meta = {} as FieldMetaState<FieldValue, Subscription>;
 
   addLazyFieldMetaState(meta, state);
 
@@ -249,8 +265,11 @@ function useField<
          * before calling `onBlur()`, but before the field has had a chance to receive
          * the value update from Final Form.
          */
-        const fieldState: any = form.getFieldState(state.name);
-        state.change(format(fieldState.value, state.name));
+        const fieldState = form.getFieldState(state.name);
+        state.change(
+          // @ts-expect-error
+          format(fieldState.value, state.name),
+        );
       }
     }),
     onChange: useConstantCallback((event: React.ChangeEvent<T> | any) => {
@@ -295,10 +314,8 @@ function useField<
     input.type = type;
   }
 
-  const renderProps: FieldRenderProps<FieldValue, InputValue, T> = {
-    input,
-    meta,
-  }; // assign to force Flow check
+  const renderProps: FieldRenderProps<FieldValue, InputValue, T, Subscription> =
+    { input, meta }; // assign to force TS check
   return renderProps;
 }
 

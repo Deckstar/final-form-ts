@@ -1,9 +1,9 @@
-import { FormValuesShape } from "final-form";
+import { FieldSubscription, FormValuesShape } from "final-form";
 import * as React from "react";
 
 import renderComponent from "./renderComponent";
 import type { FieldProps as Props, FieldRenderProps } from "./types";
-import useField from "./useField";
+import useField, { FullFieldSubscription } from "./useField";
 
 function FieldComponent<
   FieldValue = any,
@@ -15,8 +15,9 @@ function FieldComponent<
     InputValue,
     T
   >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 >(
-  props: Props<FieldValue, InputValue, FormValues, T, RP>,
+  props: Props<FieldValue, InputValue, FormValues, T, RP, Subscription>,
   ref: React.ForwardedRef<React.ReactNode>,
 ): React.ReactElement {
   const {
@@ -42,12 +43,19 @@ function FieldComponent<
     ...rest
   } = props;
 
-  const field: FieldRenderProps<FieldValue, InputValue, T> = useField(name, {
+  const field = useField<
+    FieldValue,
+    InputValue,
+    FormValues,
+    T,
+    RP,
+    Subscription
+  >(name, {
     afterSubmit,
     allowNull,
     beforeSubmit,
-    children,
-    component,
+    children: children as RP["children"],
+    component: component as RP["component"],
     data,
     defaultValue,
     format,
@@ -210,8 +218,9 @@ const Field = React.forwardRef(FieldComponent) as <
     InputValue,
     T
   >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 >(
-  props: Props<FieldValue, InputValue, FormValues, T, RP> & {
+  props: Props<FieldValue, InputValue, FormValues, T, RP, Subscription> & {
     ref?: React.Ref<React.ReactNode>;
   },
 ) => React.ReactElement;

@@ -14,6 +14,7 @@ import type {
 import * as React from "react";
 
 import { FormStateHookResult } from "./useFormState";
+import { FullFieldSubscription } from "./useField";
 
 type SupportedInputs = "input" | "select" | "textarea";
 
@@ -25,7 +26,7 @@ export interface ReactContext<
 }
 
 export interface FieldInputProps<
-  FieldValue = any,
+  InputValue = any,
   T extends HTMLElement = HTMLInputElement,
 > extends AnyObject {
   /** The name of the field. */
@@ -62,18 +63,37 @@ export interface FieldInputProps<
    * May not be present if you have not subscribed to
    * `value`.
    */
-  value: FieldValue;
+  value: InputValue;
   checked?: boolean;
   multiple?: boolean;
 }
 
-export type FieldMetaState<FieldValue> = Pick<
-  FieldState<FieldValue>,
-  Exclude<
-    keyof FieldState<FieldValue>,
-    "blur" | "change" | "focus" | "name" | "value"
-  >
+type FieldMetaStateKeys = Exclude<
+  keyof FieldState,
+  "blur" | "change" | "focus" | "name" | "value"
 >;
+
+/** Picks keys from a shape type whose values match some type. */
+export type KeyOfTypeTest<Shape, Type> = NonNullable<
+  {
+    [Key in keyof Shape]: [Type] extends [Shape[Key]]
+      ? Shape[Key] extends Type
+        ? Key
+        : never
+      : never;
+  }[keyof Shape]
+>;
+
+export type FieldMetaState<
+  FieldValue = any,
+  Subscription extends FieldSubscription = FullFieldSubscription,
+> = Pick<FieldState<FieldValue>, FieldMetaStateKeys> &
+  Required<
+    Pick<
+      FieldState<FieldValue>,
+      keyof FieldState<FieldValue> & KeyOfTypeTest<Subscription, true>
+    >
+  >;
 
 /**
  * These are the props that `<Field/>` provides to your
@@ -91,6 +111,7 @@ export interface FieldRenderProps<
   FieldValue = any,
   InputValue = FieldValue,
   T extends HTMLElement = HTMLInputElement,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 > {
   /**
    * The values and event handlers intended to be given
@@ -107,7 +128,7 @@ export interface FieldRenderProps<
    * dependent on you having subscribed to them** with
    * the `subscription` prop.
    */
-  meta: FieldMetaState<FieldValue>;
+  meta: FieldMetaState<FieldValue, Subscription>;
   [otherProp: string]: any;
 }
 
@@ -304,6 +325,7 @@ export interface UseFieldConfig<
     InputValue,
     T
   >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 > extends Pick<RP, "children" | "component">,
     Pick<
       FieldConfig<FieldValue, FormValues>,
@@ -384,7 +406,7 @@ export interface UseFieldConfig<
    * Related:
    * - `FieldState`
    */
-  subscription?: FieldSubscription;
+  subscription?: Subscription;
   /**
    * If set to `"checkbox"` or `"radio"`, React Final
    * Form will know to manage your values as a checkbox
@@ -463,8 +485,9 @@ export interface FieldProps<
     InputValue,
     T
   >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 > extends Omit<
-      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP>,
+      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP, Subscription>,
       "children" | "component"
     >,
     RenderableProps<RP> {

@@ -4,40 +4,43 @@ import type {
   FieldSubscription,
   FieldValidator,
 } from "final-form";
-import {
-  ARRAY_ERROR,
-  fieldSubscriptionItems,
-  FormValuesShape,
-} from "final-form";
+import { ARRAY_ERROR, FormValuesShape } from "final-form";
 import type { DefaultType, Mutators } from "final-form-arrays";
 import { useMemo } from "react";
-import { useField, useForm } from "react-final-form";
+import {
+  FieldRenderProps,
+  FullFieldSubscription,
+  fullFieldSubscription as all,
+  useField,
+  useForm,
+} from "react-final-form";
 
 import defaultIsEqual from "./defaultIsEqual";
 import type { FieldArrayRenderProps, UseFieldArrayConfig } from "./types";
 import useConstant from "./useConstant";
 
-const all: FieldSubscription = fieldSubscriptionItems.reduce((result, key) => {
-  result[key] = true;
-
-  return result;
-}, {} as FieldSubscription);
-
 const useFieldArray = <
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
   T extends HTMLElement = HTMLInputElement,
-  Functions extends BoundMutators<FormValues> = Mutators<FormValues>,
+  Functions extends BoundMutators<FormValues> &
+    Mutators<FormValues> = Mutators<FormValues>,
+  RP extends FieldRenderProps<FieldValue[], FieldValue[], T> = FieldRenderProps<
+    FieldValue[],
+    FieldValue[],
+    T
+  >,
+  Subscription extends FieldSubscription = FullFieldSubscription,
 >(
   name: string,
   {
-    subscription = all,
+    subscription = all as Subscription,
     defaultValue,
     initialValue,
     isEqual = defaultIsEqual,
     validate: validateProp,
-  }: UseFieldArrayConfig<FieldValue, FormValues, T> = {},
-): FieldArrayRenderProps<FieldValue, FormValues, Functions> => {
+  }: UseFieldArrayConfig<FieldValue, FormValues, T, RP, Subscription> = {},
+): FieldArrayRenderProps<FieldValue, FormValues, Functions, Subscription> => {
   const form = useForm("useFieldArray");
 
   type BoundArrayMutatorsObj = typeof form.mutators & DefaultType;
@@ -88,14 +91,17 @@ const useFieldArray = <
     meta: { length, ...meta },
     input,
     ...fieldState
-  } = useField<FieldValue[], FieldValue[], FormValues, T>(name, {
-    subscription: { ...subscription, length: true },
-    defaultValue,
-    initialValue,
-    isEqual,
-    validate,
-    format: (v) => v,
-  });
+  } = useField<FieldValue[], FieldValue[], FormValues, T, RP, Subscription>(
+    name,
+    {
+      subscription: { ...subscription, length: true },
+      defaultValue,
+      initialValue,
+      isEqual,
+      validate,
+      format: (v) => v,
+    },
+  );
 
   const forEach = (iterator: (name: string, index: number) => void): void => {
     const len = length || 0;
@@ -125,7 +131,12 @@ const useFieldArray = <
       ...mutators,
       ...fieldState,
       value: input.value,
-    } as FieldArrayRenderProps<FieldValue, FormValues, Functions>["fields"],
+    } as FieldArrayRenderProps<
+      FieldValue,
+      FormValues,
+      Functions,
+      Subscription
+    >["fields"],
     meta,
   };
 };
