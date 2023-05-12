@@ -110,8 +110,8 @@ export type FieldMetaState<
 export interface FieldRenderProps<
   FieldValue = any,
   InputValue = FieldValue,
-  T extends HTMLElement = HTMLInputElement,
   Subscription extends FieldSubscription = FullFieldSubscription,
+  T extends HTMLElement = HTMLInputElement,
 > {
   /**
    * The values and event handlers intended to be given
@@ -319,13 +319,14 @@ export interface UseFieldConfig<
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
   InputValue = any,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+  RP extends FieldRenderProps<
     FieldValue,
     InputValue,
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue, InputValue, Subscription, T>,
 > extends Pick<RP, "children" | "component">,
     Pick<
       FieldConfig<FieldValue, FormValues>,
@@ -479,15 +480,16 @@ export interface FieldProps<
   FieldValue = any,
   InputValue = FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+  RP extends FieldRenderProps<
     FieldValue,
     InputValue,
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue, InputValue, Subscription, T>,
 > extends Omit<
-      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP, Subscription>,
+      UseFieldConfig<FieldValue, FormValues, InputValue, Subscription, T, RP>,
       "children" | "component"
     >,
     RenderableProps<RP> {

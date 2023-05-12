@@ -36,21 +36,22 @@ export type FieldArrayRenderProps<
 export interface UseFieldArrayConfig<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
-  T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<FieldValue[], FieldValue[], T> = FieldRenderProps<
-    FieldValue[],
-    FieldValue[],
-    T
-  >,
   Subscription extends FieldSubscription = FullFieldSubscription,
+  T extends HTMLElement = HTMLInputElement,
+  RP extends FieldRenderProps<
+    FieldValue[],
+    FieldValue[],
+    Subscription,
+    T
+  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 > extends Omit<
       UseFieldConfig<
         FieldValue[],
         FormValues,
         FieldValue[],
+        Subscription,
         T,
-        RP,
-        Subscription
+        RP
       >,
       "children" | "component"
     >,
@@ -60,9 +61,9 @@ export interface UseFieldArrayConfig<
           FieldValue[],
           FormValues,
           FieldValue[],
+          Subscription,
           T,
-          RP,
-          Subscription
+          RP
         >,
         "children" | "component"
       >
@@ -73,17 +74,18 @@ export interface UseFieldArrayConfig<
 export interface FieldArrayProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
-  T extends HTMLElement = HTMLInputElement,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   Functions extends BoundMutators<FormValues> &
     Mutators<FormValues> = Mutators<FormValues>,
-  RP extends FieldRenderProps<FieldValue[], FieldValue[], T> = FieldRenderProps<
+  T extends HTMLElement = HTMLInputElement,
+  RP extends FieldRenderProps<
     FieldValue[],
     FieldValue[],
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 > extends Omit<
-      UseFieldArrayConfig<FieldValue, FormValues, T, RP, Subscription>,
+      UseFieldArrayConfig<FieldValue, FormValues, Subscription, T, RP>,
       keyof RenderableProps
     >,
     RenderableProps<

@@ -9,15 +9,16 @@ function FieldComponent<
   FieldValue = any,
   InputValue = FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+  RP extends FieldRenderProps<
     FieldValue,
     InputValue,
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue, InputValue, Subscription, T>,
 >(
-  props: Props<FieldValue, InputValue, FormValues, T, RP, Subscription>,
+  props: Props<FieldValue, InputValue, FormValues, Subscription, T, RP>,
   ref: React.ForwardedRef<React.ReactNode>,
 ): React.ReactElement {
   const {
@@ -47,9 +48,9 @@ function FieldComponent<
     FieldValue,
     InputValue,
     FormValues,
+    Subscription,
     T,
-    RP,
-    Subscription
+    RP
   >(name, {
     afterSubmit,
     allowNull,
@@ -212,15 +213,16 @@ const Field = React.forwardRef(FieldComponent) as <
   FieldValue = any,
   InputValue = FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+  RP extends FieldRenderProps<
     FieldValue,
     InputValue,
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue, InputValue, Subscription, T>,
 >(
-  props: Props<FieldValue, InputValue, FormValues, T, RP, Subscription> & {
+  props: Props<FieldValue, InputValue, FormValues, Subscription, T, RP> & {
     ref?: React.Ref<React.ReactNode>;
   },
 ) => React.ReactElement;

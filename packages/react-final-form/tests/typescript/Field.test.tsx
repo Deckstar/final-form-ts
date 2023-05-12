@@ -6,14 +6,14 @@ const NumberInput: React.FC<{ value?: number }> = () => null;
 
 function FormText1({
   input,
-}: FieldRenderProps<string, string, HTMLInputElement>) {
+}: FieldRenderProps<string, string, any, HTMLInputElement>) {
   // renders OK because of the used generic
   return <input type="text" {...input} />;
 }
 
 function FormText2({
   input,
-}: FieldRenderProps<string, string, HTMLSelectElement>) {
+}: FieldRenderProps<string, string, any, HTMLSelectElement>) {
   return <select {...input} />;
 }
 

@@ -104,7 +104,7 @@ describe("Field", () => {
       <Form onSubmit={onSubmitMock}>
         {() => (
           <form>
-            <Field<any, any, any, HTMLSelectElement>
+            <Field<any, any, any, any, HTMLSelectElement>
               name="color"
               render={({ input, children }) => (
                 <select {...input} data-testid="color">
@@ -1035,7 +1035,13 @@ describe("Field", () => {
                 <input type="radio" {...input} data-testid="radio" />
               )}
             </Field>
-            <Field<any, any, any, HTMLSelectElement> name="selectMultipleInput">
+            <Field<
+              any,
+              any,
+              any,
+              any,
+              HTMLSelectElement
+            > name="selectMultipleInput">
               {({ input }) => (
                 <select multiple {...input} data-testid="select">
                   <option>{"Option"}</option>

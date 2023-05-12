@@ -22,15 +22,16 @@ import useConstant from "./useConstant";
 const useFieldArray = <
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
-  T extends HTMLElement = HTMLInputElement,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   Functions extends BoundMutators<FormValues> &
     Mutators<FormValues> = Mutators<FormValues>,
-  RP extends FieldRenderProps<FieldValue[], FieldValue[], T> = FieldRenderProps<
+  T extends HTMLElement = HTMLInputElement,
+  RP extends FieldRenderProps<
     FieldValue[],
     FieldValue[],
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 >(
   name: string,
   {
@@ -39,7 +40,7 @@ const useFieldArray = <
     initialValue,
     isEqual = defaultIsEqual,
     validate: validateProp,
-  }: UseFieldArrayConfig<FieldValue, FormValues, T, RP, Subscription> = {},
+  }: UseFieldArrayConfig<FieldValue, FormValues, Subscription, T, RP> = {},
 ): FieldArrayRenderProps<FieldValue, FormValues, Functions, Subscription> => {
   const form = useForm("useFieldArray");
 
@@ -91,7 +92,7 @@ const useFieldArray = <
     meta: { length, ...meta },
     input,
     ...fieldState
-  } = useField<FieldValue[], FieldValue[], FormValues, T, RP, Subscription>(
+  } = useField<FieldValue[], FieldValue[], FormValues, Subscription, T, RP>(
     name,
     {
       subscription: { ...subscription, length: true },

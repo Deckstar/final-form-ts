@@ -42,16 +42,16 @@ type UseFieldHookConfigParam<
   FieldValue,
   FormValues extends FormValuesShape,
   InputValue,
+  Subscription extends FieldSubscription,
   T extends HTMLElement,
-  RP extends FieldRenderProps<FieldValue, InputValue, T>,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  RP extends FieldRenderProps<FieldValue, InputValue, Subscription, T>,
 > = Omit<
-  UseFieldConfig<FieldValue, FormValues, InputValue, T, RP, Subscription>,
+  UseFieldConfig<FieldValue, FormValues, InputValue, Subscription, T, RP>,
   "children" | "component"
 > &
   Partial<
     Pick<
-      UseFieldConfig<FieldValue, FormValues, InputValue, T, RP, Subscription>,
+      UseFieldConfig<FieldValue, FormValues, InputValue, Subscription, T, RP>,
       "children" | "component"
     >
   >;
@@ -68,13 +68,14 @@ function useField<
   FieldValue = any,
   InputValue = FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<FieldValue, InputValue, T> = FieldRenderProps<
+  RP extends FieldRenderProps<
     FieldValue,
     InputValue,
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue, InputValue, Subscription, T>,
 >(
   /** The name of the field. */
   name: string,
@@ -86,11 +87,11 @@ function useField<
     FieldValue,
     FormValues,
     InputValue,
+    Subscription,
     T,
-    RP,
-    Subscription
+    RP
   > = {},
-): FieldRenderProps<FieldValue, InputValue, T, Subscription> {
+): FieldRenderProps<FieldValue, InputValue, Subscription, T> {
   type ConfigParam = typeof config;
 
   const {
@@ -314,7 +315,7 @@ function useField<
     input.type = type;
   }
 
-  const renderProps: FieldRenderProps<FieldValue, InputValue, T, Subscription> =
+  const renderProps: FieldRenderProps<FieldValue, InputValue, Subscription, T> =
     { input, meta }; // assign to force TS check
   return renderProps;
 }

@@ -9,15 +9,16 @@ import { FieldRenderProps, FullFieldSubscription } from "react-final-form/src";
 const FieldArray = <
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
-  T extends HTMLElement = HTMLInputElement,
+  Subscription extends FieldSubscription = FullFieldSubscription,
   Functions extends BoundMutators<FormValues> &
     Mutators<FormValues> = Mutators<FormValues>,
-  RP extends FieldRenderProps<FieldValue[], FieldValue[], T> = FieldRenderProps<
+  T extends HTMLElement = HTMLInputElement,
+  RP extends FieldRenderProps<
     FieldValue[],
     FieldValue[],
+    Subscription,
     T
-  >,
-  Subscription extends FieldSubscription = FullFieldSubscription,
+  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 >({
   name,
   subscription,
@@ -26,14 +27,14 @@ const FieldArray = <
   isEqual,
   validate,
   ...rest
-}: FieldArrayProps<FieldValue, FormValues, T, Functions, RP, Subscription>) => {
+}: FieldArrayProps<FieldValue, FormValues, Subscription, Functions, T, RP>) => {
   const { fields, meta } = useFieldArray<
     FieldValue,
     FormValues,
-    T,
+    Subscription,
     Functions,
-    RP,
-    Subscription
+    T,
+    RP
   >(name, {
     subscription,
     defaultValue,
