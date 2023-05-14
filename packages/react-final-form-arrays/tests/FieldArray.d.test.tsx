@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import arrayMutators, { DefaultType, Mutators } from "final-form-arrays";
+import arrayMutators, {
+  ArrayMutators,
+  BoundArrayMutators,
+} from "final-form-arrays";
 import * as React from "react";
 import { Field, Form } from "react-final-form";
 
@@ -29,7 +32,7 @@ const basic = () => (
       submitting,
       values,
     }) => {
-      const { push, pop } = mutators as Mutators<FormValues>;
+      const { push, pop } = mutators as BoundArrayMutators<FormValues>;
 
       return (
         <form onSubmit={handleSubmit}>

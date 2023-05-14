@@ -5,7 +5,7 @@ import type {
   FieldSubscription,
   FormValuesShape,
 } from "final-form";
-import { Mutators } from "final-form-arrays";
+import { BoundArrayMutators } from "final-form-arrays";
 import {
   FieldMetaState,
   FieldRenderProps,
@@ -19,8 +19,8 @@ export type { RenderableProps };
 export type FieldArrayRenderProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
-  Functions extends BoundMutators<FormValues> &
-    Mutators<FormValues> = Mutators<FormValues>,
+  Mutators extends BoundMutators<FormValues> &
+    BoundArrayMutators<FormValues> = BoundArrayMutators<FormValues>,
   Subscription extends FieldSubscription = FullFieldSubscription,
 > = {
   fields: {
@@ -29,7 +29,7 @@ export type FieldArrayRenderProps<
     map: (iterator: (name: string, index: number) => any) => any[];
     name: string;
     value: FieldValue[];
-  } & FieldMutators<FormValues, Functions>;
+  } & FieldMutators<FormValues, Mutators>;
   meta: Omit<FieldMetaState<FieldValue[], Subscription>, "length">;
 };
 
@@ -75,8 +75,8 @@ export interface FieldArrayProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FieldSubscription = FullFieldSubscription,
-  Functions extends BoundMutators<FormValues> &
-    Mutators<FormValues> = Mutators<FormValues>,
+  Mutators extends BoundMutators<FormValues> &
+    BoundArrayMutators<FormValues> = BoundArrayMutators<FormValues>,
   T extends HTMLElement = HTMLInputElement,
   RP extends FieldRenderProps<
     FieldValue[],
@@ -89,7 +89,7 @@ export interface FieldArrayProps<
       keyof RenderableProps
     >,
     RenderableProps<
-      FieldArrayRenderProps<FieldValue, FormValues, Functions, Subscription>
+      FieldArrayRenderProps<FieldValue, FormValues, Mutators, Subscription>
     > {
   name: string;
   [otherProp: string]: any;

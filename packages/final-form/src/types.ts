@@ -871,9 +871,9 @@ export type BoundMutators<FormValues extends FormValuesShape> = {
 
 export type FieldMutators<
   FormValues extends FormValuesShape = FormValuesShape,
-  Functions extends BoundMutators<FormValues> = BoundMutators<FormValues>,
+  Mutators extends BoundMutators<FormValues> = BoundMutators<FormValues>,
 > = {
-  [Func in keyof Functions]: DropFirstArg<Functions[Func]>;
+  [Func in keyof Mutators]: DropFirstArg<Mutators[Func]>;
 };
 
 /** Tools that will be passed into the functions used as `mutators`. */

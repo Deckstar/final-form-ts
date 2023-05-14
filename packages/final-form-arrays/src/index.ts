@@ -25,7 +25,7 @@ export type { Unshift, UnshiftMutator } from "./unshift";
 export type { Update, UpdateMutator } from "./update";
 
 /** The shape of the mutators as passed in to the final-form config. */
-export interface DefaultType<
+export interface ArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
@@ -54,7 +54,9 @@ export interface DefaultType<
 }
 
 /** The shape of the mutators once final-form has bound them to state. */
-export type Mutators<FormValues extends FormValuesShape = FormValuesShape> = {
+export type BoundArrayMutators<
+  FormValues extends FormValuesShape = FormValuesShape,
+> = {
   /** Inserts a value into the specified index of the field array. */
   insert: Insert<FormValues>;
   /** Concatenates an array at the end of the field array. */
@@ -91,6 +93,6 @@ const mutators = {
   swap,
   unshift,
   update,
-} as const satisfies DefaultType;
+} as const satisfies ArrayMutators;
 
 export default mutators;

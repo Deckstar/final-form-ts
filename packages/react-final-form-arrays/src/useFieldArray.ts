@@ -5,7 +5,7 @@ import type {
   FieldValidator,
 } from "final-form";
 import { ARRAY_ERROR, FormValuesShape } from "final-form";
-import type { DefaultType, Mutators } from "final-form-arrays";
+import type { BoundArrayMutators } from "final-form-arrays";
 import { useMemo } from "react";
 import {
   FieldRenderProps,
@@ -23,8 +23,8 @@ const useFieldArray = <
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FieldSubscription = FullFieldSubscription,
-  Functions extends BoundMutators<FormValues> &
-    Mutators<FormValues> = Mutators<FormValues>,
+  Mutators extends BoundMutators<FormValues> &
+    BoundArrayMutators<FormValues> = BoundArrayMutators<FormValues>,
   T extends HTMLElement = HTMLInputElement,
   RP extends FieldRenderProps<
     FieldValue[],
@@ -41,13 +41,12 @@ const useFieldArray = <
     isEqual = defaultIsEqual,
     validate: validateProp,
   }: UseFieldArrayConfig<FieldValue, FormValues, Subscription, T, RP> = {},
-): FieldArrayRenderProps<FieldValue, FormValues, Functions, Subscription> => {
-  const form = useForm("useFieldArray");
+): FieldArrayRenderProps<FieldValue, FormValues, Mutators, Subscription> => {
+  const form = useForm<FormValues>("useFieldArray");
 
-  type BoundArrayMutatorsObj = typeof form.mutators & DefaultType;
-  type FieldArrayMutatorsObj = FieldMutators<FormValues, BoundArrayMutatorsObj>;
+  type FieldMutatorsObj = FieldMutators<FormValues, Mutators>;
 
-  const formMutators = form.mutators as BoundArrayMutatorsObj;
+  const formMutators = form.mutators as Mutators;
 
   // @ts-expect-error
   const hasMutators = !!(formMutators && formMutators.push && formMutators.pop);
@@ -57,16 +56,23 @@ const useFieldArray = <
     );
   }
 
-  const mutators = useMemo<FieldArrayMutatorsObj>(
+  const mutators = useMemo<FieldMutatorsObj>(
     () =>
       // curry the field name onto all mutator calls
-      Object.keys(formMutators).reduce((result, key) => {
-        result[key] = (
-          ...args: Parameters<FieldArrayMutatorsObj[typeof key]>
-        ) => formMutators[key](name, ...args);
+      Object.keys(formMutators).reduce((result, _key) => {
+        const key = _key as keyof Mutators;
+
+        const boundMutator = formMutators[key];
+
+        type FieldMutator = FieldMutatorsObj[typeof key];
+
+        const fieldMutator: FieldMutator = (...args) =>
+          boundMutator(name, ...args);
+
+        result[key] = fieldMutator;
 
         return result;
-      }, {} as FieldArrayMutatorsObj),
+      }, {} as FieldMutatorsObj),
     [name, formMutators],
   );
 
@@ -132,12 +138,7 @@ const useFieldArray = <
       ...mutators,
       ...fieldState,
       value: input.value,
-    } as FieldArrayRenderProps<
-      FieldValue,
-      FormValues,
-      Functions,
-      Subscription
-    >["fields"],
+    },
     meta,
   };
 };

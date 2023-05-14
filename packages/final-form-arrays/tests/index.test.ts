@@ -1,7 +1,7 @@
 import { Config, createForm } from "final-form";
 
 import arrayMutators from "../src/index";
-import { Mutators } from "../src/index";
+import { BoundArrayMutators } from "../src/index";
 
 const onSubmit: Config["onSubmit"] = (_values, _callback) => {};
 
@@ -11,7 +11,7 @@ const form = createForm({
 });
 
 // Get form.mutators (default as object) and cast to Mutators
-const mutators: Mutators = form.mutators as any as Mutators;
+const mutators: BoundArrayMutators = form.mutators as any as BoundArrayMutators;
 
 mutators.insert("customers", 0, { firstName: "", lastName: "" });
 mutators.concat("customers", [
