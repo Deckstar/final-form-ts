@@ -5,7 +5,7 @@ import type {
   FormApi,
   FormValuesShape,
 } from "final-form";
-import { fieldSubscriptionItems, FieldSubscriptionItem } from "final-form";
+import { FieldSubscriptionItem, fieldSubscriptionItems } from "final-form";
 import * as React from "react";
 
 import { addLazyFieldMetaState } from "./getters";

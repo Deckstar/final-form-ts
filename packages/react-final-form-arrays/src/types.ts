@@ -1,7 +1,6 @@
 import type {
   BoundMutators,
   FieldMutators,
-  FieldState,
   FieldSubscription,
   FormValuesShape,
 } from "final-form";

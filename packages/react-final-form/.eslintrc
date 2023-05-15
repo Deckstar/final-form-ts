@@ -1,8 +1,5 @@
 {
-  "extends": ["react-app", "./../../.eslintrc.js"],
-  "plugins": ["react-hooks"],
-  "rules": {
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
-  }
+  "extends": "./../../.eslintrc.js",
+  "plugins": [],
+  "rules": {}
 }

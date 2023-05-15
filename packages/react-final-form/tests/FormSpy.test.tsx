@@ -2,13 +2,13 @@
 import "@testing-library/jest-dom/extend-expect";
 
 import { cleanup, fireEvent, render } from "@testing-library/react";
+import { FormApi } from "final-form";
 import React from "react";
 
 import Field from "../src/Field";
 import FormSpy from "../src/FormSpy";
 import Form from "../src/ReactFinalForm";
 import { ErrorBoundary, onSubmitMock, Toggle, wrapWith } from "./testUtils";
-import { FormApi } from "final-form/src";
 
 const hasFormApi = (props: { form: FormApi }) => {
   expect(props.form).toBeDefined();

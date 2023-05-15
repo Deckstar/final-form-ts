@@ -4,7 +4,14 @@
 module.exports = {
   extends: ["plugin:prettier/recommended"],
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "prettier", "simple-import-sort"],
+  plugins: [
+    "@typescript-eslint",
+    "jest",
+    "prettier",
+    "react",
+    "react-hooks",
+    "simple-import-sort",
+  ],
   rules: {
     "@typescript-eslint/adjacent-overload-signatures": "error",
     "@typescript-eslint/no-dynamic-delete": "error",
@@ -19,6 +26,8 @@ module.exports = {
     ],
     "no-console": "warn",
     "prettier/prettier": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
   },

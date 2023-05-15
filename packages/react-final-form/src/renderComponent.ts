@@ -1,7 +1,7 @@
+import { AnyObject } from "final-form";
 import * as React from "react";
 
 import type { RenderableProps } from "./types";
-import { AnyObject } from "final-form";
 
 // shared logic between components that use either render prop,
 // children render function, or component prop

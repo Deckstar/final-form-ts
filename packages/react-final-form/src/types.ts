@@ -13,8 +13,8 @@ import type {
 } from "final-form";
 import * as React from "react";
 
-import { FormStateHookResult } from "./useFormState";
 import { FullFieldSubscription } from "./useField";
+import { FormStateHookResult } from "./useFormState";
 
 type SupportedInputs = "input" | "select" | "textarea";
 

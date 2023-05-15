@@ -1,10 +1,10 @@
 import { BoundMutators, FieldSubscription, FormValuesShape } from "final-form";
+import { BoundArrayMutators } from "final-form-arrays";
+import { FieldRenderProps, FullFieldSubscription } from "react-final-form";
 
 import renderComponent from "./renderComponent";
 import type { FieldArrayProps } from "./types";
 import useFieldArray from "./useFieldArray";
-import { BoundArrayMutators } from "final-form-arrays/src";
-import { FieldRenderProps, FullFieldSubscription } from "react-final-form/src";
 
 const FieldArray = <
   FieldValue = any,

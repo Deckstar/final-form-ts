@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import arrayMutators, {
-  ArrayMutators,
-  BoundArrayMutators,
-} from "final-form-arrays";
+import arrayMutators, { BoundArrayMutators } from "final-form-arrays";
 import * as React from "react";
 import { Field, Form } from "react-final-form";
 
