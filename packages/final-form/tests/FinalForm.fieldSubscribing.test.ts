@@ -17,10 +17,7 @@ describe("Field.subscribing", () => {
   type FieldSubscribersItem<
     FormValues extends FormValuesShape,
     Field extends keyof FormValues,
-  > = Pick<
-    FieldState<FormValues[Field], FormValues>,
-    "blur" | "change" | "focus"
-  > & {
+  > = Pick<FieldState<FormValues[Field]>, "blur" | "change" | "focus"> & {
     spy: any;
   };
 

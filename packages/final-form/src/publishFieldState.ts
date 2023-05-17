@@ -13,7 +13,7 @@ function publishFieldState<
 >(
   formState: InternalFormState<FormValues, InitialFormValues>,
   field: InternalFieldState<FieldValue, FormValues>,
-): FieldState<FieldValue, FormValues> {
+): FieldState<FieldValue> {
   const {
     errors,
     initialValues,

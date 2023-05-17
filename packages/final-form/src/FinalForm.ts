@@ -598,7 +598,7 @@ function createForm<
           fieldSubscriber,
           fieldState,
           lastFieldState,
-          filterFieldState as StateFilter<FieldState<any, FormValues>>,
+          filterFieldState as StateFilter<FieldState<any>>,
           lastFieldState === undefined,
         );
       }
@@ -948,7 +948,7 @@ function createForm<
 
     registerField: (
       name: string,
-      subscriber: FieldSubscriber<any, FormValues>,
+      subscriber: FieldSubscriber<any>,
       subscription: FieldSubscription = {},
       fieldConfig?: FieldConfig<any, FormValues>,
     ): Unsubscribe => {

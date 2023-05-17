@@ -6,7 +6,7 @@ import type {
 } from "final-form";
 
 const addLazyState = <
-  State extends FieldState<FieldValue, FormValues> | FormState<FormValues>,
+  State extends FieldState<FieldValue> | FormState<FormValues>,
   FormValues extends FormValuesShape = FormValuesShape,
   FieldValue = any,
 >(

@@ -120,7 +120,7 @@ function useField<
    * subscriptions.
    */
   const register = (
-    callback: (fieldState: FieldState<FieldValue, FormValues>) => void,
+    callback: (fieldState: FieldState<FieldValue>) => void,
     silent: FieldConfig<FieldValue, FormValues>["silent"],
   ) =>
     // avoid using `state` const in any closures created inside `register`
@@ -160,10 +160,10 @@ function useField<
   const firstRender = React.useRef(true);
 
   // synchronously register and unregister to query field state for our subscription on first render
-  const [state, setState] = React.useState<FieldState<FieldValue, FormValues>>(
-    (): FieldState<FieldValue, FormValues> => {
+  const [state, setState] = React.useState<FieldState<FieldValue>>(
+    (): FieldState<FieldValue> => {
       // @ts-ignore
-      let initialState: FieldState<FieldValue, FormValues> = {};
+      let initialState: FieldState<FieldValue> = {};
 
       // temporarily disable destroyOnUnregister
       const destroyOnUnregister = form.destroyOnUnregister;

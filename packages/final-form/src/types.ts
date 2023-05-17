@@ -231,10 +231,7 @@ export type FormSubscriber<
  * `form.registerField()`, some of the values may not be
  * present.**
  */
-export interface FieldState<
-  FieldValue = any,
-  FormValues extends FormValuesShape = FormValuesShape,
-> {
+export interface FieldState<FieldValue = any> {
   /** Whether or not the field currently has focus. */
   active?: boolean;
   /**
@@ -246,7 +243,7 @@ export interface FieldState<
    * A place for arbitrary values to be placed by
    * mutators.
    */
-  data?: FormValues;
+  data?: AnyObject; // // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Data` type.
   /**
    * `true` when the value of the field is not equal to
    * the initial value (using the `isEqual` comparator
@@ -354,10 +351,9 @@ export type FieldSubscriptionItem = ArrayElement<typeof fieldSubscriptionItems>;
 
 export type FieldSubscription = Partial<Record<FieldSubscriptionItem, boolean>>;
 
-export type FieldSubscriber<
-  FieldValue = any,
-  FormValues extends FormValuesShape = FormValuesShape,
-> = Subscriber<FieldState<FieldValue, FormValues>>;
+export type FieldSubscriber<FieldValue = any> = Subscriber<
+  FieldState<FieldValue>
+>;
 
 export type Subscribers<T extends Object> = {
   index: number;
@@ -383,7 +379,7 @@ export type FieldValidator<
 > = (
   value: FieldValue,
   allValues: FormValues,
-  meta?: FieldState<FieldValue, FormValues>,
+  meta?: FieldState<FieldValue>,
 ) => any | Promise<any>;
 
 export type GetFieldValidator<
@@ -484,13 +480,13 @@ export interface RegisterField<
 > {
   <F extends keyof FormValues>(
     name: F,
-    subscriber: FieldSubscriber<FormValues[F], FormValues>,
+    subscriber: FieldSubscriber<FormValues[F]>,
     subscription?: FieldSubscription,
     config?: FieldConfig<FormValues[F], FormValues>,
   ): Unsubscribe;
   <F extends string>(
     name: F,
-    subscriber: FieldSubscriber<any, FormValues>,
+    subscriber: FieldSubscriber<any>,
     subscription?: FieldSubscription,
     config?: FieldConfig<any, FormValues>,
   ): Unsubscribe;
@@ -505,10 +501,10 @@ export interface RegisterField<
 export interface InternalFieldState<
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Partial<Pick<FieldState<FieldValue, FormValues>, "length">>,
+> extends Partial<Pick<FieldState<FieldValue>, "length">>,
     Required<
       Pick<
-        FieldState<FieldValue, FormValues>,
+        FieldState<FieldValue>,
         | "active"
         | "blur"
         | "change"
@@ -526,7 +522,7 @@ export interface InternalFieldState<
     Partial<Pick<FieldConfig<FieldValue, FormValues>, "validateFields">>,
     Required<Pick<FieldConfig<FieldValue, FormValues>, "isEqual">> {
   /** The previous state of the field. */
-  lastFieldState?: FieldState<FieldValue, FormValues>;
+  lastFieldState?: FieldState<FieldValue>;
   /** Functions for validating this field. */
   validators: {
     [index: number]: GetFieldValidator<FieldValue, FormValues>;
@@ -606,9 +602,9 @@ export interface GetFieldState<
   FormValues extends FormValuesShape = FormValuesShape,
 > {
   <F extends keyof FormValues>(field: F): F extends NonOptionalKeys<FormValues>
-    ? FieldState<FormValues[F], FormValues>
-    : FieldState<FormValues[F], FormValues> | undefined;
-  <F extends string>(field: F): FieldState<unknown, FormValues> | undefined;
+    ? FieldState<FormValues[F]>
+    : FieldState<FormValues[F]> | undefined;
+  <F extends string>(field: F): FieldState<unknown> | undefined;
 }
 
 /**
@@ -802,7 +798,7 @@ export interface MutableState<
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   /** An object of field subscribers. */
-  fieldSubscribers: { [key: string]: Subscribers<FieldState<any, FormValues>> };
+  fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> };
   /**
    * An object of values very similar to `FieldState`.
    *
