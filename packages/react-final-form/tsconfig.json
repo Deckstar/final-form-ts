@@ -6,6 +6,6 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "include": ["./src/**/*", "./tests/**/*"],
+  "include": ["package.json", "./src/**/*", "./tests/**/*"],
   "references": [{ "path": "../final-form" }]
 }

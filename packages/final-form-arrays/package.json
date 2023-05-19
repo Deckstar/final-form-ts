@@ -7,7 +7,8 @@
   "module": "dist/src",
   "sideEffects": false,
   "files": [
-    "dist/src"
+    "dist/src",
+    "dist/package.json"
   ],
   "scripts": {
     "start": "nps",
