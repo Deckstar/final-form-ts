@@ -92,16 +92,15 @@ function useFormState<
     [],
   );
 
-  const lazyState = {};
-
-  // @ts-ignore
-  addLazyFormState(lazyState, state);
-
-  return lazyState as FormStateHookResult<
+  const lazyState = {} as FormStateHookResult<
     FormValues,
     InitialFormValues,
     Subscription
   >;
+
+  addLazyFormState(lazyState, state);
+
+  return lazyState;
 }
 
 export default useFormState;
