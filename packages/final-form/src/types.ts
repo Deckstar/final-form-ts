@@ -850,8 +850,10 @@ export interface RenameField<
   ): void;
 }
 
+/** Drops the first item from a tuple type. */
 type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 
+/** Drops the first parameter from a function type. */
 type DropFirstArg<Func extends (...args: any[]) => any> = (
   ...argsWithoutFirst: DropFirst<Parameters<Func>>
 ) => ReturnType<Func>;
