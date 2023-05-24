@@ -1,6 +1,6 @@
 {
-  "name": "react-final-form",
-  "version": "6.5.9",
+  "name": "@deckstar/react-final-form",
+  "version": "1.0.0",
   "description": "🏁 High performance subscription-based form state management for React",
   "main": "dist/src",
   "jsnext:main": "dist/src",
@@ -20,12 +20,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/final-form/react-final-form.git"
+    "url": "https://github.com/deckstar/final-form-ts.git"
   },
   "bugs": {
-    "url": "https://github.com/final-form/react-final-form/issues"
+    "url": "https://github.com/deckstar/final-form-ts/issues"
   },
-  "homepage": "https://github.com/final-form/react-final-form#readme",
+  "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "devDependencies": {
     "doctoc": "^2.0.1",
     "fast-deep-equal": "^3.1.3",

@@ -1,6 +1,6 @@
 {
-  "name": "react-final-form-arrays",
-  "version": "3.1.4",
+  "name": "@deckstar/react-final-form-arrays",
+  "version": "1.0.0",
   "description": "A component for rendering and editing arrays 🏁 React Final Form",
   "main": "dist/src",
   "jsnext:main": "dist/src",
@@ -18,12 +18,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/final-form/react-final-form-arrays.git"
+    "url": "https://github.com/deckstar/final-form-ts.git"
   },
   "bugs": {
-    "url": "https://github.com/final-form/react-final-form-arrays/issues"
+    "url": "https://github.com/deckstar/final-form-ts/issues"
   },
-  "homepage": "https://github.com/final-form/react-final-form-arrays#readme",
+  "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "devDependencies": {
     "doctoc": "^2.2.1",
     "final-form": "workspace:packages/final-form",

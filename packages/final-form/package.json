@@ -1,6 +1,6 @@
 {
-  "name": "final-form",
-  "version": "4.20.9",
+  "name": "@deckstar/final-form",
+  "version": "1.0.0",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/src",
   "jsnext:main": "dist/src",
@@ -23,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/final-form/final-form.git"
+    "url": "https://github.com/deckstar/final-form-ts.git"
   },
   "bugs": {
-    "url": "https://github.com/final-form/final-form/issues"
+    "url": "https://github.com/deckstar/final-form-ts/issues"
   },
-  "homepage": "https://github.com/final-form/final-form#readme",
+  "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "devDependencies": {
     "@types/node": "^16.10.1",
     "doctoc": "^2.0.1"

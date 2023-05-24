@@ -2,10 +2,17 @@
 
 ## Introduction
 
-> _Master Form_ is a state-management library for building top-down forms in JavaScript.
-
-The goal of a "master form" is for all of your form logic — initial values, validation, submission logic etc. — to live in one place, preferably in one file.
+> _Final Form TS_ is a subscription-based state-management library for building forms in JavaScript.
 
 ## Acknowledgements
 
-Master Form is a fork of Erik Rasmussen's Final Form, rewritten in TypeScript.
+Final Form TS is a fork of Erik Rasmussen's [Final Form](https://final-form.org), rewritten in TypeScript.
+
+## Quick install
+
+Pick the form package that you want and install it with the "@deckstar" prefix. For example:
+
+```bash
+yarn install @deckstar/final-form
+yarn install @deckstar/react-final-form
+```
