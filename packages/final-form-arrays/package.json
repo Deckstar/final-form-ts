@@ -10,10 +10,7 @@
     "dist/src",
     "dist/package.json"
   ],
-  "scripts": {
-    "start": "nps",
-    "test": "nps test"
-  },
+  "scripts": {},
   "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "repository": {

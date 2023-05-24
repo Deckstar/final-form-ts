@@ -10,11 +10,7 @@
     "dist/src",
     "dist/package.json"
   ],
-  "scripts": {
-    "start": "nps",
-    "test": "nps test",
-    "prepare": "lint-staged && npm start validate"
-  },
+  "scripts": {},
   "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "funding": {
