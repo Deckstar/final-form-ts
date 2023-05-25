@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "🏁 High performance subscription-based form state management for React",
   "main": "dist/src",
+  "types": "dist/src/index.d.ts",
   "jsnext:main": "dist/src",
   "module": "dist/src",
   "sideEffects": false,

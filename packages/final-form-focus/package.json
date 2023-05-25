@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Decorator that will attempt to apply focus to the first field with an error upon an attempted form submission in 🏁 Final Form",
   "main": "dist/src",
+  "types": "dist/src/index.d.ts",
   "jsnext:main": "dist/src",
   "module": "dist/src",
   "sideEffects": false,
