@@ -28,8 +28,19 @@ export type FormSubscriptionItem = ArrayElement<typeof formSubscriptionItems>;
 
 export type FormSubscription = Partial<Record<FormSubscriptionItem, boolean>>;
 
-type FormBooleanStates<FormValues extends FormValuesShape = FormValuesShape> =
-  Partial<Record<keyof FormValues | string, boolean>>;
+/** A helper type for mapping form values to a `Record` of some type. */
+export type FieldsRecord<
+  T,
+  FormValues extends FormValuesShape = FormValuesShape,
+> = Record<string, T> & Partial<Record<string & keyof FormValues, T>>;
+
+export type FormDirtyState<
+  FormValues extends FormValuesShape = FormValuesShape,
+> = FieldsRecord<true, FormValues>;
+
+export type FormBooleanState<
+  FormValues extends FormValuesShape = FormValuesShape,
+> = FieldsRecord<boolean, FormValues>;
 
 /**
  * By default: all values are subscribed. If subscription is
@@ -60,7 +71,7 @@ export interface FormState<
    * value for that field will be available under
    * `dirty['addresses.shipping.street']`.
    */
-  dirtyFields?: FormBooleanStates<FormValues>;
+  dirtyFields?: FormDirtyState<FormValues>;
   /**
    * An object full of booleans, with a value of `true`
    * for each field that has a different value from the
@@ -73,9 +84,7 @@ export interface FormState<
    * `dirtySinceLastSubmit` value for that field will be
    * available under `dirty['addresses.shipping.street']`.
    */
-  dirtyFieldsSinceLastSubmit?: Partial<
-    Record<keyof FormValues | string, boolean>
-  >;
+  dirtyFieldsSinceLastSubmit?: FormDirtyState<FormValues>;
   /**
    * `true` if the form values are different from the
    * values it was last submitted with. `false`
@@ -135,7 +144,7 @@ export interface FormState<
    * value for that field will be available under
    * `modified['addresses.shipping.street']`.
    */
-  modified?: FormBooleanStates<FormValues>;
+  modified?: FormBooleanState<FormValues>;
   /**
    * `true` if the form values have ever been changed
    * since the last submission. false otherwise.
@@ -195,7 +204,7 @@ export interface FormState<
    * value for that field will be available under
    * `touched['addresses.shipping.street']`.
    */
-  touched?: FormBooleanStates<FormValues>;
+  touched?: FormBooleanState<FormValues>;
   /**
    * `true` if neither the form nor any of its fields has
    * a validation or submission error. `false` otherwise.
@@ -221,7 +230,7 @@ export interface FormState<
    * value for that field will be available under
    * `visited['addresses.shipping.street']`.
    */
-  visited?: FormBooleanStates<FormValues>;
+  visited?: FormBooleanState<FormValues>;
 }
 
 export type FormSubscriber<

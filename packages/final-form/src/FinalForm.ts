@@ -20,6 +20,8 @@ import type {
   FieldSubscription,
   FieldValidator,
   FormApi,
+  FormBooleanState,
+  FormDirtyState,
   FormState,
   FormSubscriber,
   FormSubscription,
@@ -616,10 +618,10 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     const safeFields = { ...fields };
     const safeFieldKeys = Object.keys(safeFields);
 
-    type FieldKey = string | keyof FormValues;
+    type FieldKey = string & keyof FormValues;
 
-    type FormFieldsDirtyState = Partial<Record<FieldKey, true>>;
-    type FormFieldsBooleanState = Partial<Record<FieldKey, boolean>>;
+    type DirtyState = FormDirtyState<FormValues>;
+    type BooleanStates = FormBooleanState<FormValues>;
 
     // calculate dirty/pristine
     let foundDirty = false;
@@ -635,7 +637,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       }
 
       return result;
-    }, {} as FormFieldsDirtyState);
+    }, {} as DirtyState);
 
     const dirtyFieldsSinceLastSubmit = safeFieldKeys.reduce((result, key) => {
       const nonNullLastSubmittedValues = formState.lastSubmittedValues || {}; // || {} is for flow, but causes branch coverage complaint
@@ -650,7 +652,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       }
 
       return result;
-    }, {} as FormFieldsDirtyState);
+    }, {} as DirtyState);
 
     formState.pristine = !foundDirty;
     formState.dirtySinceLastSubmit = !!(
@@ -682,9 +684,9 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
         return result;
       },
       {
-        modified: {} as FormFieldsBooleanState,
-        touched: {} as FormFieldsBooleanState,
-        visited: {} as FormFieldsBooleanState,
+        modified: {} as BooleanStates,
+        touched: {} as BooleanStates,
+        visited: {} as BooleanStates,
       },
     );
 
