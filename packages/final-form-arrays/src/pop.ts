@@ -14,27 +14,14 @@ export interface Pop<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface PopMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    PopArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, PopArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<
-      PopArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<PopArguments<Key>, FormValues>
   ):
     | (keyof FormValues extends any[] ? ArrayElement<keyof FormValues> : any)
     | undefined;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      PopArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<PopArguments<Key>, FormValues>
   ): any | undefined;
 }
 

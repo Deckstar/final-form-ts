@@ -96,15 +96,10 @@ import useFormState from "./useFormState";
  */
 function FormSpy<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
->({
-  onChange,
-  subscription,
-  ...rest
-}: Props<FormValues, InitialFormValues, FS>) {
-  const reactFinalForm = useForm<FormValues, InitialFormValues>("FormSpy");
-  const state = useFormState<FormValues, InitialFormValues, FS>({
+>({ onChange, subscription, ...rest }: Props<FormValues, FS>) {
+  const reactFinalForm = useForm<FormValues>("FormSpy");
+  const state = useFormState<FormValues, FS>({
     onChange,
     subscription,
   });
@@ -113,10 +108,7 @@ function FormSpy<
     return null;
   }
 
-  const renderProps: Pick<
-    FormSpyRenderProps<FormValues, InitialFormValues, FS>,
-    "form"
-  > = {
+  const renderProps: Pick<FormSpyRenderProps<FormValues, FS>, "form"> = {
     form: {
       ...reactFinalForm,
       reset: (eventOrValues) => {
@@ -134,7 +126,7 @@ function FormSpy<
     {
       ...rest,
       ...renderProps,
-    } as FormSpyRenderProps<FormValues, InitialFormValues, FS>,
+    } as FormSpyRenderProps<FormValues, FS>,
     state,
     "FormSpy",
   );

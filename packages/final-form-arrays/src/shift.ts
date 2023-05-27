@@ -14,27 +14,14 @@ export interface Shift<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface ShiftMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    ShiftArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, ShiftArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<
-      ShiftArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<ShiftArguments<Key>, FormValues>
   ):
     | (keyof FormValues extends any[] ? ArrayElement<keyof FormValues> : any)
     | undefined;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      ShiftArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<ShiftArguments<Key>, FormValues>
   ): any | undefined;
 }
 

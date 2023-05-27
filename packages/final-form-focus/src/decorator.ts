@@ -13,14 +13,11 @@ import { FindInput, GetInputs } from "./types";
 const noop = () => {};
 
 const createDecorator =
-  <
-    FormValues extends FormValuesShape = FormValuesShape,
-    InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-  >(
+  <FormValues extends FormValuesShape = FormValuesShape>(
     getInputs?: GetInputs,
     findInput?: FindInput,
-  ): Decorator<FormValues, InitialFormValues> =>
-  (form: FormApi<FormValues, InitialFormValues>) => {
+  ): Decorator<FormValues> =>
+  (form: FormApi<FormValues>) => {
     const focusOnFirstError = (errors: ValidationErrors) => {
       if (!getInputs) {
         getInputs = getAllInputs;
@@ -37,7 +34,7 @@ const createDecorator =
     const originalSubmit = form.submit;
 
     // Subscribe to errors, and keep a local copy of them
-    let state: FormState<FormValues, InitialFormValues> = {};
+    let state: FormState<FormValues> = {};
 
     const unsubscribe = form.subscribe(
       (nextState) => {

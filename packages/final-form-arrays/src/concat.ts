@@ -14,25 +14,15 @@ export interface Concat<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface ConcatMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    ConcatArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, ConcatArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       ConcatArguments<Key, FormValues[Key]>,
-      FormValues,
-      InitialFormValues
+      FormValues
     >
   ): void;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      ConcatArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<ConcatArguments<Key>, FormValues>
   ): void;
 }
 

@@ -17,25 +17,15 @@ export interface Update<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface UpdateMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    UpdateArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, UpdateArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       UpdateArguments<Key, ArrayElement<FormValues[Key]>>,
-      FormValues,
-      InitialFormValues
+      FormValues
     >
   ): void;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      UpdateArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<UpdateArguments<Key>, FormValues>
   ): void;
 }
 

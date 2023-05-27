@@ -16,25 +16,15 @@ export interface Push<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface PushMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    PushArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, PushArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       PushArguments<Key, ArrayElement<FormValues[Key]>>,
-      FormValues,
-      InitialFormValues
+      FormValues
     >
   ): void;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      PushArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<PushArguments<Key>, FormValues>
   ): void;
 }
 

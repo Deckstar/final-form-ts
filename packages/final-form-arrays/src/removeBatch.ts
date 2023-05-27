@@ -41,25 +41,12 @@ export interface RemoveBatch<
 
 export interface RemoveBatchMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    RemoveBatchArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, RemoveBatchArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<
-      RemoveBatchArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<RemoveBatchArguments<Key>, FormValues>
   ): keyof FormValues extends any[] ? keyof FormValues : any[];
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      RemoveBatchArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<RemoveBatchArguments<Key>, FormValues>
   ): any[];
 }
 

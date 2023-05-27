@@ -15,25 +15,12 @@ export interface Swap<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface SwapMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    SwapArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, SwapArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<
-      SwapArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<SwapArguments<Key>, FormValues>
   ): void;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      SwapArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<SwapArguments<Key>, FormValues>
   ): void;
 }
 

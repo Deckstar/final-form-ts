@@ -17,25 +17,15 @@ export interface Unshift<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface UnshiftMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    UnshiftArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, UnshiftArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       UnshiftArguments<Key, ArrayElement<FormValues[Key]>>,
-      FormValues,
-      InitialFormValues
+      FormValues
     >
   ): void;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      UnshiftArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<UnshiftArguments<Key>, FormValues>
   ): void;
 }
 

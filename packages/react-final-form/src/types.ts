@@ -20,9 +20,8 @@ type SupportedInputs = "input" | "select" | "textarea";
 
 export interface ReactContext<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
-  reactFinalForm: FormApi<FormValues, InitialFormValues>;
+  reactFinalForm: FormApi<FormValues>;
 }
 
 export interface FieldInputProps<
@@ -138,11 +137,10 @@ export type SubmitEvent = Partial<
 
 export interface FormRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends FormState<FormValues, InitialFormValues>,
+> extends FormState<FormValues>,
     RenderableProps<FormRenderProps<FormValues>> {
   /** The `FormApi`. */
-  form: FormApi<FormValues, InitialFormValues>;
+  form: FormApi<FormValues>;
   /**
    * A function intended for you to give directly to the
    * `<form>` tag:
@@ -168,11 +166,10 @@ export interface FormRenderProps<
 
 export type FormSpyRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
-> = FormStateHookResult<FormValues, InitialFormValues, FS> & {
+> = FormStateHookResult<FormValues, FS> & {
   /** The `FormApi`. */
-  form: FormApi<FormValues, InitialFormValues>;
+  form: FormApi<FormValues>;
 };
 
 export interface RenderableProps<Props = {}> {
@@ -262,11 +259,9 @@ export interface RenderableProps<Props = {}> {
   render?: (props: Props) => React.ReactElement;
 }
 
-export interface FormProps<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Config<FormValues, InitialFormValues>,
-    RenderableProps<FormRenderProps<FormValues, InitialFormValues>> {
+export interface FormProps<FormValues extends FormValuesShape = FormValuesShape>
+  extends Config<FormValues>,
+    RenderableProps<FormRenderProps<FormValues>> {
   /**
    * _Advanced Usage_
    *
@@ -291,7 +286,7 @@ export interface FormProps<
    * Related:
    * - `Decorator`
    */
-  decorators?: Array<Decorator<FormValues, InitialFormValues>>;
+  decorators?: Array<Decorator<FormValues>>;
   /**
    * _Advanced Usage_
    *
@@ -303,7 +298,7 @@ export interface FormProps<
    * Related:
    * - `FormApi`
    */
-  form?: FormApi<FormValues, InitialFormValues>;
+  form?: FormApi<FormValues>;
   /**
    * A predicate to determine whether or not the
    * `initialValues` prop has changed, i.e. to know if
@@ -499,24 +494,21 @@ export interface FieldProps<
 
 export interface UseFormStateParams<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
 > {
-  onChange?: (formState: FormState<FormValues, InitialFormValues>) => void;
+  onChange?: (formState: FormState<FormValues>) => void;
   subscription?: FS;
 }
 
 export interface FormSpyProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
-> extends UseFormStateParams<FormValues, InitialFormValues, FS>,
-    RenderableProps<FormSpyRenderProps<FormValues, InitialFormValues, FS>> {}
+> extends UseFormStateParams<FormValues, FS>,
+    RenderableProps<FormSpyRenderProps<FormValues, FS>> {}
 
 export type FormSpyPropsWithForm<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   FS extends FormSubscription = Required<FormSubscription>,
 > = {
-  reactFinalForm?: FormApi<FormValues, InitialFormValues>;
-} & FormSpyProps<FormValues, InitialFormValues, FS>;
+  reactFinalForm?: FormApi<FormValues>;
+} & FormSpyProps<FormValues, FS>;

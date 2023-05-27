@@ -12,13 +12,10 @@ import ReactFinalFormContext from "./context";
  * `<Field/>`, and `<FormSpy/>`.
  *
  */
-function useForm<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
->(componentName?: string): FormApi<FormValues, InitialFormValues> {
-  const form: FormApi<FormValues, InitialFormValues> = React.useContext(
-    ReactFinalFormContext,
-  );
+function useForm<FormValues extends FormValuesShape = FormValuesShape>(
+  componentName?: string,
+): FormApi<FormValues> {
+  const form: FormApi<FormValues> = React.useContext(ReactFinalFormContext);
 
   if (!form) {
     throw new Error(

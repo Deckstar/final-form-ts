@@ -19,25 +19,15 @@ export interface Insert<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface InsertMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    InsertArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, InsertArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       InsertArguments<Key, ArrayElement<FormValues[Key]>>,
-      FormValues,
-      InitialFormValues
+      FormValues
     >
   ): void;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      InsertArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<InsertArguments<Key>, FormValues>
   ): void;
 }
 

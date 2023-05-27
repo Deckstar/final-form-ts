@@ -20,27 +20,14 @@ export interface Remove<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface RemoveMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    RemoveArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, RemoveArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<
-      RemoveArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<RemoveArguments<Key>, FormValues>
   ):
     | (keyof FormValues extends any[] ? ArrayElement<keyof FormValues> : any)
     | undefined;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      RemoveArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<RemoveArguments<Key>, FormValues>
   ): any | undefined;
 }
 

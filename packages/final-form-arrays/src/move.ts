@@ -16,25 +16,12 @@ export interface Move<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface MoveMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Mutator<
-    FormValues,
-    InitialFormValues,
-    MoveArguments<keyof FormValues>
-  > {
+> extends Mutator<FormValues, MoveArguments<keyof FormValues>> {
   <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<
-      MoveArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<MoveArguments<Key>, FormValues>
   ): void;
   <Key extends string>(
-    ...mutatorArgs: MutatorArguments<
-      MoveArguments<Key>,
-      FormValues,
-      InitialFormValues
-    >
+    ...mutatorArgs: MutatorArguments<MoveArguments<Key>, FormValues>
   ): void;
 }
 

@@ -310,7 +310,7 @@ describe("FormSpy", () => {
             <FormSpy
               subscription={{ values: true }}
               onChange={(formState) => {
-                spy(values.name, formState.values!.name);
+                spy(values!.name, formState.values!.name);
               }}
             />
           </form>

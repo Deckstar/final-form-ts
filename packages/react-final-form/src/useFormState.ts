@@ -13,14 +13,12 @@ import useForm from "./useForm";
 
 export type FormStateHookResult<
   FormValues extends FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   Subscription extends FormSubscription = FullFormSubscription,
-> = FormState<FormValues, InitialFormValues> &
+> = FormState<FormValues> &
   Required<
     Pick<
-      FormState<FormValues, InitialFormValues>,
-      keyof FormState<FormValues, InitialFormValues> &
-        KeyOfTypeTest<Subscription, true>
+      FormState<FormValues>,
+      keyof FormState<FormValues> & KeyOfTypeTest<Subscription, true>
     >
   >;
 
@@ -34,43 +32,38 @@ export type FormStateHookResult<
  */
 function useFormState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   Subscription extends FormSubscription = FullFormSubscription,
 >({
   onChange,
   subscription = all as Subscription,
-}: UseFormStateParams<
+}: UseFormStateParams<FormValues, Subscription> = {}): FormStateHookResult<
   FormValues,
-  InitialFormValues,
   Subscription
-> = {}): FormStateHookResult<FormValues, InitialFormValues, Subscription> {
-  const form: FormApi<FormValues, InitialFormValues> = useForm<
-    FormValues,
-    InitialFormValues
-  >("useFormState");
+> {
+  const form: FormApi<FormValues> = useForm<FormValues>("useFormState");
   const firstRender = React.useRef(true);
 
   const onChangeRef = React.useRef(onChange);
   onChangeRef.current = onChange;
 
   // synchronously register and unregister to query field state for our subscription on first render
-  const [state, setState] = React.useState<
-    FormState<FormValues, InitialFormValues>
-  >((): FormState<FormValues, InitialFormValues> => {
-    let initialState: FormState<FormValues, InitialFormValues> = {};
+  const [state, setState] = React.useState<FormState<FormValues>>(
+    (): FormState<FormValues> => {
+      let initialState: FormState<FormValues> = {};
 
-    const unsubscribe = form.subscribe((formState) => {
-      initialState = formState;
-    }, subscription);
+      const unsubscribe = form.subscribe((formState) => {
+        initialState = formState;
+      }, subscription);
 
-    unsubscribe();
+      unsubscribe();
 
-    if (onChange) {
-      onChange(initialState);
-    }
+      if (onChange) {
+        onChange(initialState);
+      }
 
-    return initialState;
-  });
+      return initialState;
+    },
+  );
 
   React.useEffect(
     function initializeSubscription() {
@@ -92,11 +85,7 @@ function useFormState<
     [],
   );
 
-  const lazyState = {} as FormStateHookResult<
-    FormValues,
-    InitialFormValues,
-    Subscription
-  >;
+  const lazyState = {} as FormStateHookResult<FormValues, Subscription>;
 
   addLazyFormState(lazyState, state);
 

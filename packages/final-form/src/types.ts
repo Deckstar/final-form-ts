@@ -12,6 +12,11 @@ export type IsEqual = (a: any, b: any) => boolean;
 
 export type FormValuesShape = Record<string, any>;
 
+/** The `initialValues` for a form, based on its `FormValues` shape. */
+export type InitialFormValues<
+  FormValues extends FormValuesShape = FormValuesShape,
+> = Partial<FormValues>;
+
 export type ValidationErrorsShape = Record<keyof FormValuesShape, any>;
 
 export type ValidationErrors = ValidationErrorsShape | undefined;
@@ -32,7 +37,6 @@ type FormBooleanStates<FormValues extends FormValuesShape = FormValuesShape> =
  */
 export interface FormState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   /**
    * The name of the currently active field. `undefined`
@@ -112,7 +116,7 @@ export interface FormState<
    * The values the form was initialized with.
    * `undefined` if the form was never initialized.
    */
-  initialValues?: InitialFormValues;
+  initialValues?: InitialFormValues<FormValues>;
   /**
    * `true` if any of the fields or the form has a
    * validation or submission error. `false` otherwise.
@@ -222,8 +226,7 @@ export interface FormState<
 
 export type FormSubscriber<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> = Subscriber<FormState<FormValues, InitialFormValues>>;
+> = Subscriber<FormState<FormValues>>;
 
 /**
  * `FieldState` is an object containing the following
@@ -536,10 +539,9 @@ export interface InternalFieldState<
  */
 export interface InternalFormState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > extends Partial<
       Pick<
-        FormState<FormValues, InitialFormValues>,
+        FormState<FormValues>,
         | "active"
         | "error"
         | "initialValues"
@@ -550,7 +552,7 @@ export interface InternalFormState<
     >,
     Required<
       Pick<
-        FormState<FormValues, InitialFormValues>,
+        FormState<FormValues>,
         | "dirtySinceLastSubmit"
         | "errors"
         | "pristine"
@@ -611,10 +613,7 @@ export interface GetFieldState<
  * The following items exist on the object returned by
  * `createForm()`.
  */
-export interface FormApi<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> {
+export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
   /**
    * Allows batch updates by silencing notifications
    * while the `fn` is running.
@@ -655,7 +654,7 @@ export interface FormApi<
    * A way to request the current state of the form
    * without subscribing.
    */
-  getState: () => FormState<FormValues, InitialFormValues>;
+  getState: () => FormState<FormValues>;
   /**
    * Initializes the form to the values provided. All the
    * values will be set to these values, and `dirty` and
@@ -665,7 +664,9 @@ export interface FormApi<
    * `pristine` after this call.
    */
   initialize: (
-    data: InitialFormValues | ((values: FormValues) => InitialFormValues),
+    data:
+      | InitialFormValues<FormValues>
+      | ((values: FormValues) => InitialFormValues<FormValues>),
   ) => void;
   /**
    * Returns `true` if validation is currently paused,
@@ -721,7 +722,7 @@ export interface FormApi<
    * as they will get arguments passed to them and
    * reinitialize your form.
    */
-  reset: (initialValues?: InitialFormValues) => void;
+  reset: (initialValues?: InitialFormValues<FormValues>) => void;
   /**
    * Resets all of a field's flags (e.g. `touched`,
    * `visited`, etc.) to their initial state.
@@ -733,7 +734,7 @@ export interface FormApi<
    * `resetFieldState()` for each field. Form should be
    * just as it was when it was first created.
    */
-  restart: (initialValues?: InitialFormValues) => void;
+  restart: (initialValues?: InitialFormValues<FormValues>) => void;
   /**
    * Resumes validation paused by `pauseValidation()`. If
    * validation was blocked while it was paused,
@@ -745,7 +746,7 @@ export interface FormApi<
    */
   setConfig: <K extends ConfigKey>(
     name: K,
-    value: Config<FormValues, InitialFormValues>[K],
+    value: Config<FormValues>[K],
   ) => void;
   /**
    * Set a top-level status to anything you want imperatively.
@@ -777,16 +778,15 @@ export interface FormApi<
    * - [`Unsubscribe`](Unsubscribe)
    */
   subscribe: (
-    subscriber: FormSubscriber<FormValues, InitialFormValues>,
+    subscriber: FormSubscriber<FormValues>,
     subscription: FormSubscription,
   ) => Unsubscribe;
 }
 
 export type DebugFunction<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (
-  state: FormState<FormValues, InitialFormValues>,
+  state: FormState<FormValues>,
   fieldStates: { [key: string]: FieldState<any> },
 ) => void;
 
@@ -795,7 +795,6 @@ export type DebugFunction<
  */
 export interface MutableState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   /** An object of field subscribers. */
   fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> };
@@ -811,40 +810,38 @@ export interface MutableState<
     [key: string]: InternalFieldState<any, FormValues>;
   };
   /** An object very similar to `FormState`. */
-  formState: InternalFormState<FormValues, InitialFormValues>;
+  formState: InternalFormState<FormValues>;
   /**
    * The last form state sent to form subscribers. The
    * object very similar to `FormState`.
    */
-  lastFormState?: FormState<FormValues, InitialFormValues>;
+  lastFormState?: FormState<FormValues>;
 }
 
 export interface ChangeValue<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   <Name extends keyof FormValues>(
-    mutableState: MutableState<FormValues, InitialFormValues>,
+    mutableState: MutableState<FormValues>,
     name: Name,
     mutate: (oldValue: FormValues[Name]) => FormValues[Name],
   ): void;
   <Name extends string>(
-    mutableState: MutableState<FormValues, InitialFormValues>,
+    mutableState: MutableState<FormValues>,
     name: Name,
     mutate: (oldValue: any) => any,
   ): void;
 }
 export interface RenameField<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   <Name extends keyof FormValues, NewName extends keyof FormValues>(
-    mutableState: MutableState<FormValues, InitialFormValues>,
+    mutableState: MutableState<FormValues>,
     from: Name,
     to: NewName,
   ): void;
   <Name extends string, NewName extends string>(
-    mutableState: MutableState<FormValues, InitialFormValues>,
+    mutableState: MutableState<FormValues>,
     from: Name,
     to: NewName,
   ): void;
@@ -875,10 +872,8 @@ export type FieldMutators<
 };
 
 /** Tools that will be passed into the functions used as `mutators`. */
-export interface Tools<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> extends Pick<FormApi, "resetFieldState" | "setStatus"> {
+export interface Tools<FormValues extends FormValuesShape = FormValuesShape>
+  extends Pick<FormApi, "resetFieldState" | "setStatus"> {
   /**
    * A utility function to modify a single field value
    * in form state. `mutate()` takes the old value and
@@ -887,7 +882,7 @@ export interface Tools<
    * Related:
    * - `MutableState`
    */
-  changeValue: ChangeValue<FormValues, InitialFormValues>;
+  changeValue: ChangeValue<FormValues>;
   /**
    * A utility function to get any arbitrarily deep
    * value from an object using dot-and-bracket syntax
@@ -905,7 +900,7 @@ export interface Tools<
    * Related:
    * - `MutableState`
    */
-  renameField: RenameField<FormValues, InitialFormValues>;
+  renameField: RenameField<FormValues>;
   /**
    * A utility function to reset all of a field's flags
    * (e.g. `touched`, `visited`, etc.) to their initial
@@ -937,29 +932,22 @@ export interface Tools<
 export type MutatorArguments<
   Arguments extends any = any,
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = [
   args: Arguments,
-  state: MutableState<FormValues, InitialFormValues>,
-  tools: Tools<FormValues, InitialFormValues>,
+  state: MutableState<FormValues>,
+  tools: Tools<FormValues>,
 ];
 
 export type Mutator<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
   Arguments extends any = any,
   Result extends any = void,
-> = (
-  ...mutatorArgs: MutatorArguments<Arguments, FormValues, InitialFormValues>
-) => Result;
+> = (...mutatorArgs: MutatorArguments<Arguments, FormValues>) => Result;
 
 /**
  * Configuration options that are passed into the form.
  */
-export interface Config<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> {
+export interface Config<FormValues extends FormValuesShape = FormValuesShape> {
   /**
    * A callback for debugging that receives the form
    * state and the states of all the fields. It's called
@@ -971,7 +959,7 @@ export interface Config<
    * - [`FormState`](FormState)
    * - [`FieldState`](FieldState)
    */
-  debug?: DebugFunction<FormValues, InitialFormValues>;
+  debug?: DebugFunction<FormValues>;
   /**
    * If `true`, the value of a field will be destroyed
    * when that field is unregistered. Defaults to
@@ -993,7 +981,7 @@ export interface Config<
    * the same type as the object given to your
    * `onSubmit` function.
    */
-  initialValues?: InitialFormValues;
+  initialValues?: InitialFormValues<FormValues>;
   /**
    * If `true`, only pristine values will be overwritten
    * when `initialize(newValues)` is called. This can be
@@ -1007,7 +995,7 @@ export interface Config<
   /** Named `Mutator` functions. */
   mutators?:
     | { [key: string]: Mutator } // Note: these mutators are purposefully flexible regarding the generic parameters. This is so the input could be easier, and so it would accept constant values.
-    | { [key: string]: Mutator<FormValues, InitialFormValues> };
+    | { [key: string]: Mutator<FormValues> };
   /**
    * Function to call when the form is submitted. There
    * are three possible ways to write an `onSubmit`
@@ -1045,7 +1033,7 @@ export interface Config<
    */
   onSubmit: (
     values: FormValues,
-    form: FormApi<FormValues, InitialFormValues>,
+    form: FormApi<FormValues>,
     callback?: (errors?: SubmissionErrors) => void,
   ) => SubmissionErrors | Promise<SubmissionErrors> | void;
   /**
@@ -1115,7 +1103,6 @@ export interface Config<
  * undecorate()
  * ```
  */
-export type Decorator<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> = (form: FormApi<FormValues, InitialFormValues>) => Unsubscribe;
+export type Decorator<FormValues extends FormValuesShape = FormValuesShape> = (
+  form: FormApi<FormValues>,
+) => Unsubscribe;

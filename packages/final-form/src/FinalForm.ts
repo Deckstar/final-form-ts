@@ -25,6 +25,7 @@ import type {
   FormSubscription,
   FormValuesShape,
   GetFieldState,
+  InitialFormValues,
   InternalFieldState,
   InternalFormState,
   IsEqual,
@@ -50,12 +51,9 @@ export const configOptions: ConfigKey[] = [
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b;
 
-type InternalState<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
-> = {
-  subscribers: Subscribers<FormState<FormValues, InitialFormValues>>;
-} & MutableState<FormValues, InitialFormValues>;
+type InternalState<FormValues extends FormValuesShape = FormValuesShape> = {
+  subscribers: Subscribers<FormState<FormValues>>;
+} & MutableState<FormValues>;
 
 export type StateFilter<T> = (
   state: T,
@@ -80,10 +78,7 @@ const hasAnyError = (errors: FormValuesShape): boolean => {
 
 function convertToExternalFormState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
->(
-  internalState: InternalFormState<FormValues, InitialFormValues>,
-): FormState<FormValues, InitialFormValues> {
+>(internalState: InternalFormState<FormValues>): FormState<FormValues> {
   const {
     // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
     active,
@@ -184,12 +179,9 @@ function notify<T extends Object>(
  *
  * It takes a `Config` and returns a `FormApi`.
  */
-function createForm<
-  FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
->(
-  config: Config<FormValues, InitialFormValues>,
-): FormApi<FormValues, InitialFormValues> {
+function createForm<FormValues extends FormValuesShape = FormValuesShape>(
+  config: Config<FormValues>,
+): FormApi<FormValues> {
   if (!config) {
     throw new Error("No config specified");
   }
@@ -207,14 +199,14 @@ function createForm<
   } = config;
 
   let mutatorsProp = _mutatorsProp as {
-    [key: string]: Mutator<FormValues, InitialFormValues>;
+    [key: string]: Mutator<FormValues>;
   };
 
   if (!onSubmit) {
     throw new Error("No onSubmit function specified");
   }
 
-  const state: InternalState<FormValues, InitialFormValues> = {
+  const state: InternalState<FormValues> = {
     subscribers: { index: 0, entries: {} },
     fieldSubscribers: {},
     fields: {},
@@ -253,8 +245,8 @@ function createForm<
     return result;
   };
 
-  const changeValue: ChangeValue<FormValues, InitialFormValues> = (
-    mState: MutableState<FormValues, InitialFormValues>,
+  const changeValue: ChangeValue<FormValues> = (
+    mState: MutableState<FormValues>,
     name: string,
     mutate: (value: any) => any,
   ) => {
@@ -264,8 +256,8 @@ function createForm<
     mState.formState.values = setIn(mState.formState.values, name, after) || {};
   };
 
-  const renameField: RenameField<FormValues, InitialFormValues> = (
-    mState: MutableState<FormValues, InitialFormValues>,
+  const renameField: RenameField<FormValues> = (
+    mState: MutableState<FormValues>,
     from: string,
     to: string,
   ) => {
@@ -307,7 +299,7 @@ function createForm<
     (key: keyof NonNullable<typeof mutatorsProp>) =>
     (...args: any[]) => {
       if (mutatorsProp) {
-        const mutableState: MutableState<FormValues, InitialFormValues> = {
+        const mutableState: MutableState<FormValues> = {
           formState: state.formState,
           fields: state.fields,
           fieldSubscribers: state.fieldSubscribers,
@@ -619,10 +611,7 @@ function createForm<
   const hasSyncErrors = () =>
     !!(state.formState.error || hasAnyError(state.formState.errors!));
 
-  const calculateNextFormState = (): FormState<
-    FormValues,
-    InitialFormValues
-  > => {
+  const calculateNextFormState = (): FormState<FormValues> => {
     const { fields, formState, lastFormState } = state;
     const safeFields = { ...fields };
     const safeFieldKeys = Object.keys(safeFields);
@@ -802,7 +791,7 @@ function createForm<
     notifyFormListeners();
   });
 
-  const api: FormApi<FormValues, InitialFormValues> = {
+  const api: FormApi<FormValues> = {
     batch: (fn: () => void) => {
       inBatch++;
       fn();
@@ -890,12 +879,16 @@ function createForm<
     getState: () => calculateNextFormState(),
 
     initialize: (
-      data: InitialFormValues | ((values: FormValues) => InitialFormValues),
+      data:
+        | InitialFormValues<FormValues>
+        | ((values: FormValues) => InitialFormValues<FormValues>),
     ) => {
       const { fields, formState } = state;
       const safeFields = { ...fields };
-      const values: InitialFormValues =
+
+      const values: InitialFormValues<FormValues> =
         typeof data === "function" ? data(formState.values) : data;
+
       if (!keepDirtyOnReinitialize) {
         formState.values = values as unknown as FormValues;
       }
@@ -1023,7 +1016,8 @@ function createForm<
           // only initialize if we don't yet have any value for this field
         ) {
           state.formState.initialValues = setIn(
-            state.formState.initialValues || ({} as InitialFormValues),
+            state.formState.initialValues ||
+              ({} as InitialFormValues<FormValues>),
             name,
             fieldConfig.initialValue,
           );
@@ -1107,10 +1101,12 @@ function createForm<
       }
       state.formState.submitFailed = false;
       state.formState.submitSucceeded = false;
+
       delete state.formState.submitError;
       delete state.formState.submitErrors;
       delete state.formState.lastSubmittedValues;
-      api.initialize(newInitialValues || ({} as InitialFormValues));
+
+      api.initialize(newInitialValues || ({} as InitialFormValues<FormValues>));
     },
 
     /**
@@ -1338,7 +1334,7 @@ function createForm<
     },
 
     subscribe: (
-      subscriber: FormSubscriber<FormValues, InitialFormValues>,
+      subscriber: FormSubscriber<FormValues>,
       subscription: FormSubscription,
     ): Unsubscribe => {
       if (!subscriber) {

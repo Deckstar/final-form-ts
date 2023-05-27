@@ -10,14 +10,13 @@ const shallowEqualKeys = ["touched", "visited"];
  */
 export default function filterFormState<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 >(
-  state: FormState<FormValues, InitialFormValues>,
-  previousState: FormState<FormValues, InitialFormValues> | null | undefined,
+  state: FormState<FormValues>,
+  previousState: FormState<FormValues> | null | undefined,
   subscription: FormSubscription,
   force?: boolean,
-): FormState<FormValues, InitialFormValues> | null | undefined {
-  const result: FormState<FormValues, InitialFormValues> = {};
+): FormState<FormValues> | null | undefined {
+  const result: FormState<FormValues> = {};
 
   const different =
     subscriptionFilter(

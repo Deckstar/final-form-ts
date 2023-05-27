@@ -27,30 +27,29 @@ export type { Update, UpdateMutator } from "./update";
 /** The shape of the mutators as passed in to the final-form config. */
 export interface ArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   /** Inserts a value into the specified index of the field array. */
-  insert: InsertMutator<FormValues, InitialFormValues>;
+  insert: InsertMutator<FormValues>;
   /** Concatenates an array at the end of the field array. */
-  concat: ConcatMutator<FormValues, InitialFormValues>;
+  concat: ConcatMutator<FormValues>;
   /** Moves a value from one index to another index in the field array. */
-  move: MoveMutator<FormValues, InitialFormValues>;
+  move: MoveMutator<FormValues>;
   /** Pops a value off the end of an field array. Returns the value. */
-  pop: PopMutator<FormValues, InitialFormValues>;
+  pop: PopMutator<FormValues>;
   /** Pushes a value onto the end of an field array. */
-  push: PushMutator<FormValues, InitialFormValues>;
+  push: PushMutator<FormValues>;
   /** Removes a value from the specified index of the field array. Returns the removed value. */
-  remove: RemoveMutator<FormValues, InitialFormValues>;
+  remove: RemoveMutator<FormValues>;
   /** Removes the values at the specified indexes of the field array. */
-  removeBatch: RemoveBatchMutator<FormValues, InitialFormValues>;
+  removeBatch: RemoveBatchMutator<FormValues>;
   /** Removes a value from the beginning of the field array. Returns the value. */
-  shift: ShiftMutator<FormValues, InitialFormValues>;
+  shift: ShiftMutator<FormValues>;
   /** Swaps the position of two values in the field array. */
-  swap: SwapMutator<FormValues, InitialFormValues>;
+  swap: SwapMutator<FormValues>;
   /** Updates a value of the specified index of the field array. */
-  update: UpdateMutator<FormValues, InitialFormValues>;
+  update: UpdateMutator<FormValues>;
   /** Inserts a value onto the beginning of the field array. */
-  unshift: UnshiftMutator<FormValues, InitialFormValues>;
+  unshift: UnshiftMutator<FormValues>;
 }
 
 /** The shape of the mutators once final-form has bound them to state. */
