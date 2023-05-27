@@ -5926,11 +5926,11 @@ __metadata:
   linkType: hard
 
 "final-form-arrays@file:packages/final-form-arrays::locator=final-form-ts%40workspace%3A.":
-  version: 1.0.0
-  resolution: "final-form-arrays@file:packages/final-form-arrays#packages/final-form-arrays::hash=24be27&locator=final-form-ts%40workspace%3A."
+  version: 1.0.1
+  resolution: "final-form-arrays@file:packages/final-form-arrays#packages/final-form-arrays::hash=e2ba38&locator=final-form-ts%40workspace%3A."
   peerDependencies:
     final-form: "workspace:packages/final-form"
-  checksum: 7df41ba9aee34489dc07d979fbf1fc13f964bad243e3ea3777e8b37dfc0a4e2378e2e20248909c63433896a52f2ff93539490f18a217c95a81c70ef7a9f05ca9
+  checksum: 6de10a9efb9c7cc82518381ec6dc9ccdc2ddfa14555b6167f5444284c557f49d2c031f5b08c10d65ac63d77c89cb7733f4015ebd39d3565b6e4c7e1cb01df91b
   languageName: node
   linkType: hard
 
@@ -5966,11 +5966,11 @@ __metadata:
   linkType: soft
 
 "final-form@file:packages/final-form::locator=final-form-ts%40workspace%3A.":
-  version: 1.0.0
-  resolution: "final-form@file:packages/final-form#packages/final-form::hash=ab9121&locator=final-form-ts%40workspace%3A."
+  version: 1.0.1
+  resolution: "final-form@file:packages/final-form#packages/final-form::hash=18592d&locator=final-form-ts%40workspace%3A."
   dependencies:
     "@babel/runtime": ^7.10.0
-  checksum: 5a090031fa4f6f8d41bffca5844cd2f262733678a8ea677fd62a9c49445d609a6a698ed40a037b6eba1859fd5a0ba7ae5ee3af77c7100da97fe493618ae9c041
+  checksum: cd268a9a7dfa4d189abcb68c706ebdef59f13787f043981fb6b669019de144170edb656ef8f1b2fd31724051fa684d7bff59f423d3c165a0e28a6dc1aed3c3c3
   languageName: node
   linkType: hard
 
@@ -10395,11 +10395,11 @@ __metadata:
   linkType: hard
 
 "react-final-form@file:packages/react-final-form::locator=final-form-ts%40workspace%3A.":
-  version: 1.0.0
-  resolution: "react-final-form@file:packages/react-final-form#packages/react-final-form::hash=962d5d&locator=final-form-ts%40workspace%3A."
+  version: 1.0.1
+  resolution: "react-final-form@file:packages/react-final-form#packages/react-final-form::hash=af8ec7&locator=final-form-ts%40workspace%3A."
   peerDependencies:
     final-form: "workspace:packages/final-form"
-  checksum: bd3dea91b6da261c3fe1448fa831ce245f4d6b12f168afd792358ff2e73032f8b12c696d92e654ffd4082e0d5bba7c4a6737db284841179acc965ccb28904cb2
+  checksum: aa79278ec62d858073a8003e2262e6ff2bb501e684eea62918f175098049b47d9f99d1db5e066c1faa6b21e170c010c73fd86af06f2b3430c84aa6ff81fc0e8a
   languageName: node
   linkType: hard
 

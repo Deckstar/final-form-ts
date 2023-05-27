@@ -11,7 +11,6 @@
     "dist/src",
     "dist/package.json"
   ],
-  "scripts": {},
   "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "repository": {
