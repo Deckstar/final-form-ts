@@ -4,7 +4,10 @@
     "baseUrl": ".",
     "rootDir": ".",
     "outDir": "dist",
-    "composite": true
+    "composite": true,
+    "paths": {
+      "final-form": ["../final-form/src"]
+    }
   },
   "include": ["package.json", "./src/**/*", "./tests/**/*"],
   "references": [{ "path": "../final-form" }]
