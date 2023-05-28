@@ -1,9 +1,13 @@
-import { FieldSubscription, FormValuesShape } from "final-form";
+import {
+  FieldSubscription,
+  FormValuesShape,
+  FullFieldSubscription,
+} from "final-form";
 import * as React from "react";
 
 import renderComponent from "./renderComponent";
 import type { FieldProps as Props, FieldRenderProps } from "./types";
-import useField, { FullFieldSubscription } from "./useField";
+import useField from "./useField";
 
 function FieldComponent<
   FieldValue = any,

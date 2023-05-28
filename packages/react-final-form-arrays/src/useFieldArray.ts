@@ -3,13 +3,13 @@ import type {
   FieldMutators,
   FieldSubscription,
   FieldValidator,
+  FullFieldSubscription,
 } from "final-form";
 import { ARRAY_ERROR, FormValuesShape } from "final-form";
 import type { BoundArrayMutators } from "final-form-arrays";
 import { useMemo } from "react";
 import {
   FieldRenderProps,
-  FullFieldSubscription,
   fullFieldSubscription as all,
   useField,
   useForm,

@@ -1,6 +1,11 @@
-import { BoundMutators, FieldSubscription, FormValuesShape } from "final-form";
+import {
+  BoundMutators,
+  FieldSubscription,
+  FormValuesShape,
+  FullFieldSubscription,
+} from "final-form";
 import { BoundArrayMutators } from "final-form-arrays";
-import { FieldRenderProps, FullFieldSubscription } from "react-final-form";
+import { FieldRenderProps } from "react-final-form";
 
 import renderComponent from "./renderComponent";
 import type { FieldArrayProps } from "./types";

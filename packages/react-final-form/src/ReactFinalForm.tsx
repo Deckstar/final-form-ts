@@ -3,8 +3,8 @@ import type {
   FormApi,
   FormStateBasedOnSubscription,
   FormSubscription,
-  FormSubscriptionItem,
   FormValuesShape,
+  FullFormSubscription,
   Unsubscribe,
 } from "final-form";
 import { createForm, formSubscriptionItems } from "final-form";
@@ -19,8 +19,6 @@ import type { FormProps as Props, SubmitEvent } from "./types";
 import type { FormRenderProps } from "./types";
 import useConstant from "./useConstant";
 import useWhenValueChanges from "./useWhenValueChanges";
-
-export type FullFormSubscription = Record<FormSubscriptionItem, true>;
 
 export const all = formSubscriptionItems.reduce((result, key) => {
   result[key] = true;

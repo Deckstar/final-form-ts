@@ -3,11 +3,12 @@ import type {
   FormStateBasedOnSubscription,
   FormSubscription,
   FormValuesShape,
+  FullFormSubscription,
 } from "final-form";
 import * as React from "react";
 
 import { addLazyFormState } from "./getters";
-import { all, FullFormSubscription } from "./ReactFinalForm";
+import { all } from "./ReactFinalForm";
 import type { UseFormStateParams } from "./types";
 import useForm from "./useForm";
 

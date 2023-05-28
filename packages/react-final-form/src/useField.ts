@@ -4,8 +4,9 @@ import type {
   FormApi,
   FormValuesShape,
 } from "final-form";
-import { FieldSubscriptionItem, fieldSubscriptionItems } from "final-form";
+import { fieldSubscriptionItems } from "final-form";
 import { FieldSubscriber } from "final-form";
+import { FullFieldSubscription } from "final-form";
 import * as React from "react";
 
 import { FieldStateBasedOnSubscription } from "../../final-form/src/types";
@@ -21,8 +22,6 @@ import type {
 import useConstantCallback from "./useConstantCallback";
 import useForm from "./useForm";
 import useLatest from "./useLatest";
-
-export type FullFieldSubscription = Record<FieldSubscriptionItem, true>;
 
 export const all: FullFieldSubscription = fieldSubscriptionItems.reduce(
   (result, key) => {

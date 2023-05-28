@@ -10,12 +10,11 @@ import type {
   FormStateBasedOnSubscription,
   FormSubscription,
   FormValuesShape,
+  FullFieldSubscription,
   FullFormSubscription,
   StateBasedOnSubscription,
 } from "final-form";
 import * as React from "react";
-
-import { FullFieldSubscription } from "./useField";
 
 type SupportedInputs = "input" | "select" | "textarea";
 

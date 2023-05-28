@@ -3,13 +3,13 @@ import type {
   FieldMutators,
   FieldSubscription,
   FormValuesShape,
+  FullFieldSubscription,
 } from "final-form";
 import { BoundArrayMutators } from "final-form-arrays";
 import {
   FieldInputPropsBasedOnSubscription,
   FieldMetaState,
   FieldRenderProps,
-  FullFieldSubscription,
   RenderableProps,
   UseFieldConfig,
 } from "react-final-form";
