@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/final-form",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/src",
   "types": "dist/src/index.d.ts",
