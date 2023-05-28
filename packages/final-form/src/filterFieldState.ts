@@ -14,12 +14,12 @@ const filterFieldState: StateFilter<FieldState> = (
   subscription: FieldSubscription,
   force?: boolean,
 ): FieldState | null | undefined => {
-  const result: FieldState = {
+  const result = {
     blur: state.blur,
     change: state.change,
     focus: state.focus,
     name: state.name,
-  };
+  } as FieldState;
 
   const different =
     subscriptionFilter(

@@ -1,6 +1,6 @@
 import type {
   FormApi,
-  FormState,
+  FormStateBasedOnSubscription,
   FormSubscription,
   FormValuesShape,
 } from "final-form";
@@ -8,19 +8,8 @@ import * as React from "react";
 
 import { addLazyFormState } from "./getters";
 import { all, FullFormSubscription } from "./ReactFinalForm";
-import type { KeyOfTypeTest, UseFormStateParams } from "./types";
+import type { UseFormStateParams } from "./types";
 import useForm from "./useForm";
-
-export type FormStateHookResult<
-  FormValues extends FormValuesShape,
-  Subscription extends FormSubscription = FullFormSubscription,
-> = FormState<FormValues> &
-  Required<
-    Pick<
-      FormState<FormValues>,
-      keyof FormState<FormValues> & KeyOfTypeTest<Subscription, true>
-    >
-  >;
 
 /**
  * The `useFormState()` hook takes one optional
@@ -36,22 +25,25 @@ function useFormState<
 >({
   onChange,
   subscription = all as Subscription,
-}: UseFormStateParams<FormValues, Subscription> = {}): FormStateHookResult<
+}: UseFormStateParams<
   FormValues,
   Subscription
-> {
+> = {}): FormStateBasedOnSubscription<FormValues, Subscription> {
   const form: FormApi<FormValues> = useForm<FormValues>("useFormState");
   const firstRender = React.useRef(true);
 
   const onChangeRef = React.useRef(onChange);
   onChangeRef.current = onChange;
 
-  // synchronously register and unregister to query field state for our subscription on first render
-  const [state, setState] = React.useState<FormState<FormValues>>(
-    (): FormState<FormValues> => {
-      let initialState: FormState<FormValues> = {};
+  /** The `FormState` based on the passed in `subscription`. */
+  type SubscribedState = FormStateBasedOnSubscription<FormValues, Subscription>;
 
-      const unsubscribe = form.subscribe((formState) => {
+  // synchronously register and unregister to query field state for our subscription on first render
+  const [state, setState] = React.useState<SubscribedState>(
+    (): SubscribedState => {
+      let initialState = {} as SubscribedState;
+
+      const unsubscribe = form.subscribe<Subscription>((formState) => {
         initialState = formState;
       }, subscription);
 
@@ -85,7 +77,10 @@ function useFormState<
     [],
   );
 
-  const lazyState = {} as FormStateHookResult<FormValues, Subscription>;
+  const lazyState = {} as FormStateBasedOnSubscription<
+    FormValues,
+    Subscription
+  >;
 
   addLazyFormState(lazyState, state);
 

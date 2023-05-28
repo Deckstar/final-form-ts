@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { FullFieldSubscription } from "final-form";
 import * as React from "react";
 
 import { Field, FieldRenderProps } from "../../src";
@@ -7,14 +8,14 @@ const NumberInput: React.FC<{ value?: number }> = () => null;
 
 function FormText1({
   input,
-}: FieldRenderProps<string, string, any, HTMLInputElement>) {
+}: FieldRenderProps<string, string, FullFieldSubscription, HTMLInputElement>) {
   // renders OK because of the used generic
   return <input type="text" {...input} />;
 }
 
 function FormText2({
   input,
-}: FieldRenderProps<string, string, any, HTMLSelectElement>) {
+}: FieldRenderProps<string, string, FullFieldSubscription, HTMLSelectElement>) {
   return <select {...input} />;
 }
 

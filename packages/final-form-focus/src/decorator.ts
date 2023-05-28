@@ -1,7 +1,7 @@
 import {
   Decorator,
   FormApi,
-  FormState,
+  FormStateBasedOnSubscription,
   FormValuesShape,
   ValidationErrors,
 } from "final-form";
@@ -9,6 +9,8 @@ import {
 import defaultFindInput from "./findInput";
 import getAllInputs from "./getAllInputs";
 import { FindInput, GetInputs } from "./types";
+
+type DecoratorSubscription = { errors: true; submitErrors: true };
 
 const noop = () => {};
 
@@ -34,9 +36,12 @@ const createDecorator =
     const originalSubmit = form.submit;
 
     // Subscribe to errors, and keep a local copy of them
-    let state: FormState<FormValues> = {};
+    let state = {} as FormStateBasedOnSubscription<
+      FormValues,
+      DecoratorSubscription
+    >;
 
-    const unsubscribe = form.subscribe(
+    const unsubscribe = form.subscribe<DecoratorSubscription>(
       (nextState) => {
         state = nextState;
       },

@@ -7,7 +7,9 @@ export interface AnyObject {
   [key: string]: any;
 }
 
-export type Subscriber<V = any> = (value: V) => void;
+export type Subscriber<Value extends AnyObject = AnyObject> = (
+  value: Value,
+) => void;
 export type IsEqual = (a: any, b: any) => boolean;
 
 export type FormValuesShape = Record<string, any>;
@@ -24,9 +26,50 @@ export type SubmissionErrors = ValidationErrors;
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
+/** Picks keys from a shape type whose values match some type. */
+type KeyOfTypeTest<Shape, Type> = NonNullable<
+  {
+    [Key in keyof Shape]: [Type] extends [Shape[Key]]
+      ? Shape[Key] extends Type
+        ? Key
+        : never
+      : never;
+  }[keyof Shape]
+>;
+
+/**
+ * Gets the state object based on the `Subscription`.
+ *
+ * Unsubscribed to items will be potentially `undefined`, unless they
+ * are not part of the `SubscribableType` (i.e. should always be present
+ * on the state).
+ */
+export type StateBasedOnSubscription<
+  State extends Partial<FormState | FieldState>,
+  Subscription extends Partial<FormSubscription | FieldSubscription>,
+  SubscribableType extends Partial<{ [key in keyof State]: any }> = State, // These keys will be ignored and will remain typed as they are on the `State` object. If omitted, the entire `State` could be potentially `undefined`.
+> = Partial<State> &
+  Pick<State, Exclude<keyof State, keyof SubscribableType>> &
+  Required<Pick<State, keyof State & KeyOfTypeTest<Subscription, true>>>;
+
+/** A key that can be subscribed to in a form. */
 export type FormSubscriptionItem = ArrayElement<typeof formSubscriptionItems>;
 
+/** A subscription to all form state keys, i.e. with all keys marked `true`. */
+export type FullFormSubscription = Record<FormSubscriptionItem, true>;
+
+/** The shape of an object that can be used to subscribe to the form state. */
 export type FormSubscription = Partial<Record<FormSubscriptionItem, boolean>>;
+
+/** The form state that is return depending on the `Subscription` used. */
+export type FormStateBasedOnSubscription<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Subscription extends FormSubscription = {},
+> = StateBasedOnSubscription<
+  FormState<FormValues>,
+  Subscription,
+  FormSubscription
+>; // This complicated type basically means that subscribable keys are potentially optional (depending on the subscription), whereas non-subscribable keys are always present (unless they are optional in the original state type)
 
 /** A helper type for mapping form values to a `Record` of some type. */
 export type FieldsRecord<
@@ -53,14 +96,14 @@ export interface FormState<
    * The name of the currently active field. `undefined`
    * if none are active.
    */
-  active?: string;
+  active: string | undefined;
   /**
    * `true` if the form values are different from the
    * values it was initialized with. `false` otherwise.
    *
    * Comparison is done with shallow-equals.
    */
-  dirty?: boolean;
+  dirty: boolean;
   /**
    * An object full of booleans, with a value of `true`
    * for each `dirty` field. _Pristine fields will not
@@ -71,7 +114,7 @@ export interface FormState<
    * value for that field will be available under
    * `dirty['addresses.shipping.street']`.
    */
-  dirtyFields?: FormDirtyState<FormValues>;
+  dirtyFields: FormDirtyState<FormValues>;
   /**
    * An object full of booleans, with a value of `true`
    * for each field that has a different value from the
@@ -84,7 +127,7 @@ export interface FormState<
    * `dirtySinceLastSubmit` value for that field will be
    * available under `dirty['addresses.shipping.street']`.
    */
-  dirtyFieldsSinceLastSubmit?: FormDirtyState<FormValues>;
+  dirtyFieldsSinceLastSubmit: FormDirtyState<FormValues>;
   /**
    * `true` if the form values are different from the
    * values it was last submitted with. `false`
@@ -92,23 +135,23 @@ export interface FormState<
    *
    * Comparison is done with shallow-equals.
    */
-  dirtySinceLastSubmit?: boolean;
+  dirtySinceLastSubmit: boolean;
   /**
    * The whole-form error returned by a validation
    * function under the `FORM_ERROR` key.
    */
-  error?: any;
+  error: any;
   /**
    * An object containing all the current validation
    * errors. The shape will match the shape of the form's
    * values.
    */
-  errors?: ValidationErrors;
+  errors: ValidationErrors;
   /**
    * `true` when the form currently has submit errors.
    * Useful for distinguishing _why_ `invalid` is `true`.
    */
-  hasSubmitErrors?: boolean;
+  hasSubmitErrors: boolean;
   /**
    * `true` when the form currently has validation
    * errors. Useful for distinguishing _why_ `invalid` is
@@ -120,12 +163,12 @@ export interface FormState<
    * errors causes the form to have sync validation
    * errors.
    */
-  hasValidationErrors?: boolean;
+  hasValidationErrors: boolean;
   /**
    * The values the form was initialized with.
    * `undefined` if the form was never initialized.
    */
-  initialValues?: InitialFormValues<FormValues>;
+  initialValues: InitialFormValues<FormValues> | undefined;
   /**
    * `true` if any of the fields or the form has a
    * validation or submission error. `false` otherwise.
@@ -133,7 +176,7 @@ export interface FormState<
    * Note that a form can be invalid even if the errors
    * do not belong to any currently registered fields.
    */
-  invalid?: boolean;
+  invalid: boolean;
   /**
    * An object full of booleans, with a boolean value for
    * each field name denoting whether that field is
@@ -144,19 +187,19 @@ export interface FormState<
    * value for that field will be available under
    * `modified['addresses.shipping.street']`.
    */
-  modified?: FormBooleanState<FormValues>;
+  modified: FormBooleanState<FormValues>;
   /**
    * `true` if the form values have ever been changed
    * since the last submission. false otherwise.
    */
-  modifiedSinceLastSubmit?: boolean;
+  modifiedSinceLastSubmit: boolean;
   /**
    * `true` if the form values are the same as the
    * initial values. `false` otherwise.
    *
    * Comparison is done with shallow-equals.
    */
-  pristine?: boolean;
+  pristine: boolean;
   /**
    * A top-level status object that you can use to
    * represent form state that can't otherwise be
@@ -167,33 +210,33 @@ export interface FormState<
    * - for capturing and passing through API responses to your
    * inner component;
    */
-  status?: any; // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Status` type. Probably easier for everyone involved to just cast it with `as Type`.
+  status: any; // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Status` type. Probably easier for everyone involved to just cast it with `as Type`.
   /**
    * The whole-form submission error returned by
    * `onSubmit` under the `FORM_ERROR` key.
    */
-  submitError?: any;
+  submitError: any | undefined;
   /**
    * An object containing all the current submission
    * errors. The shape will match the shape of the form's
    * values.
    */
-  submitErrors?: SubmissionErrors;
+  submitErrors: SubmissionErrors | undefined;
   /**
    * `true` if the form was submitted, but the submission
    * failed with submission errors. `false` otherwise.
    */
-  submitFailed?: boolean;
+  submitFailed: boolean;
   /**
    * `true` if the form was successfully submitted.
    * `false` otherwise.
    */
-  submitSucceeded?: boolean;
+  submitSucceeded: boolean;
   /**
    * `true` if the form is currently being submitted
    * asynchronously. `false` otherwise.
    */
-  submitting?: boolean;
+  submitting: boolean;
   /**
    * An object full of booleans, with a boolean value for
    * each field name denoting whether that field is
@@ -204,7 +247,7 @@ export interface FormState<
    * value for that field will be available under
    * `touched['addresses.shipping.street']`.
    */
-  touched?: FormBooleanState<FormValues>;
+  touched: FormBooleanState<FormValues>;
   /**
    * `true` if neither the form nor any of its fields has
    * a validation or submission error. `false` otherwise.
@@ -212,14 +255,14 @@ export interface FormState<
    * Note that a form can be invalid even if the errors do
    * not belong to any currently registered fields.
    */
-  valid?: boolean;
+  valid: boolean;
   /**
    * `true` if the form is currently being validated
    * asynchronously. `false` otherwise.
    */
-  validating?: boolean;
+  validating: boolean;
   /** The current values of the form. */
-  values?: FormValues;
+  values: FormValues;
   /**
    * An object full of booleans, with a boolean value for
    * each field name denoting whether that field is
@@ -230,12 +273,13 @@ export interface FormState<
    * value for that field will be available under
    * `visited['addresses.shipping.street']`.
    */
-  visited?: FormBooleanState<FormValues>;
+  visited: FormBooleanState<FormValues>;
 }
 
 export type FormSubscriber<
   FormValues extends FormValuesShape = FormValuesShape,
-> = Subscriber<FormState<FormValues>>;
+  Subscription extends FormSubscription = {},
+> = Subscriber<FormStateBasedOnSubscription<FormValues, Subscription>>;
 
 /**
  * `FieldState` is an object containing the following
@@ -245,7 +289,7 @@ export type FormSubscriber<
  */
 export interface FieldState<FieldValue = any> {
   /** Whether or not the field currently has focus. */
-  active?: boolean;
+  active: boolean;
   /**
    * A function to blur the field (mark it as inactive). */
   blur: () => void;
@@ -255,23 +299,23 @@ export interface FieldState<FieldValue = any> {
    * A place for arbitrary values to be placed by
    * mutators.
    */
-  data?: AnyObject; // // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Data` type.
+  data: AnyObject | undefined; // // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Data` type.
   /**
    * `true` when the value of the field is not equal to
    * the initial value (using the `isEqual` comparator
    * provided at field registration), `false` if the
    * values are equal.
    */
-  dirty?: boolean;
+  dirty: boolean;
   /**
    * `true` when the value of the field is not equal to
    * the value last submitted (using the `isEqual`
    * comparator provided at field registration), `false`
    * if the values are equal.
    */
-  dirtySinceLastSubmit?: boolean;
+  dirtySinceLastSubmit: boolean;
   /** The current validation error for this field. */
-  error?: any;
+  error: any;
   /**
    * A function to focus the field (mark it as active).
    */
@@ -280,17 +324,17 @@ export interface FieldState<FieldValue = any> {
    * The initial value of the field. `undefined` if it
    * was never initialized.
    */
-  initial?: FieldValue | undefined;
+  initial: FieldValue | undefined;
   /**
    * `true` if the field has a validation error or a
    * submission error. `false` otherwise.
    */
-  invalid?: boolean;
+  invalid: boolean;
   /**
    * The length of the array if the value is an array.
    * `undefined` otherwise.
    */
-  length?: FieldValue extends any[] ? number : undefined;
+  length: FieldValue extends any[] ? number : undefined;
   /**
    * `true` if this field's value has ever been changed.
    * `false` otherwise.
@@ -298,7 +342,7 @@ export interface FieldState<FieldValue = any> {
    * Once `true`, it will remain `true` for the lifetime * of the field, or until the form or field state is
    * reset.
    */
-  modified?: boolean;
+  modified: boolean;
   /**
    * `true` if this field's value has ever been changed
    * since the last submission. `false` otherwise.
@@ -307,67 +351,83 @@ export interface FieldState<FieldValue = any> {
    * submit action, or until the form or field state is
    * reset.
    */
-  modifiedSinceLastSubmit?: boolean;
+  modifiedSinceLastSubmit: boolean;
   /** The name of the field. */
   name: string;
   /**
    * `true` if the current value is `===` to the initial
    * value, `false` if the values are `!==`.
    */
-  pristine?: boolean;
+  pristine: boolean;
   /** The submission error for this field. */
-  submitError?: any;
+  submitError: any | undefined;
   /**
    * `true` if a form submission has been tried and
    * failed. `false` otherwise.
    */
-  submitFailed?: boolean;
+  submitFailed: boolean;
   /**
    * `true` if the form has been successfully submitted.
    * `false` otherwise.
    */
-  submitSucceeded?: boolean;
+  submitSucceeded: boolean;
   /**
    * `true` if the form is currently being submitted
    * asynchronously. `false` otherwise.
    */
-  submitting?: boolean;
+  submitting: boolean;
   /**
    * `true` if this field has ever gained and lost focus.
    * `false` otherwise.
    *
    * Useful for knowing when to display error messages.
    */
-  touched?: boolean;
+  touched: boolean;
   /**
    * `true` if this field has no validation or submission
    * errors. `false` otherwise.
    */
-  valid?: boolean;
+  valid: boolean;
   /**
    * `true` if this field is currently waiting on its
    * asynchronous field-level validation function to
    * resolve. `false` otherwise.
    */
-  validating?: boolean;
+  validating: boolean;
   /** The value of the field. */
-  value?: FieldValue;
+  value: FieldValue;
   /**
    * `true` if this field has ever gained focus. `false`
    * otherwise.
    */
-  visited?: boolean;
+  visited: boolean;
 }
 
+/** A key that can be subscribed to in a field. */
 export type FieldSubscriptionItem = ArrayElement<typeof fieldSubscriptionItems>;
 
+/** A subscription to all field state keys, i.e. with all keys marked `true`. */
+export type FullFieldSubscription = Record<FieldSubscriptionItem, true>;
+
+/** The shape of an object that can be used to subscribe to a field state. */
 export type FieldSubscription = Partial<Record<FieldSubscriptionItem, boolean>>;
 
-export type FieldSubscriber<FieldValue = any> = Subscriber<
-  FieldState<FieldValue>
+/** The form state that is return depending on the `Subscription` used. */
+export type FieldStateBasedOnSubscription<
+  FieldValue = any,
+  Subscription extends FieldSubscription = {},
+> = StateBasedOnSubscription<
+  FieldState<FieldValue>,
+  Subscription,
+  FieldSubscription
 >;
 
-export type Subscribers<T extends Object> = {
+export type FieldSubscriber<
+  FieldValue = any,
+  Subscription extends FieldSubscription = {},
+> = Subscriber<FieldStateBasedOnSubscription<FieldValue, Subscription>>;
+
+export type Subscribers<T extends AnyObject> = {
   index: number;
   entries: {
     [key: number]: {
@@ -490,16 +550,16 @@ export interface FieldConfig<
 export interface RegisterField<
   FormValues extends FormValuesShape = FormValuesShape,
 > {
-  <F extends keyof FormValues>(
+  <F extends keyof FormValues, Subscription extends FieldSubscription = {}>(
     name: F,
-    subscriber: FieldSubscriber<FormValues[F]>,
-    subscription?: FieldSubscription,
+    subscriber: FieldSubscriber<FormValues[F], Subscription>,
+    subscription?: Subscription,
     config?: FieldConfig<FormValues[F], FormValues>,
   ): Unsubscribe;
-  <F extends string>(
+  <F extends string, Subscription extends FieldSubscription = {}>(
     name: F,
-    subscriber: FieldSubscriber<any>,
-    subscription?: FieldSubscription,
+    subscriber: FieldSubscriber<any, Subscription>,
+    subscription?: Subscription,
     config?: FieldConfig<any, FormValues>,
   ): Unsubscribe;
 }
@@ -551,12 +611,7 @@ export interface InternalFormState<
 > extends Partial<
       Pick<
         FormState<FormValues>,
-        | "active"
-        | "error"
-        | "initialValues"
-        | "invalid"
-        | "submitError"
-        | "submitErrors"
+        "active" | "error" | "initialValues" | "submitError" | "submitErrors"
       >
     >,
     Required<
@@ -564,6 +619,7 @@ export interface InternalFormState<
         FormState<FormValues>,
         | "dirtySinceLastSubmit"
         | "errors"
+        | "invalid"
         | "pristine"
         | "status"
         | "submitFailed"
@@ -786,9 +842,9 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
    * - [`FormState`](FormState)
    * - [`Unsubscribe`](Unsubscribe)
    */
-  subscribe: (
-    subscriber: FormSubscriber<FormValues>,
-    subscription: FormSubscription,
+  subscribe: <Subscription extends FormSubscription = {}>(
+    subscriber: FormSubscriber<FormValues, Subscription>,
+    subscription: Subscription,
   ) => Unsubscribe;
 }
 
@@ -796,7 +852,7 @@ export type DebugFunction<
   FormValues extends FormValuesShape = FormValuesShape,
 > = (
   state: FormState<FormValues>,
-  fieldStates: { [key: string]: FieldState<any> },
+  fieldStates: { [key: string]: InternalFieldState<any, FormValues> },
 ) => void;
 
 /**

@@ -6,6 +6,7 @@ import type {
 } from "final-form";
 import { BoundArrayMutators } from "final-form-arrays";
 import {
+  FieldInputPropsBasedOnSubscription,
   FieldMetaState,
   FieldRenderProps,
   FullFieldSubscription,
@@ -24,11 +25,13 @@ export type FieldArrayRenderProps<
 > = {
   fields: {
     forEach: (iterator: (name: string, index: number) => void) => void;
-    length: number;
     map: (iterator: (name: string, index: number) => any) => any[];
-    name: string;
-    value: FieldValue[];
-  } & FieldMutators<FormValues, Mutators>;
+  } & FieldMutators<FormValues, Mutators> &
+    Pick<
+      FieldInputPropsBasedOnSubscription<FieldValue[], Subscription>,
+      "name" | "value"
+    > &
+    Required<Pick<FieldMetaState<FieldValue[], Subscription>, "length">>;
   meta: Omit<FieldMetaState<FieldValue[], Subscription>, "length">;
 };
 

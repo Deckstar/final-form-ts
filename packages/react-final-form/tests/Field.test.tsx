@@ -2,6 +2,7 @@
 import "@testing-library/jest-dom/extend-expect";
 
 import { act, cleanup, fireEvent, render } from "@testing-library/react";
+import { FullFieldSubscription } from "final-form";
 import React from "react";
 
 import Field from "../src/Field";
@@ -1039,7 +1040,7 @@ describe("Field", () => {
               any,
               any,
               any,
-              any,
+              FullFieldSubscription,
               HTMLSelectElement
             > name="selectMultipleInput">
               {({ input }) => (

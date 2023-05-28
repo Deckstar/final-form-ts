@@ -1,4 +1,4 @@
-import type { Mutator, MutatorArguments } from "../src";
+import type { FormSubscriber, Mutator, MutatorArguments } from "../src";
 import { createForm } from "../src";
 import { onSubmitMock } from "./testUtils";
 
@@ -185,7 +185,7 @@ describe("FinalForm.mutators", () => {
       mutators: { goToStep2 },
     });
 
-    type Subscriber = Parameters<typeof form.subscribe>[0];
+    type Subscriber = FormSubscriber<any, { status: true }>;
 
     const formListener = jest.fn<
       ReturnType<Subscriber>,

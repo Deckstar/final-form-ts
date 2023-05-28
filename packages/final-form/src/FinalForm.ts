@@ -10,6 +10,7 @@ import shallowEqual from "./shallowEqual";
 import getIn from "./structure/getIn";
 import setIn from "./structure/setIn";
 import type {
+  AnyObject,
   BoundMutators,
   ChangeValue,
   Config,
@@ -34,6 +35,7 @@ import type {
   MutableState,
   Mutator,
   RenameField,
+  StateBasedOnSubscription,
   Subscriber,
   Subscribers,
   Unsubscribe,
@@ -57,14 +59,20 @@ type InternalState<FormValues extends FormValuesShape = FormValuesShape> = {
   subscribers: Subscribers<FormState<FormValues>>;
 } & MutableState<FormValues>;
 
-export type StateFilter<T> = (
+export type StateFilter<
+  T,
+  Subscription extends FieldSubscription | FormSubscription = {},
+> = (
   state: T,
   previousState: T | null | undefined,
-  subscription: FieldSubscription,
+  subscription: Subscription,
   force?: boolean,
 ) => T | null | undefined;
 
-type StateFilterParams<T> = Parameters<StateFilter<T>>;
+type StateFilterParams<
+  T,
+  Subscription extends FieldSubscription | FormSubscription = {},
+> = Parameters<StateFilter<T, Subscription>>;
 
 const hasAnyError = (errors: FormValuesShape): boolean => {
   return Object.keys(errors).some((key) => {
@@ -78,9 +86,22 @@ const hasAnyError = (errors: FormValuesShape): boolean => {
   });
 };
 
+type ManuallyAddedKeys =
+  | "dirtyFields"
+  | "dirtyFieldsSinceLastSubmit"
+  | "modified"
+  | "touched"
+  | "visited";
+
+/**
+ * Converts an `InternalFormState` to an almost full
+ * `FormState`.
+ */
 function convertToExternalFormState<
   FormValues extends FormValuesShape = FormValuesShape,
->(internalState: InternalFormState<FormValues>): FormState<FormValues> {
+>(
+  internalState: InternalFormState<FormValues>,
+): Omit<FormState<FormValues>, ManuallyAddedKeys> {
   const {
     // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
     active,
@@ -128,20 +149,24 @@ function convertToExternalFormState<
   };
 }
 
-function notifySubscriber<T extends Object>(
-  subscriber: Subscriber<T>,
-  subscription: StateFilterParams<T>[2],
-  state: StateFilterParams<T>[0],
-  lastState: StateFilterParams<T>[1],
+function notifySubscriber<
+  T extends AnyObject,
+  Subscription extends FieldSubscription | FormSubscription = {},
+>(
+  subscriber: Subscriber<StateBasedOnSubscription<T, Subscription>>,
+  subscription: StateFilterParams<T, Subscription>[2],
+  state: StateFilterParams<T, Subscription>[0],
+  lastState: StateFilterParams<T, Subscription>[1],
   filter: StateFilter<T>,
-  force?: StateFilterParams<T>[3],
+  force?: StateFilterParams<T, Subscription>[3],
 ): boolean {
-  const notification: T | null | undefined = filter(
+  const notification = filter(
     state,
     lastState,
     subscription,
     force,
-  );
+  ) as unknown as StateBasedOnSubscription<T, Subscription>;
+
   if (notification) {
     subscriber(notification);
     return true;
@@ -149,7 +174,7 @@ function notifySubscriber<T extends Object>(
   return false;
 }
 
-function notify<T extends Object>(
+function notify<T extends AnyObject>(
   { entries }: Subscribers<T>,
   state: T,
   lastState: T | null | undefined,
@@ -160,9 +185,14 @@ function notify<T extends Object>(
     const entry = entries[Number(key)];
     if (entry) {
       const { subscription, subscriber, notified } = entry;
+
+      type EntrySubscriber = Subscriber<
+        StateBasedOnSubscription<T, typeof subscription>
+      >;
+
       if (
         notifySubscriber(
-          subscriber,
+          subscriber as EntrySubscriber,
           subscription,
           state,
           lastState,
@@ -673,7 +703,15 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       !hasAnyError(formState.errors!) &&
       !(formState.submitErrors && hasAnyError(formState.submitErrors));
 
-    const nextFormState = convertToExternalFormState(formState);
+    /**
+     * The `FormState` that will be returned.
+     *
+     * Note that we add the `ManuallyAddedKeys` below,
+     * based on the `lastFormState`.
+     */
+    const nextFormState = convertToExternalFormState(
+      formState,
+    ) as FormState<FormValues>;
 
     const { modified, touched, visited } = safeFieldKeys.reduce(
       (result, key) => {
@@ -941,11 +979,14 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       preventNotificationWhileValidationPaused = preventNotification;
     },
 
-    registerField: (
-      name: string,
-      subscriber: FieldSubscriber<any>,
-      subscription: FieldSubscription = {},
-      fieldConfig?: FieldConfig<any, FormValues>,
+    registerField: <
+      FieldName extends string,
+      Subscription extends FieldSubscription = {},
+    >(
+      name: FieldName,
+      subscriber: FieldSubscriber<FormValues[FieldName], Subscription>,
+      subscription: Subscription = {} as Subscription,
+      fieldConfig?: FieldConfig<FormValues[FieldName], FormValues>,
     ): Unsubscribe => {
       if (!state.fieldSubscribers[name]) {
         state.fieldSubscribers[name] = { index: 0, entries: {} };
@@ -954,6 +995,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
       // save field subscriber callback
       state.fieldSubscribers[name].entries[index] = {
+        // @ts-ignore
         subscriber: memoize(subscriber),
         subscription,
         notified: false,
@@ -1335,9 +1377,9 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       }
     },
 
-    subscribe: (
-      subscriber: FormSubscriber<FormValues>,
-      subscription: FormSubscription,
+    subscribe: <Subscription extends FormSubscription = {}>(
+      subscriber: FormSubscriber<FormValues, Subscription>,
+      subscription: Subscription,
     ): Unsubscribe => {
       if (!subscriber) {
         throw new Error("No callback given.");
@@ -1353,6 +1395,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       const index = subscribers.index++;
 
       subscribers.entries[index] = {
+        // @ts-ignore
         subscriber: memoized,
         subscription,
         notified: false,
@@ -1360,7 +1403,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
       const nextFormState = calculateNextFormState();
 
-      notifySubscriber(
+      notifySubscriber<FormState<FormValues>, Subscription>(
         memoized,
         subscription,
         nextFormState,

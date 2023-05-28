@@ -8,6 +8,7 @@ export { all as fullFormSubscription } from "./ReactFinalForm";
 export { default as Form } from "./ReactFinalForm";
 export type {
   FieldInputProps,
+  FieldInputPropsBasedOnSubscription,
   FieldMetaState,
   FieldProps,
   FieldRenderProps,
@@ -26,7 +27,6 @@ export type { FullFieldSubscription } from "./useField";
 export { all as fullFieldSubscription } from "./useField";
 export { default as useField } from "./useField";
 export { default as useForm } from "./useForm";
-export type { FormStateHookResult } from "./useFormState";
 export { default as useFormState } from "./useFormState";
 
 export function withTypes() {

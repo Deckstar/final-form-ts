@@ -1,7 +1,7 @@
 import type {
   Config,
   FormApi,
-  FormState,
+  FormStateBasedOnSubscription,
   FormSubscription,
   FormSubscriptionItem,
   FormValuesShape,
@@ -109,9 +109,10 @@ export const all = formSubscriptionItems.reduce((result, key) => {
  * </Form>
  * ```
  */
-function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
-  props: Props<FormValues>,
-) {
+function ReactFinalForm<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Subscription extends FormSubscription = FullFormSubscription,
+>(props: Props<FormValues, Subscription>) {
   const {
     debug,
     decorators = [],
@@ -122,7 +123,7 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     keepDirtyOnReinitialize,
     mutators,
     onSubmit,
-    subscription = all,
+    subscription = all as Subscription,
     validate,
     validateOnBlur,
     ...rest
@@ -148,14 +149,17 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     return f;
   });
 
-  // synchronously register and unregister to query form state for our subscription on first render
-  const [state, setState] = React.useState<FormState<FormValues>>(
-    (): FormState<FormValues> => {
-      let initialState: FormState<FormValues> = {};
+  /** The `FieldState` based on the passed in `subscription`. */
+  type SubscribedState = FormStateBasedOnSubscription<FormValues, Subscription>;
 
-      form.subscribe((formState) => {
+  // synchronously register and unregister to query form state for our subscription on first render
+  const [state, setState] = React.useState<SubscribedState>(
+    (): SubscribedState => {
+      let initialState = {} as SubscribedState;
+
+      form.subscribe<Subscription>((formState) => {
         initialState = formState;
-      }, subscription)();
+      }, subscription as Subscription)();
 
       return initialState;
     },
@@ -163,7 +167,7 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
 
   // save a copy of state that can break through the closure
   // on the shallowEqual() line below.
-  const stateRef = React.useRef<FormState<FormValues>>(state);
+  const stateRef = React.useRef<SubscribedState>(state);
   stateRef.current = state;
 
   React.useEffect(() => {
@@ -171,11 +175,11 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     form.isValidationPaused() && form.resumeValidation();
 
     const unsubscriptions: Unsubscribe[] = [
-      form.subscribe((formState) => {
+      form.subscribe<Subscription>((formState) => {
         if (!shallowEqual(formState, stateRef.current)) {
           setState(formState);
         }
-      }, subscription),
+      }, subscription as Subscription),
       ...(decorators
         ? decorators.map((decorator) =>
             // this noop ternary is to appease the flow gods
@@ -256,7 +260,13 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     return form.submit();
   };
 
-  const renderProps: FormRenderProps<FormValues> = {
+  /** We will be rendering props `lazily` (i.e. non-subscribed items will be `undefined`.) */
+  type LazyRenderProps = FormRenderProps<FormValues, Subscription>;
+
+  /** Note that `form` and `handleSubmit` must always be passed in. */
+  type NonLazyRenderProps = Pick<LazyRenderProps, "form" | "handleSubmit">;
+
+  const renderProps: NonLazyRenderProps = {
     form: {
       ...form,
       reset: (eventOrValues) => {
@@ -271,13 +281,14 @@ function ReactFinalForm<FormValues extends FormValuesShape = FormValuesShape>(
     handleSubmit,
   };
 
-  addLazyFormState(renderProps, state);
+  // At this point, `renderProps` gets values from `state` and becomes LazyRenderProps
+  addLazyFormState(renderProps as LazyRenderProps, state);
 
   return React.createElement(
     ReactFinalFormContext.Provider,
     { value: form },
     // @ts-ignore
-    renderComponent(rest, renderProps, "ReactFinalForm"),
+    renderComponent(rest, renderProps as LazyRenderProps, "ReactFinalForm"),
   );
 }
 

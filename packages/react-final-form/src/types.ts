@@ -7,14 +7,15 @@ import type {
   FieldSubscription,
   FieldValidator,
   FormApi,
-  FormState,
+  FormStateBasedOnSubscription,
   FormSubscription,
   FormValuesShape,
+  FullFormSubscription,
+  StateBasedOnSubscription,
 } from "final-form";
 import * as React from "react";
 
 import { FullFieldSubscription } from "./useField";
-import { FormStateHookResult } from "./useFormState";
 
 type SupportedInputs = "input" | "select" | "textarea";
 
@@ -24,10 +25,11 @@ export interface ReactContext<
   reactFinalForm: FormApi<FormValues>;
 }
 
-export interface FieldInputProps<
+/** The field input props that must always be included. */
+interface DefiniteFieldInputProps<
   InputValue = any,
   T extends HTMLElement = HTMLInputElement,
-> extends AnyObject {
+> {
   /** The name of the field. */
   name: string;
   /**
@@ -62,37 +64,40 @@ export interface FieldInputProps<
    * May not be present if you have not subscribed to
    * `value`.
    */
-  value: InputValue;
+  value?: InputValue;
   checked?: boolean;
   multiple?: boolean;
 }
+
+export interface FieldInputProps<
+  InputValue = any,
+  T extends HTMLElement = HTMLInputElement,
+> extends AnyObject,
+    DefiniteFieldInputProps<InputValue, T> {}
+
+export type FieldInputPropsBasedOnSubscription<
+  InputValue = any,
+  Subscription extends FieldSubscription = FullFieldSubscription,
+  T extends HTMLElement = HTMLInputElement,
+> = StateBasedOnSubscription<
+  DefiniteFieldInputProps<InputValue, T>,
+  Subscription,
+  FieldSubscription
+>;
 
 type FieldMetaStateKeys = Exclude<
   keyof FieldState,
   "blur" | "change" | "focus" | "name" | "value"
 >;
 
-/** Picks keys from a shape type whose values match some type. */
-export type KeyOfTypeTest<Shape, Type> = NonNullable<
-  {
-    [Key in keyof Shape]: [Type] extends [Shape[Key]]
-      ? Shape[Key] extends Type
-        ? Key
-        : never
-      : never;
-  }[keyof Shape]
->;
-
 export type FieldMetaState<
   FieldValue = any,
   Subscription extends FieldSubscription = FullFieldSubscription,
-> = Pick<FieldState<FieldValue>, FieldMetaStateKeys> &
-  Required<
-    Pick<
-      FieldState<FieldValue>,
-      keyof FieldState<FieldValue> & KeyOfTypeTest<Subscription, true>
-    >
-  >;
+> = StateBasedOnSubscription<
+  Pick<FieldState<FieldValue>, FieldMetaStateKeys>,
+  Subscription,
+  FieldSubscription
+>;
 
 /**
  * These are the props that `<Field/>` provides to your
@@ -119,7 +124,7 @@ export interface FieldRenderProps<
    * The `input` can be destructured directly into an
    * `<input/>` like so: `<input {...props.input}/>`.
    */
-  input: FieldInputProps<InputValue, T>;
+  input: FieldInputPropsBasedOnSubscription<InputValue, Subscription, T>;
   /**
    * `meta` data about the field.
    *
@@ -135,10 +140,10 @@ export type SubmitEvent = Partial<
   Pick<React.SyntheticEvent, "preventDefault" | "stopPropagation">
 >;
 
-export interface FormRenderProps<
+export type FormRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends FormState<FormValues>,
-    RenderableProps<FormRenderProps<FormValues>> {
+  Subscription extends FormSubscription = FullFormSubscription,
+> = FormStateBasedOnSubscription<FormValues, Subscription> & {
   /** The `FormApi`. */
   form: FormApi<FormValues>;
   /**
@@ -162,16 +167,35 @@ export interface FormRenderProps<
       Pick<React.SyntheticEvent, "preventDefault" | "stopPropagation">
     >,
   ) => Promise<AnyObject | undefined> | undefined;
-}
+};
 
 export type FormSpyRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
-  FS extends FormSubscription = Required<FormSubscription>,
-> = FormStateHookResult<FormValues, FS> & {
-  /** The `FormApi`. */
-  form: FormApi<FormValues>;
-};
+  Subscription extends FormSubscription = FullFormSubscription,
+> = FormStateBasedOnSubscription<FormValues, Subscription> &
+  Pick<FormRenderProps<FormValues, Subscription>, "form">;
 
+/**
+ * Props that can be used to render content, namely
+ * `children`, `component` or `render`.
+ *
+ * The components will receive `Props` as parameters.
+ *
+ * ---
+ *  * Note that if you specify `render` or `component`
+ * _and_ `children`, `render` will be called, with
+ * `children` injected as if it were an additional
+ * prop. This can be especially useful for doing
+ * something like:
+ *
+ * ```tsx
+ * <Field name="favoriteColor" component="select">
+ *   <option value="FF0000">Red</option>
+ *   <option value="00FF00">Green</option>
+ *   <option value="0000FF">Blue</option>
+ * </Field>
+ * ```
+ */
 export interface RenderableProps<Props = {}> {
   /**
    * A render function that is given `FieldRenderProps`,
@@ -259,56 +283,58 @@ export interface RenderableProps<Props = {}> {
   render?: (props: Props) => React.ReactElement;
 }
 
-export interface FormProps<FormValues extends FormValuesShape = FormValuesShape>
-  extends Config<FormValues>,
-    RenderableProps<FormRenderProps<FormValues>> {
-  /**
-   * _Advanced Usage_
-   *
-   * An object of the parts of `FormState` to subscribe
-   * to. If a subscription is provided, the `<Form/>`
-   * will only rerender when those parts of form state
-   * change.
-   *
-   * If no `subscription` is provided, it will default to
-   * subscribing to _all_ form state changes. i.e.
-   * `<Form/>` will rerender whenever any part of the
-   * form state changes.
-   *
-   * Related:
-   * - `FormState`
-   */
-  subscription?: FormSubscription;
-  /**
-   * An array of decorators to apply to the form.
-   * `<Form/>` will undecorate the form on unmount.
-   *
-   * Related:
-   * - `Decorator`
-   */
-  decorators?: Array<Decorator<FormValues>>;
-  /**
-   * _Advanced Usage_
-   *
-   * If you'd like to construct your own Final Form
-   * `form` instance using `createForm()`, you may do so
-   * and pass it into `<Form/>` as a prop. Doing so will
-   * ignore all the other config props.
-   *
-   * Related:
-   * - `FormApi`
-   */
-  form?: FormApi<FormValues>;
-  /**
-   * A predicate to determine whether or not the
-   * `initialValues` prop has changed, i.e. to know if
-   * the form needs to be reinitialized with the new
-   * values. Useful for passing in a "deep equals"
-   * function if you need to. Defaults to "shallow equals".
-   */
-  initialValuesEqual?: (a?: AnyObject, b?: AnyObject) => boolean;
-  [otherProp: string]: any;
-}
+export type FormProps<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Subscription extends FormSubscription = FullFormSubscription,
+> = Config<FormValues> &
+  RenderableProps<FormRenderProps<FormValues, Subscription>> & {
+    /**
+     * _Advanced Usage_
+     *
+     * An object of the parts of `FormState` to subscribe
+     * to. If a subscription is provided, the `<Form/>`
+     * will only rerender when those parts of form state
+     * change.
+     *
+     * If no `subscription` is provided, it will default to
+     * subscribing to _all_ form state changes. i.e.
+     * `<Form/>` will rerender whenever any part of the
+     * form state changes.
+     *
+     * Related:
+     * - `FormState`
+     */
+    subscription?: Subscription;
+    /**
+     * An array of decorators to apply to the form.
+     * `<Form/>` will undecorate the form on unmount.
+     *
+     * Related:
+     * - `Decorator`
+     */
+    decorators?: Array<Decorator<FormValues>>;
+    /**
+     * _Advanced Usage_
+     *
+     * If you'd like to construct your own Final Form
+     * `form` instance using `createForm()`, you may do so
+     * and pass it into `<Form/>` as a prop. Doing so will
+     * ignore all the other config props.
+     *
+     * Related:
+     * - `FormApi`
+     */
+    form?: FormApi<FormValues>;
+    /**
+     * A predicate to determine whether or not the
+     * `initialValues` prop has changed, i.e. to know if
+     * the form needs to be reinitialized with the new
+     * values. Useful for passing in a "deep equals"
+     * function if you need to. Defaults to "shallow equals".
+     */
+    initialValuesEqual?: (a?: AnyObject, b?: AnyObject) => boolean;
+    [otherProp: string]: any;
+  };
 
 export interface UseFieldConfig<
   FieldValue = any,
@@ -494,10 +520,12 @@ export interface FieldProps<
 
 export interface UseFormStateParams<
   FormValues extends FormValuesShape = FormValuesShape,
-  FS extends FormSubscription = Required<FormSubscription>,
+  Subscription extends FormSubscription = FullFormSubscription,
 > {
-  onChange?: (formState: FormState<FormValues>) => void;
-  subscription?: FS;
+  onChange?: (
+    formState: FormStateBasedOnSubscription<FormValues, Subscription>,
+  ) => void;
+  subscription?: Subscription;
 }
 
 export interface FormSpyProps<

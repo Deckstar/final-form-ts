@@ -11,7 +11,7 @@ const addLazyState = <
   FieldValue = any,
 >(
   dest: AnyObject,
-  state: State,
+  state: Partial<State>,
   keys: (string & keyof State)[],
 ): void => {
   keys.forEach((key) => {
@@ -26,7 +26,7 @@ export const addLazyFormState = <
   FormValues extends FormValuesShape = FormValuesShape,
 >(
   dest: AnyObject,
-  state: FormState<FormValues>,
+  state: Partial<FormState<FormValues>>,
 ): void =>
   addLazyState(dest, state, [
     "active",
@@ -57,7 +57,7 @@ export const addLazyFormState = <
 
 export const addLazyFieldMetaState = (
   dest: AnyObject,
-  state: FieldState,
+  state: Partial<FieldState>,
 ): void =>
   addLazyState(dest, state, [
     "active",

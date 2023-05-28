@@ -1,4 +1,8 @@
-import type { FormSubscription, FormValuesShape } from "final-form";
+import type {
+  FormSubscription,
+  FormValuesShape,
+  FullFormSubscription,
+} from "final-form";
 
 import isSyntheticEvent from "./isSyntheticEvent";
 import renderComponent from "./renderComponent";
@@ -96,10 +100,10 @@ import useFormState from "./useFormState";
  */
 function FormSpy<
   FormValues extends FormValuesShape = FormValuesShape,
-  FS extends FormSubscription = Required<FormSubscription>,
->({ onChange, subscription, ...rest }: Props<FormValues, FS>) {
+  Subscription extends FormSubscription = FullFormSubscription,
+>({ onChange, subscription, ...rest }: Props<FormValues, Subscription>) {
   const reactFinalForm = useForm<FormValues>("FormSpy");
-  const state = useFormState<FormValues, FS>({
+  const state = useFormState<FormValues, Subscription>({
     onChange,
     subscription,
   });
@@ -108,7 +112,13 @@ function FormSpy<
     return null;
   }
 
-  const renderProps: Pick<FormSpyRenderProps<FormValues, FS>, "form"> = {
+  /** We will be rendering props `lazily` (i.e. non-subscribed items will be `undefined`.) */
+  type LazyRenderProps = FormSpyRenderProps<FormValues, Subscription>;
+
+  /** Note that `form` must always be passed in. */
+  type NonLazyRenderProps = Pick<LazyRenderProps, "form">;
+
+  const renderProps: NonLazyRenderProps = {
     form: {
       ...reactFinalForm,
       reset: (eventOrValues) => {
@@ -126,7 +136,7 @@ function FormSpy<
     {
       ...rest,
       ...renderProps,
-    } as FormSpyRenderProps<FormValues, FS>,
+    } as LazyRenderProps,
     state,
     "FormSpy",
   );

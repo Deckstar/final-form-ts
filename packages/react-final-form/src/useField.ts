@@ -1,18 +1,19 @@
 import type {
   FieldConfig,
-  FieldState,
   FieldSubscription,
   FormApi,
   FormValuesShape,
 } from "final-form";
 import { FieldSubscriptionItem, fieldSubscriptionItems } from "final-form";
+import { FieldSubscriber } from "final-form";
 import * as React from "react";
 
+import { FieldStateBasedOnSubscription } from "../../final-form/src/types";
 import { addLazyFieldMetaState } from "./getters";
 import getValue from "./getValue";
 import isReactNative from "./isReactNative";
 import type {
-  FieldInputProps,
+  FieldInputPropsBasedOnSubscription,
   FieldMetaState,
   FieldRenderProps,
   UseFieldConfig,
@@ -105,7 +106,7 @@ function useField<
     initialValue,
     multiple,
     parse = defaultParse as NonNullable<ConfigParam["parse"]>,
-    subscription = all,
+    subscription = all as Subscription,
     type,
     validateFields,
     value: _value,
@@ -120,7 +121,7 @@ function useField<
    * subscriptions.
    */
   const register = (
-    callback: (fieldState: FieldState<FieldValue>) => void,
+    callback: FieldSubscriber<FormValues[string], Subscription>,
     silent: FieldConfig<FieldValue, FormValues>["silent"],
   ) =>
     // avoid using `state` const in any closures created inside `register`
@@ -128,49 +129,59 @@ function useField<
     // whereas actual `state` would defined in the subsequent `useField` hook
     // execution
     // (that would be caused by `setState` call performed in `register` callback)
-    form.registerField(name, callback, subscription, {
-      afterSubmit,
-      beforeSubmit: () => {
-        const {
-          beforeSubmit,
-          formatOnBlur: wouldFormatOnBlur,
-          format: formatValue = defaultFormat,
-        } = configRef.current;
+    form.registerField<typeof name, Subscription>(
+      name,
+      callback,
+      subscription,
+      {
+        afterSubmit,
+        beforeSubmit: () => {
+          const {
+            beforeSubmit,
+            formatOnBlur: wouldFormatOnBlur,
+            format: formatValue = defaultFormat,
+          } = configRef.current;
 
-        if (wouldFormatOnBlur) {
-          const { value } = form.getFieldState(name)!;
-          const formatted = formatValue(value!, name);
+          if (wouldFormatOnBlur) {
+            const { value } = form.getFieldState(name)!;
+            const formatted = formatValue(value!, name);
 
-          if (formatted !== value) {
-            form.change(name, formatted);
+            if (formatted !== value) {
+              form.change(name, formatted);
+            }
           }
-        }
 
-        return beforeSubmit && beforeSubmit();
+          return beforeSubmit && beforeSubmit();
+        },
+        data,
+        defaultValue,
+        getValidator: () => configRef.current.validate,
+        initialValue,
+        isEqual: (a, b) => (configRef.current.isEqual || defaultIsEqual)(a, b),
+        silent,
+        validateFields,
       },
-      data,
-      defaultValue,
-      getValidator: () => configRef.current.validate,
-      initialValue,
-      isEqual: (a, b) => (configRef.current.isEqual || defaultIsEqual)(a, b),
-      silent,
-      validateFields,
-    });
+    );
 
   const firstRender = React.useRef(true);
 
+  /** The `FieldState` based on the passed in `subscription`. */
+  type SubscribedState = FieldStateBasedOnSubscription<
+    FieldValue,
+    Subscription
+  >;
+
   // synchronously register and unregister to query field state for our subscription on first render
-  const [state, setState] = React.useState<FieldState<FieldValue>>(
-    (): FieldState<FieldValue> => {
-      // @ts-ignore
-      let initialState: FieldState<FieldValue> = {};
+  const [state, setState] = React.useState<SubscribedState>(
+    (): SubscribedState => {
+      let initialState = {} as SubscribedState;
 
       // temporarily disable destroyOnUnregister
       const destroyOnUnregister = form.destroyOnUnregister;
       form.destroyOnUnregister = false;
 
       register((fieldState) => {
-        initialState = fieldState;
+        initialState = fieldState as SubscribedState;
       }, true)();
 
       // return destroyOnUnregister to its original value
@@ -186,7 +197,7 @@ function useField<
         if (firstRender.current) {
           firstRender.current = false;
         } else {
-          setState(fieldState);
+          setState(fieldState as SubscribedState);
         }
       }, false),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -209,9 +220,11 @@ function useField<
 
   addLazyFieldMetaState(meta, state);
 
-  const input: FieldInputProps<InputValue, T> = {
+  type Input = FieldInputPropsBasedOnSubscription<InputValue, Subscription, T>;
+
+  const input: Input = {
     name,
-    get value() {
+    get value(): Input["value"] {
       let value = state.value;
 
       if (formatOnBlur) {
@@ -234,7 +247,7 @@ function useField<
         return (value || []) as InputValue;
       }
 
-      return value as InputValue;
+      return value as unknown as InputValue;
     },
     get checked() {
       let value = state.value;
@@ -305,7 +318,7 @@ function useField<
       state.change(parse(value, name));
     }),
     onFocus: useConstantCallback((_event) => state.focus()),
-  };
+  } as unknown as Input;
 
   if (multiple) {
     input.multiple = multiple;
