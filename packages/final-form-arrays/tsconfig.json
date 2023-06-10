@@ -1,14 +1,10 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "rootDir": ".",
+    "rootDir": "./src",
     "outDir": "dist",
-    "composite": true,
-    "paths": {
-      "final-form": ["../final-form/src"]
-    }
+    "composite": true
   },
-  "include": ["package.json", "./src/**/*", "./tests/**/*"],
+  "include": ["./src/**/*"],
   "references": [{ "path": "../final-form" }]
 }

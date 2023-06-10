@@ -2,14 +2,12 @@
   "name": "@deckstar/react-final-form",
   "version": "1.0.4",
   "description": "🏁 High performance subscription-based form state management for React",
-  "main": "dist/src",
-  "types": "dist/src/index.d.ts",
-  "jsnext:main": "dist/src",
-  "module": "dist/src",
+  "main": "dist",
+  "types": "dist/index.d.ts",
+  "jsnext:main": "dist",
   "sideEffects": false,
   "files": [
-    "dist/src",
-    "dist/package.json"
+    "dist"
   ],
   "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",

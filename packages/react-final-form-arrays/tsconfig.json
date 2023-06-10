@@ -2,16 +2,10 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "lib": ["es2015", "dom"],
-    "baseUrl": ".",
-    "rootDir": ".",
-    "outDir": "dist",
-    "paths": {
-      "final-form": ["../final-form/src"],
-      "final-form-arrays": ["../final-form-arrays/src"],
-      "react-final-form": ["../react-final-form/src"]
-    }
+    "rootDir": "./src",
+    "outDir": "dist"
   },
-  "include": ["package.json", "./src/**/*", "./tests/**/*"],
+  "include": ["./src/**/*"],
   "references": [
     { "path": "../final-form" },
     { "path": "../final-form-arrays" },

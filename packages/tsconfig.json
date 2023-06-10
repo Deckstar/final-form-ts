@@ -1,9 +1,14 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": ["../tsconfig.build.json"],
   "compilerOptions": {
-    "strict": true,
     "noEmit": false,
-    "moduleResolution": "node",
-    "composite": true
+    "composite": true,
+    "paths": {
+      "final-form": ["./final-form/src"],
+      "final-form-arrays": ["./final-form-arrays/src"],
+      "final-form-focus": ["./final-form-focus/src"],
+      "react-final-form": ["./react-final-form/src"],
+      "react-final-form-arrays": ["./react-final-form-arrays/src"]
+    }
   }
 }
