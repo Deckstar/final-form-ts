@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/final-form-arrays",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Array Mutators for 🏁 Final Form",
   "main": "dist",
   "types": "dist/index.d.ts",
