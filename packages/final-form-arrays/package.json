@@ -2,12 +2,13 @@
   "name": "@deckstar/final-form-arrays",
   "version": "1.0.5",
   "description": "Array Mutators for 🏁 Final Form",
-  "main": "dist",
-  "types": "dist/index.d.ts",
-  "jsnext:main": "dist",
+  "main": "dist/src",
+  "types": "dist/src/index.d.ts",
+  "jsnext:main": "dist/src",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist/src",
+    "dist/package.json"
   ],
   "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",

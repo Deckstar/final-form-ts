@@ -1,4 +1,9 @@
-import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import type {
+  BoundMutator,
+  FormValuesShape,
+  Mutator,
+  MutatorArguments,
+} from "final-form";
 
 import copyField from "./copyField";
 
@@ -8,14 +13,20 @@ export type SwapArguments<Key extends any = any> = [
   indexB: number,
 ];
 
-export interface Swap<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Swap<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<
+    SwapMutator<FormValues>,
+    SwapArguments,
+    void,
+    FormValues
+  > {
   <Key extends keyof FormValues>(...args: SwapArguments<Key>): void;
   <Key extends string>(...args: SwapArguments<Key>): void;
 }
 
 export interface SwapMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, SwapArguments<keyof FormValues>> {
+> extends Mutator<SwapArguments<keyof FormValues>, void, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<SwapArguments<Key>, FormValues>
   ): void;

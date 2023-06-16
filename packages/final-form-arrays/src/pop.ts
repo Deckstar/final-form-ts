@@ -1,24 +1,26 @@
 import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import { BoundMutator } from "final-form";
 
 import remove from "./remove";
 import { ArrayElement } from "./types";
 
 export type PopArguments<Key extends any = any> = [name: Key];
 
-export interface Pop<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Pop<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<PopMutator<FormValues>, PopArguments, any, FormValues> {
   <Key extends keyof FormValues>(...args: PopArguments<Key>):
-    | (keyof FormValues extends any[] ? ArrayElement<keyof FormValues> : any)
+    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
     | undefined;
   <Key extends string>(...args: PopArguments<Key>): any | undefined;
 }
 
 export interface PopMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, PopArguments<keyof FormValues>> {
+> extends Mutator<PopArguments<keyof FormValues>, unknown, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<PopArguments<Key>, FormValues>
   ):
-    | (keyof FormValues extends any[] ? ArrayElement<keyof FormValues> : any)
+    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
     | undefined;
   <Key extends string>(
     ...mutatorArgs: MutatorArguments<PopArguments<Key>, FormValues>

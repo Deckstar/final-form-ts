@@ -1,11 +1,14 @@
 import type {
   BoundMutators,
-  FieldMutators,
   FieldSubscription,
   FormValuesShape,
   FullFieldSubscription,
+  Mutators,
 } from "final-form";
-import { BoundArrayMutators } from "final-form-arrays";
+import {
+  BoundArrayMutators,
+  DefaultBoundArrayMutators,
+} from "final-form-arrays";
 import {
   FieldInputPropsBasedOnSubscription,
   FieldMetaState,
@@ -16,17 +19,48 @@ import {
 
 export type { RenderableProps };
 
+/** Drops the first item from a tuple type. */
+type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
+
+/** Drops the first parameter from a function type. */
+type DropFirstArg<Func extends (...args: any[]) => any> = (
+  ...argsWithoutFirst: DropFirst<Parameters<Func>>
+) => ReturnType<Func>;
+
+/**
+ * Mutators for an array item in the field render props.
+ *
+ * These have the `name` argument dropped, as it is already bound by the component.
+ */
+export type FieldArrayMutators<
+  FormValues extends FormValuesShape = FormValuesShape,
+  MutatorsAfterBinding extends BoundArrayMutators<
+    Mutators<FormValues>,
+    FormValues
+  > = DefaultBoundArrayMutators<FormValues>,
+> = {
+  [Func in keyof MutatorsAfterBinding]: DropFirstArg<
+    MutatorsAfterBinding[Func]
+  >;
+};
+
+/** Props that get passed into field array items. */
 export type FieldArrayRenderProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
-  Mutators extends BoundMutators<FormValues> &
-    BoundArrayMutators<FormValues> = BoundArrayMutators<FormValues>,
+  MutatorsAfterBinding extends BoundArrayMutators<
+    Mutators<FormValues>,
+    FormValues
+  > = DefaultBoundArrayMutators<FormValues>,
   Subscription extends FieldSubscription = FullFieldSubscription,
 > = {
   fields: {
     forEach: (iterator: (name: string, index: number) => void) => void;
     map: (iterator: (name: string, index: number) => any) => any[];
-  } & FieldMutators<FormValues, Mutators> &
+  } & FieldArrayMutators<
+    FormValues,
+    MutatorsAfterBinding & DefaultBoundArrayMutators<FormValues>
+  > &
     Pick<
       FieldInputPropsBasedOnSubscription<FieldValue[], Subscription>,
       "name" | "value"
@@ -77,8 +111,8 @@ export interface FieldArrayProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FieldSubscription = FullFieldSubscription,
-  Mutators extends BoundMutators<FormValues> &
-    BoundArrayMutators<FormValues> = BoundArrayMutators<FormValues>,
+  MutatorsAfterBinding extends BoundMutators<Mutators<FormValues>, FormValues> &
+    DefaultBoundArrayMutators<FormValues> = DefaultBoundArrayMutators<FormValues>,
   T extends HTMLElement = HTMLInputElement,
   RP extends FieldRenderProps<
     FieldValue[],
@@ -91,7 +125,12 @@ export interface FieldArrayProps<
       keyof RenderableProps
     >,
     RenderableProps<
-      FieldArrayRenderProps<FieldValue, FormValues, Mutators, Subscription>
+      FieldArrayRenderProps<
+        FieldValue,
+        FormValues,
+        MutatorsAfterBinding,
+        Subscription
+      >
     > {
   name: string;
   [otherProp: string]: any;

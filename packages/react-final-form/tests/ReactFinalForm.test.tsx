@@ -843,7 +843,7 @@ describe("ReactFinalForm", () => {
     const newMutators = {
       clearField: (([name], state, { changeValue }) => {
         changeValue(state, name, () => undefined);
-      }) as Mutator,
+      }) as Mutator<[name: string]>,
     };
     const spy = jest.fn();
     const { getByTestId, getByText } = render(

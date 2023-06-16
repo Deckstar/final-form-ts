@@ -1,4 +1,5 @@
 import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import { BoundMutator } from "final-form";
 
 import { ArrayElement } from "./types";
 
@@ -8,7 +9,13 @@ export type UpdateArguments<Key extends any = any, Value extends any = any> = [
   value: Value,
 ];
 
-export interface Update<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Update<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<
+    UpdateMutator<FormValues>,
+    UpdateArguments,
+    void,
+    FormValues
+  > {
   <Key extends keyof FormValues>(
     ...args: UpdateArguments<Key, ArrayElement<FormValues[Key]>>
   ): void;
@@ -17,7 +24,7 @@ export interface Update<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface UpdateMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, UpdateArguments<keyof FormValues>> {
+> extends Mutator<UpdateArguments<keyof FormValues>, void, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       UpdateArguments<Key, ArrayElement<FormValues[Key]>>,

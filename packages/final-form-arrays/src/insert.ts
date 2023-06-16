@@ -1,4 +1,5 @@
 import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import { BoundMutator } from "final-form";
 
 import copyField from "./copyField";
 import { ArrayElement } from "./types";
@@ -10,7 +11,13 @@ export type InsertArguments<Key extends any = any, Value extends any = any> = [
   value: Value,
 ];
 
-export interface Insert<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Insert<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<
+    InsertMutator<FormValues>,
+    InsertArguments,
+    void,
+    FormValues
+  > {
   <Key extends keyof FormValues>(
     ...args: InsertArguments<Key, ArrayElement<FormValues[Key]>>
   ): void;
@@ -19,7 +26,7 @@ export interface Insert<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface InsertMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, InsertArguments<keyof FormValues>> {
+> extends Mutator<InsertArguments<keyof FormValues>, void, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       InsertArguments<Key, ArrayElement<FormValues[Key]>>,

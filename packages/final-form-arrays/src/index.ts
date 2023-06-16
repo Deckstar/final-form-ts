@@ -21,13 +21,14 @@ export type { Remove, RemoveMutator } from "./remove";
 export type { RemoveBatch, RemoveBatchMutator } from "./removeBatch";
 export type { Shift, ShiftMutator } from "./shift";
 export type { Swap, SwapMutator } from "./swap";
+export type { ArrayMutator, ArrayMutators, BoundArrayMutators } from "./types";
 export type { Unshift, UnshiftMutator } from "./unshift";
 export type { Update, UpdateMutator } from "./update";
 
-/** The shape of the mutators as passed in to the final-form config. */
-export interface ArrayMutators<
+/** The shape of the default array mutators as passed in to the final-form config. */
+export type DefaultArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
-> {
+> = {
   /** Inserts a value into the specified index of the field array. */
   insert: InsertMutator<FormValues>;
   /** Concatenates an array at the end of the field array. */
@@ -50,10 +51,10 @@ export interface ArrayMutators<
   update: UpdateMutator<FormValues>;
   /** Inserts a value onto the beginning of the field array. */
   unshift: UnshiftMutator<FormValues>;
-}
+};
 
-/** The shape of the mutators once final-form has bound them to state. */
-export type BoundArrayMutators<
+/** The shape of the default array mutators once final-form has bound them to state. */
+export type DefaultBoundArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
 > = {
   /** Inserts a value into the specified index of the field array. */
@@ -92,6 +93,6 @@ const mutators = {
   swap,
   unshift,
   update,
-} as const satisfies ArrayMutators;
+} as const satisfies DefaultArrayMutators;
 
 export default mutators;

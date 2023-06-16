@@ -1,4 +1,5 @@
 import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import { BoundMutator } from "final-form";
 
 import insert from "./insert";
 import { ArrayElement } from "./types";
@@ -8,7 +9,13 @@ export type UnshiftArguments<Key extends any = any, Value extends any = any> = [
   value: Value,
 ];
 
-export interface Unshift<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Unshift<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<
+    UnshiftMutator<FormValues>,
+    UnshiftArguments,
+    void,
+    FormValues
+  > {
   <Key extends keyof FormValues>(
     ...args: UnshiftArguments<Key, ArrayElement<FormValues[Key]>>
   ): void;
@@ -17,7 +24,7 @@ export interface Unshift<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface UnshiftMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, UnshiftArguments<keyof FormValues>> {
+> extends Mutator<UnshiftArguments<keyof FormValues>, void, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       UnshiftArguments<Key, ArrayElement<FormValues[Key]>>,

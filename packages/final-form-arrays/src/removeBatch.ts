@@ -1,4 +1,9 @@
-import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import type {
+  BoundMutator,
+  FormValuesShape,
+  Mutator,
+  MutatorArguments,
+} from "final-form";
 
 import copyField from "./copyField";
 import { escapeRegexTokens } from "./utils";
@@ -32,19 +37,24 @@ export type RemoveBatchArguments<Key extends any = any> = [
 
 export interface RemoveBatch<
   FormValues extends FormValuesShape = FormValuesShape,
-> {
+> extends BoundMutator<
+    RemoveBatchMutator<FormValues>,
+    RemoveBatchArguments,
+    any[],
+    FormValues
+  > {
   <Key extends keyof FormValues>(
     ...args: RemoveBatchArguments<Key>
-  ): keyof FormValues extends any[] ? keyof FormValues : any[];
+  ): FormValues[Key] extends any[] ? FormValues[Key] : any[];
   <Key extends string>(...args: RemoveBatchArguments<Key>): any[];
 }
 
 export interface RemoveBatchMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, RemoveBatchArguments<keyof FormValues>> {
+> extends Mutator<RemoveBatchArguments<keyof FormValues>, any[], FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<RemoveBatchArguments<Key>, FormValues>
-  ): keyof FormValues extends any[] ? keyof FormValues : any[];
+  ): FormValues[Key] extends any[] ? FormValues[Key] : any[];
   <Key extends string>(
     ...mutatorArgs: MutatorArguments<RemoveBatchArguments<Key>, FormValues>
   ): any[];

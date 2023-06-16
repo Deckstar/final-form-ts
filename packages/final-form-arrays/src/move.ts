@@ -1,4 +1,5 @@
 import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import { BoundMutator } from "final-form";
 
 import copyField from "./copyField";
 import { escapeRegexTokens } from "./utils";
@@ -9,14 +10,20 @@ export type MoveArguments<Key extends any = any> = [
   to: number,
 ];
 
-export interface Move<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Move<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<
+    MoveMutator<FormValues>,
+    MoveArguments,
+    void,
+    FormValues
+  > {
   <Key extends keyof FormValues>(...args: MoveArguments<Key>): void;
   <Key extends string>(...args: MoveArguments<Key>): void;
 }
 
 export interface MoveMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, MoveArguments<keyof FormValues>> {
+> extends Mutator<MoveArguments<keyof FormValues>, void, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<MoveArguments<Key>, FormValues>
   ): void;

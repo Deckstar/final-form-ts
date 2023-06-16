@@ -97,7 +97,11 @@ function simpleSubscription() {
   );
 }
 
-const setValue: Mutator = ([name, newValue], state, { changeValue }) => {
+const setValue: Mutator<[name: string, newValue: any]> = (
+  [name, newValue],
+  state,
+  { changeValue },
+) => {
   changeValue(state, name, (value) => newValue);
 };
 

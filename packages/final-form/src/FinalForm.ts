@@ -11,6 +11,7 @@ import getIn from "./structure/getIn";
 import setIn from "./structure/setIn";
 import type {
   AnyObject,
+  BoundMutator,
   BoundMutators,
   ChangeValue,
   Config,
@@ -33,7 +34,7 @@ import type {
   InternalFormState,
   IsEqual,
   MutableState,
-  Mutator,
+  Mutators,
   RenameField,
   StateBasedOnSubscription,
   Subscriber,
@@ -230,9 +231,9 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     validateOnBlur,
   } = config;
 
-  let mutatorsProp = _mutatorsProp as {
-    [key: string]: Mutator<FormValues>;
-  };
+  let mutatorsProp = _mutatorsProp as Mutators<FormValues>;
+
+  type PassedInMutators = typeof mutatorsProp;
 
   if (!onSubmit) {
     throw new Error("No onSubmit function specified");
@@ -328,8 +329,15 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
   // bind state to mutators
   const getMutatorApi =
-    (key: keyof NonNullable<typeof mutatorsProp>) =>
-    (...args: any[]) => {
+    (
+      key: keyof PassedInMutators,
+    ): BoundMutator<
+      PassedInMutators[typeof key],
+      Parameters<PassedInMutators[typeof key]>[0],
+      ReturnType<PassedInMutators[typeof key]>,
+      FormValues
+    > =>
+    (...args) => {
       if (mutatorsProp) {
         const mutableState: MutableState<FormValues> = {
           formState: state.formState,
@@ -361,11 +369,18 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       }
     };
 
-  const mutatorsApi: BoundMutators<FormValues> = mutatorsProp
+  const mutatorsApi: BoundMutators<PassedInMutators, FormValues> = mutatorsProp
     ? Object.keys(mutatorsProp).reduce((result, key) => {
-        result[key] = getMutatorApi(key);
+        type CurrentMutatorBound = BoundMutator<
+          PassedInMutators[typeof key],
+          Parameters<PassedInMutators[typeof key]>[0],
+          ReturnType<PassedInMutators[typeof key]>,
+          FormValues
+        >;
+
+        result[key] = getMutatorApi(key) as CurrentMutatorBound;
         return result;
-      }, {} as { [mutator: string]: (...args: any[]) => any })
+      }, {} as BoundMutators<PassedInMutators, FormValues>)
     : {};
 
   const runRecordLevelValidation = (

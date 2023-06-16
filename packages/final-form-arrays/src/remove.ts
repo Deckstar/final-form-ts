@@ -4,6 +4,7 @@ import type {
   MutatorArguments,
   SetIn,
 } from "final-form";
+import { BoundMutator } from "final-form";
 
 import copyField from "./copyField";
 import { ArrayElement } from "./types";
@@ -11,20 +12,26 @@ import { escapeRegexTokens } from "./utils";
 
 export type RemoveArguments<Key extends any = any> = [name: Key, index: number];
 
-export interface Remove<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Remove<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<
+    RemoveMutator<FormValues>,
+    RemoveArguments,
+    any,
+    FormValues
+  > {
   <Key extends keyof FormValues>(...args: RemoveArguments<Key>):
-    | (keyof FormValues extends any[] ? ArrayElement<keyof FormValues> : any)
+    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
     | undefined;
   <Key extends string>(...args: RemoveArguments<Key>): any | undefined;
 }
 
 export interface RemoveMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, RemoveArguments<keyof FormValues>> {
+> extends Mutator<RemoveArguments<keyof FormValues>, any, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<RemoveArguments<Key>, FormValues>
   ):
-    | (keyof FormValues extends any[] ? ArrayElement<keyof FormValues> : any)
+    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
     | undefined;
   <Key extends string>(
     ...mutatorArgs: MutatorArguments<RemoveArguments<Key>, FormValues>

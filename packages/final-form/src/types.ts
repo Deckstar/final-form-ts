@@ -742,7 +742,7 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
    * The state-bound versions of the mutators provided to
    * `Config`.
    */
-  mutators: { [key: string]: BoundMutator<FormValues> };
+  mutators: BoundMutators<Mutators<FormValues>, FormValues>;
   /**
    * If called, validation will be paused until
    * `resumeValidation()` is called.
@@ -912,28 +912,33 @@ export interface RenameField<
   ): void;
 }
 
-/** Drops the first item from a tuple type. */
-type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
-
-/** Drops the first parameter from a function type. */
-type DropFirstArg<Func extends (...args: any[]) => any> = (
-  ...argsWithoutFirst: DropFirst<Parameters<Func>>
-) => ReturnType<Func>;
-
-export interface BoundMutator<FormValues> {
-  <Key extends keyof FormValues>(name: Key, ...args: any[]): any;
-  <Key extends string>(name: Key, ...args: any[]): any;
-}
-
-export type BoundMutators<FormValues extends FormValuesShape> = {
-  [mutator: string]: BoundMutator<FormValues>;
-};
-
-export type FieldMutators<
+/**
+ * Converts an unbound mutator type to its bound version.
+ *
+ * This is the bound version of the mutator that's available from the `FormApi`.
+ */
+export type BoundMutator<
+  UnboundMutator extends Mutator<Arguments, Result, FormValues>,
+  Arguments extends any[] = [],
+  Result extends any = any,
   FormValues extends FormValuesShape = FormValuesShape,
-  Mutators extends BoundMutators<FormValues> = BoundMutators<FormValues>,
+> = (...args: Parameters<UnboundMutator>[0]) => ReturnType<UnboundMutator>;
+
+/**
+ * Converts a map of unbound mutators to their bound versions.
+ *
+ * These are the bound versions of the mutators that are available from the `FormApi`.
+ */
+export type BoundMutators<
+  UnboundMutators extends Mutators<FormValues> = {},
+  FormValues extends FormValuesShape = FormValuesShape,
 > = {
-  [Func in keyof Mutators]: DropFirstArg<Mutators[Func]>;
+  [M in keyof UnboundMutators]: BoundMutator<
+    UnboundMutators[M],
+    Parameters<UnboundMutators[M]>[0],
+    ReturnType<UnboundMutators[M]>,
+    FormValues
+  >;
 };
 
 /** Tools that will be passed into the functions used as `mutators`. */
@@ -995,7 +1000,7 @@ export interface Tools<FormValues extends FormValuesShape = FormValuesShape>
 }
 
 export type MutatorArguments<
-  Arguments extends any = any,
+  Arguments extends any[] = [],
   FormValues extends FormValuesShape = FormValuesShape,
 > = [
   args: Arguments,
@@ -1003,11 +1008,27 @@ export type MutatorArguments<
   tools: Tools<FormValues>,
 ];
 
+/**
+ * A mutator type, with its arguments and result optionally typed.
+ *
+ * This is the unbound version of the mutator that gets passed into
+ * the form config.
+ */
 export type Mutator<
+  Arguments extends any[] = [],
+  Result extends any = any,
   FormValues extends FormValuesShape = FormValuesShape,
-  Arguments extends any = any,
-  Result extends any = void,
 > = (...mutatorArgs: MutatorArguments<Arguments, FormValues>) => Result;
+
+/**
+ * A generic type for a map of mutators.
+ *
+ * This are the unbound versions of the mutators that get passed into
+ * the form config.
+ */
+export type Mutators<FormValues extends FormValuesShape = FormValuesShape> = {
+  [mutator: string]: Mutator<any, any, FormValues>;
+};
 
 /**
  * Configuration options that are passed into the form.
@@ -1059,8 +1080,8 @@ export interface Config<FormValues extends FormValuesShape = FormValuesShape> {
   keepDirtyOnReinitialize?: boolean;
   /** Named `Mutator` functions. */
   mutators?:
-    | { [key: string]: Mutator } // Note: these mutators are purposefully flexible regarding the generic parameters. This is so the input could be easier, and so it would accept constant values.
-    | { [key: string]: Mutator<FormValues> };
+    | Mutators // Note: these mutators are purposefully flexible regarding the generic parameters. This is so the input could be easier, and so it would accept constant values.
+    | Mutators<FormValues>;
   /**
    * Function to call when the form is submitted. There
    * are three possible ways to write an `onSubmit`

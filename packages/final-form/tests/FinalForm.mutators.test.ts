@@ -4,16 +4,16 @@ import { onSubmitMock } from "./testUtils";
 
 describe("FinalForm.mutators", () => {
   it("should allow mutators to mutate state", () => {
-    const clear = jest.fn<void, Parameters<Mutator>>(
+    const clear = jest.fn<void, Parameters<Mutator<[name: string]>>>(
       ([name], state, { changeValue }) => {
         changeValue(state, name, () => undefined);
       },
-    ) as Mutator;
-    const upper = jest.fn<void, Parameters<Mutator>>(
+    ) as Mutator<[name: string]>;
+    const upper = jest.fn<void, Parameters<Mutator<[name: string]>>>(
       ([name], state, { changeValue }) => {
         changeValue(state, name, (value: any) => value && value.toUpperCase());
       },
-    ) as Mutator;
+    ) as Mutator<[name: string]>;
 
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -49,11 +49,11 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should allow changeValue to modify a non-registered field", () => {
-    const upper = jest.fn<void, Parameters<Mutator>>(
+    const upper = jest.fn<void, Parameters<Mutator<[name: string]>>>(
       ([name], state, { changeValue }) => {
         changeValue(state, name, (value: any) => value && value.toUpperCase());
       },
-    ) as Mutator;
+    ) as Mutator<[name: string]>;
 
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -196,7 +196,6 @@ describe("FinalForm.mutators", () => {
     expect(formListener).toHaveBeenCalledTimes(1);
     expect(formListener.mock.calls[0][0].status).toEqual("Step 1");
 
-    // @ts-expect-error
     form.mutators.goToStep2();
 
     expect(formListener).toHaveBeenCalledTimes(2);

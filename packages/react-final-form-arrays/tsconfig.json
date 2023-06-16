@@ -2,10 +2,10 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "lib": ["es2015", "dom"],
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "dist"
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "./tests/**/*"],
   "references": [
     { "path": "../final-form" },
     { "path": "../final-form-arrays" },

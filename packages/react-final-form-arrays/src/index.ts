@@ -1,5 +1,6 @@
 export { default as FieldArray } from "./FieldArray";
 export type {
+  FieldArrayMutators,
   FieldArrayProps,
   FieldArrayRenderProps,
   RenderableProps,

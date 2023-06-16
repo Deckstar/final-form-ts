@@ -2,12 +2,13 @@
   "name": "@deckstar/final-form",
   "version": "1.0.5",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
-  "main": "dist",
-  "types": "dist/index.d.ts",
-  "jsnext:main": "dist",
+  "main": "dist/src",
+  "types": "dist/src/index.d.ts",
+  "jsnext:main": "dist/src",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist/src",
+    "dist/package.json"
   ],
   "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",

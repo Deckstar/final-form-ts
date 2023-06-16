@@ -1,4 +1,5 @@
 import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
+import { BoundMutator } from "final-form";
 
 import { ArrayElement } from "./types";
 
@@ -7,7 +8,13 @@ export type PushArguments<Key extends any = any, Value extends any = any> = [
   value: Value,
 ];
 
-export interface Push<FormValues extends FormValuesShape = FormValuesShape> {
+export interface Push<FormValues extends FormValuesShape = FormValuesShape>
+  extends BoundMutator<
+    PushMutator<FormValues>,
+    PushArguments,
+    void,
+    FormValues
+  > {
   <Key extends keyof FormValues>(
     ...args: PushArguments<Key, FormValues[Key]>
   ): void;
@@ -16,7 +23,7 @@ export interface Push<FormValues extends FormValuesShape = FormValuesShape> {
 
 export interface PushMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<FormValues, PushArguments<keyof FormValues>> {
+> extends Mutator<PushArguments<keyof FormValues>, void, FormValues> {
   <Key extends keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
       PushArguments<Key, ArrayElement<FormValues[Key]>>,

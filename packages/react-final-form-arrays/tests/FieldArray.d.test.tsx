@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import arrayMutators, { BoundArrayMutators } from "final-form-arrays";
+import arrayMutators, { DefaultBoundArrayMutators } from "final-form-arrays";
 import * as React from "react";
 import { Field, Form } from "react-final-form";
 
@@ -10,7 +10,7 @@ const onSubmit = async (values: any) => {
   console.log(values);
 };
 
-type FormValues = { customers: any[] };
+type FormValues = { customers: { firstName: string; lastName: string }[] };
 
 const basic = () => (
   <Form<FormValues>
@@ -29,7 +29,7 @@ const basic = () => (
       submitting,
       values,
     }) => {
-      const { push, pop } = mutators as BoundArrayMutators<FormValues>;
+      const { push, pop } = mutators as DefaultBoundArrayMutators<FormValues>;
 
       return (
         <form onSubmit={handleSubmit}>
