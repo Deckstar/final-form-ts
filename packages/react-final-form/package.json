@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/react-final-form",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "🏁 High performance subscription-based form state management for React",
   "main": "dist/src",
   "types": "dist/src/index.d.ts",
