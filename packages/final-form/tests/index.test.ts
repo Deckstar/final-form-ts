@@ -135,8 +135,10 @@ form2.subscribe(
   { pristine: true },
 );
 
+type Name = keyof FormValues2;
+
 // mutators
-const setValue: Mutator<[name: string, value: any], void, FormValues2> = (
+const setValue: Mutator<[name: Name, value: any], void, FormValues2> = (
   [name, newValue],
   state,
   { changeValue },

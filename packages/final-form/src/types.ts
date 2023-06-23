@@ -656,10 +656,12 @@ export interface InternalFormState<
 
 export type ConfigKey = keyof Config;
 
-export interface Change<FormValues extends FormValuesShape = FormValuesShape> {
-  <F extends keyof FormValues>(name: F, value?: FormValues[F]): void;
-  <F extends string>(name: F, value?: any): void;
-}
+export type Change<FormValues extends FormValuesShape = FormValuesShape> = <
+  F extends string,
+>(
+  name: F,
+  value: FormValues[F] extends never ? any : FormValues[F],
+) => void;
 
 type NonOptionalKeys<T> = {
   [Key in keyof T]-?: undefined extends T[Key] ? never : Key;
@@ -883,34 +885,24 @@ export interface MutableState<
   lastFormState?: FormState<FormValues>;
 }
 
-export interface ChangeValue<
-  FormValues extends FormValuesShape = FormValuesShape,
-> {
-  <Name extends keyof FormValues>(
+export type ChangeValue<FormValues extends FormValuesShape = FormValuesShape> =
+  <Name extends string & keyof FormValues>(
     mutableState: MutableState<FormValues>,
     name: Name,
-    mutate: (oldValue: FormValues[Name]) => FormValues[Name],
-  ): void;
-  <Name extends string>(
-    mutableState: MutableState<FormValues>,
-    name: Name,
-    mutate: (oldValue: any) => any,
-  ): void;
-}
-export interface RenameField<
-  FormValues extends FormValuesShape = FormValuesShape,
-> {
-  <Name extends keyof FormValues, NewName extends keyof FormValues>(
+    mutate: (
+      oldValue: FormValues[Name] extends never ? any : FormValues[Name],
+    ) => FormValues[Name] extends never ? any : FormValues[Name],
+  ) => void;
+
+export type RenameField<FormValues extends FormValuesShape = FormValuesShape> =
+  <
+    Name extends string & keyof FormValues,
+    NewName extends string & keyof FormValues,
+  >(
     mutableState: MutableState<FormValues>,
     from: Name,
     to: NewName,
-  ): void;
-  <Name extends string, NewName extends string>(
-    mutableState: MutableState<FormValues>,
-    from: Name,
-    to: NewName,
-  ): void;
-}
+  ) => void;
 
 /**
  * Converts an unbound mutator type to its bound version.

@@ -289,10 +289,13 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     mState.formState.values = setIn(mState.formState.values, name, after) || {};
   };
 
-  const renameField: RenameField<FormValues> = (
+  const renameField: RenameField<FormValues> = <
+    Name extends string & keyof FormValues,
+    NewName extends string & keyof FormValues,
+  >(
     mState: MutableState<FormValues>,
-    from: string,
-    to: string,
+    from: Name,
+    to: NewName,
   ) => {
     if (mState.fields[from]) {
       mState.fields = {
