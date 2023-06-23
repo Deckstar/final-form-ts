@@ -34,7 +34,7 @@ describe("FinalForm.registerField", () => {
         },
       },
     });
-    // @ts-expect-error
+
     form.mutators.setFieldState();
 
     const spy = jest.fn();

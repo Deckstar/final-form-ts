@@ -61,16 +61,16 @@ describe("FinalForm.setConfig", () => {
   });
 
   it('should update mutators on setConfig("mutators", mutators)', () => {
-    const clear = jest.fn<void, Parameters<Mutator>>(
+    const clear = jest.fn<void, Parameters<Mutator<[name: string]>>>(
       ([name], state, { changeValue }) => {
         changeValue(state, name, () => undefined);
       },
-    ) as Mutator;
-    const upper = jest.fn<void, Parameters<Mutator>>(
+    ) as Mutator<[name: string]>;
+    const upper = jest.fn<void, Parameters<Mutator<[name: string]>>>(
       ([name], state, { changeValue }) => {
         changeValue(state, name, (value) => value && value.toUpperCase());
       },
-    ) as Mutator;
+    ) as Mutator<[name: string]>;
 
     const form = createForm({
       onSubmit: onSubmitMock,

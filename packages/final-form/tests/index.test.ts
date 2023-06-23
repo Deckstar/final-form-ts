@@ -136,7 +136,7 @@ form2.subscribe(
 );
 
 // mutators
-const setValue: Mutator<FormValues2> = (
+const setValue: Mutator<[name: string, value: any], void, FormValues2> = (
   [name, newValue],
   state,
   { changeValue },
