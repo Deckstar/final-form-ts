@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/react-final-form-arrays",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A component for rendering and editing arrays 🏁 React Final Form",
   "main": "dist/src",
   "types": "dist/src/index.d.ts",
