@@ -381,7 +381,7 @@ export interface UseFieldConfig<
    * `v => v`, to `format`. If you do this, making sure
    * your inputs are "controlled" is up to you.**
    */
-  format?: (value: FieldValue, name: string) => InputValue;
+  format?: (fieldValue: FieldValue, name: string) => InputValue;
   /**
    * If `true`, the `format` function will only be called
    * when the field is blurred. If `false`, `format` will
@@ -401,10 +401,10 @@ export interface UseFieldConfig<
    * A function that takes the value from the input and
    * name of the field and converts the value into the
    * value you want stored as this field's value in the
-   * form. Common usecases include converting strings
+   * form. Common use cases include converting strings
    * into `Number`s or parsing localized dates into
    * actual javascript `Date` objects. Almost always used
-   * in conjuction with `format`.
+   * in conjunction with `format`.
    *
    * **Note: If would like to override the default
    * behavior of converting `''` to `undefined`, you can
@@ -412,7 +412,7 @@ export interface UseFieldConfig<
    * `v => v`, to `parse`, thus allowing you to have form
    * values of `''`.**
    */
-  parse?: (value: InputValue, name: string) => FieldValue;
+  parse?: (inputValue: InputValue, name: string) => FieldValue;
   /**
    * An object of the parts of `FieldState` to subscribe
    * to. If a subscription is provided, the `<Field/>`
