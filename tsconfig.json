@@ -106,11 +106,11 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */,
     "paths": {
-      "final-form": ["./packages/final-form"],
-      "final-form-arrays": ["./packages/final-form-arrays"],
-      "final-form-focus": ["./packages/final-form-focus"],
-      "react-final-form": ["./packages/react-final-form"],
-      "react-final-form-arrays": ["./packages/react-final-form-arrays"]
+      "final-form": ["./packages/final-form/src"],
+      "final-form-arrays": ["./packages/final-form-arrays/src"],
+      "final-form-focus": ["./packages/final-form-focus/src"],
+      "react-final-form": ["./packages/react-final-form/src"],
+      "react-final-form-arrays": ["./packages/react-final-form-arrays/src"]
     }
   },
   "exclude": ["**/dist"],
