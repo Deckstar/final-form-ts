@@ -1,7 +1,7 @@
 /* eslint-env node */
 
 /** @type {import("eslint").Linter.Config} */
-module.exports = {
+const eslintConfig = {
   extends: ["plugin:prettier/recommended"],
   parser: "@typescript-eslint/parser",
   plugins: [
@@ -32,3 +32,5 @@ module.exports = {
     "simple-import-sort/exports": "error",
   },
 };
+
+module.exports = eslintConfig;
