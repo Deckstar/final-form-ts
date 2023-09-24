@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "yarn@3.5.0",
   "scripts": {
-    "compile": "tsc --build --force tsconfig.build.json",
+    "compile": "tsc --build --force tsconfig.json",
     "clean": "yarn find-dist -exec rm -rf '{}' + && yarn find-build-info -exec rm -rf '{}' +",
     "find-dist": "find \"./packages\" -type d -name \"dist\" -maxdepth 2",
     "find-build-info": "find ./packages -name \"*.tsbuildinfo\" -maxdepth 2"
