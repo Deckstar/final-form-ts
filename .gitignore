@@ -17,3 +17,8 @@ node_modules
 
 # TypeScript
 tsconfig.tsbuildinfo
+
+# dist
+dist
+build
+tmpBuild
