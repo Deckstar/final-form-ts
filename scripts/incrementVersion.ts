@@ -42,9 +42,9 @@ const askForNewVersionNumber = async (): Promise<
     type: "list",
     choices: [
       { name: `${currentVersion} (current)`, value: currentVersion },
-      { name: patchIncrement, value: patchIncrement },
-      { name: minorIncrement, value: minorIncrement },
-      { name: majorIncrement, value: majorIncrement },
+      { name: `${patchIncrement} (patch)`, value: patchIncrement },
+      { name: `${minorIncrement} (minor)`, value: minorIncrement },
+      { name: `${majorIncrement} (major)`, value: majorIncrement },
     ],
   });
 
