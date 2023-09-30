@@ -11,7 +11,9 @@
     "clean": "yarn find-dist -exec rm -rf '{}' + && yarn find-build-info -exec rm -rf '{}' + && rm -rf ./dist",
     "find-dist": "find \"./packages\" -type d -name \"dist\" -maxdepth 2",
     "find-build-info": "find ./packages -name \"*.tsbuildinfo\" -maxdepth 2",
-    "increment-version": "ts-node scripts/incrementVersion.ts"
+    "increment-version": "ts-node scripts/incrementVersion.ts",
+    "prepare-for-publish": "yarn increment-version && yarn build-files",
+    "publish-all": "yarn prepare-for-publish && yarn lerna publish from-package"
   },
   "workspaces": {
     "packages": [
