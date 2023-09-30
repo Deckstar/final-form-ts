@@ -1,5 +1,11 @@
 import React, { PropsWithChildren } from "react";
 
+export const onSubmitMock = <T extends any>(
+  _values: T,
+  _form: any,
+  _callback?: (...args: any) => any,
+) => {};
+
 export const wrapWith =
   (
     mock: (...args: any[]) => any,
@@ -11,7 +17,11 @@ export const wrapWith =
   };
 
 /** A simple container component that allows boolean to be toggled with a button */
-export function Toggle({ children }: PropsWithChildren<any>) {
+export function Toggle({
+  children,
+}: {
+  children: (onState: boolean) => React.ReactNode;
+}) {
   const [on, setOn] = React.useState(false);
   return (
     <div>

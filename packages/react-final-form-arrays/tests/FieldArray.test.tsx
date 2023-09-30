@@ -5,14 +5,10 @@ import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import arrayMutators from "final-form-arrays";
 import React from "react";
 import { Field, Form } from "react-final-form";
-import { onSubmitMock } from "react-final-form/tests/testUtils";
-import {
-  ErrorBoundary,
-  Toggle,
-  wrapWith,
-} from "react-final-form/tests/testUtils";
 
 import { FieldArray } from "../src";
+import { onSubmitMock } from "./testUtils";
+import { ErrorBoundary, Toggle, wrapWith } from "./testUtils";
 
 const timeout = (ms?: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));

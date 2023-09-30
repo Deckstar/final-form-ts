@@ -5,9 +5,9 @@ import { act, cleanup, render } from "@testing-library/react";
 import arrayMutators from "final-form-arrays";
 import React from "react";
 import { Form } from "react-final-form";
-import { ErrorBoundary, onSubmitMock } from "react-final-form/tests/testUtils";
 
 import useFieldArray from "../src/useFieldArray";
+import { ErrorBoundary, onSubmitMock } from "./testUtils";
 
 describe("FieldArray", () => {
   afterEach(cleanup);
