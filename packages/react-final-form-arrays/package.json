@@ -20,14 +20,14 @@
   },
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "devDependencies": {
-    "doctoc": "^2.2.1",
-    "final-form": "npm:@deckstar/final-form@1.0.8",
-    "final-form-arrays": "npm:@deckstar/final-form-arrays@1.0.8",
-    "react-final-form": "npm:@deckstar/react-final-form@1.0.8"
+    "@deckstar/final-form": "1.0.8",
+    "@deckstar/final-form-arrays": "1.0.8",
+    "@deckstar/react-final-form": "1.0.8",
+    "doctoc": "^2.2.1"
   },
   "peerDependencies": {
-    "final-form": "npm:@deckstar/final-form@1.0.8",
-    "final-form-arrays": "npm:@deckstar/final-form-arrays@1.0.8",
-    "react-final-form": "npm:@deckstar/react-final-form@1.0.8"
+    "@deckstar/final-form": "1.0.8",
+    "@deckstar/final-form-arrays": "1.0.8",
+    "@deckstar/react-final-form": "1.0.8"
   }
 }

@@ -1496,14 +1496,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deckstar/final-form-arrays@workspace:packages/final-form-arrays":
+"@deckstar/final-form-arrays@1.0.8, @deckstar/final-form-arrays@workspace:packages/final-form-arrays":
   version: 0.0.0-use.local
   resolution: "@deckstar/final-form-arrays@workspace:packages/final-form-arrays"
   dependencies:
+    "@deckstar/final-form": 1.0.8
     doctoc: ^1.3.0
-    final-form: "workspace:packages/final-form"
   peerDependencies:
-    final-form: "workspace:packages/final-form"
+    "@deckstar/final-form": 1.0.8
   languageName: unknown
   linkType: soft
 
@@ -1511,14 +1511,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@deckstar/final-form-focus@workspace:packages/final-form-focus"
   dependencies:
+    "@deckstar/final-form": 1.0.8
     doctoc: ^1.4.0
-    final-form: "workspace:packages/final-form"
   peerDependencies:
-    final-form: "workspace:packages/final-form"
+    "@deckstar/final-form": 1.0.8
   languageName: unknown
   linkType: soft
 
-"@deckstar/final-form@workspace:packages/final-form":
+"@deckstar/final-form@1.0.8, @deckstar/final-form@workspace:packages/final-form":
   version: 0.0.0-use.local
   resolution: "@deckstar/final-form@workspace:packages/final-form"
   dependencies:
@@ -1532,26 +1532,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@deckstar/react-final-form-arrays@workspace:packages/react-final-form-arrays"
   dependencies:
+    "@deckstar/final-form": 1.0.8
+    "@deckstar/final-form-arrays": 1.0.8
+    "@deckstar/react-final-form": 1.0.8
     doctoc: ^2.2.1
-    final-form: "workspace:packages/final-form"
-    final-form-arrays: "workspace:packages/final-form-arrays"
-    react-final-form: "workspace:packages/react-final-form"
   peerDependencies:
-    final-form: "workspace:packages/final-form"
-    final-form-arrays: "workspace:packages/final-form-arrays"
-    react-final-form: "workspace:packages/react-final-form"
+    "@deckstar/final-form": 1.0.8
+    "@deckstar/final-form-arrays": 1.0.8
+    "@deckstar/react-final-form": 1.0.8
   languageName: unknown
   linkType: soft
 
-"@deckstar/react-final-form@workspace:packages/react-final-form":
+"@deckstar/react-final-form@1.0.8, @deckstar/react-final-form@workspace:packages/react-final-form":
   version: 0.0.0-use.local
   resolution: "@deckstar/react-final-form@workspace:packages/react-final-form"
   dependencies:
+    "@deckstar/final-form": 1.0.8
     doctoc: ^2.0.1
     fast-deep-equal: ^3.1.3
-    final-form: "workspace:packages/final-form"
   peerDependencies:
-    final-form: "workspace:packages/final-form"
+    "@deckstar/final-form": 1.0.8
   languageName: unknown
   linkType: soft
 
@@ -5961,15 +5961,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"final-form-arrays@file:packages/final-form-arrays::locator=final-form-ts%40workspace%3A.":
-  version: 1.0.7
-  resolution: "final-form-arrays@file:packages/final-form-arrays#packages/final-form-arrays::hash=0c5502&locator=final-form-ts%40workspace%3A."
-  peerDependencies:
-    final-form: "workspace:packages/final-form"
-  checksum: 88b940b64342683b502fcb8c170fb9d19f2145eaeab35e794cd7206f4525880f9f1df97d96f91d5f8adf05ca48d922b1105a12bd7b20440dd56d6bdd0d85ef97
-  languageName: node
-  linkType: hard
-
 "final-form-ts@workspace:.":
   version: 0.0.0-use.local
   resolution: "final-form-ts@workspace:."
@@ -6004,15 +5995,6 @@ __metadata:
     typescript: ^5.0.4
   languageName: unknown
   linkType: soft
-
-"final-form@file:packages/final-form::locator=final-form-ts%40workspace%3A.":
-  version: 1.0.7
-  resolution: "final-form@file:packages/final-form#packages/final-form::hash=a2c5fb&locator=final-form-ts%40workspace%3A."
-  dependencies:
-    "@babel/runtime": ^7.10.0
-  checksum: cfa0e07031b72579d89a38f7b578abd5b8b1c60f9c43f9dae7381b2315a4655d1ec52bb7820bd3ad2d4a6e73288982b9cf00b9a70d9398ecfae268410a099e4b
-  languageName: node
-  linkType: hard
 
 "find-up@npm:5.0.0, find-up@npm:^5.0.0":
   version: 5.0.0
@@ -10431,15 +10413,6 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
   checksum: 7d323310bea3a91be2965f9468d552f201b1c27891e45ddc2d6b8f717680c95a75ae0bc1e3f5cf41472446a2589a75aed4483aee8169287909fcd59ad149e8cc
-  languageName: node
-  linkType: hard
-
-"react-final-form@file:packages/react-final-form::locator=final-form-ts%40workspace%3A.":
-  version: 1.0.7
-  resolution: "react-final-form@file:packages/react-final-form#packages/react-final-form::hash=3860e5&locator=final-form-ts%40workspace%3A."
-  peerDependencies:
-    final-form: "workspace:packages/final-form"
-  checksum: d88f2bb9c08cdb6d432349221616f9201baadb947eeb39e513cc6d513d1a0ccaa615dea06e0682d1ec83bb23e5eadc1dd535dd2bed752798c88db70b176c346b
   languageName: node
   linkType: hard
 

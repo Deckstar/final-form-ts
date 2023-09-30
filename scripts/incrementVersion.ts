@@ -1,8 +1,16 @@
 import fs from "fs/promises";
 import inquirer from "inquirer";
-import { invert, isPlainObject, map, mapValues, split, toNumber } from "lodash";
+import {
+  invert,
+  isPlainObject,
+  map,
+  mapKeys,
+  mapValues,
+  split,
+  toNumber,
+} from "lodash";
 
-import { DESTINATION, PACKAGES, Packages } from "./_constants";
+import { DESTINATION, Package, PACKAGES, Packages } from "./_constants";
 
 const MONOREPO_PACKAGE_JSON =
   `${__dirname}/../package.json` as `${string}/../package.json`;
@@ -77,10 +85,10 @@ const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
     }) as [...PackageJSONsForPackages]),
   ];
 
-  const packagesMap = invert(PACKAGES) as unknown as Record<
-    (typeof PACKAGES)[number],
-    number
-  >;
+  const packagesMap = mapKeys(
+    invert(PACKAGES) as unknown as Record<Package, number>,
+    (_index, pkg) => `@deckstar/${pkg as Package}`,
+  ) as Record<`@deckstar/${Package}`, number>;
 
   for (const pkgJSONPath of pkgJSONs) {
     const pkgJson = (await fs.readFile(pkgJSONPath)) as unknown as string;
@@ -90,14 +98,6 @@ const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
       pkgJsonObj,
       function editValue(value, key): (typeof pkgJsonObj)[string] {
         if (isPlainObject(value)) {
-          /**
-           * Resolutions in our monorepo "package.json" are an exception
-           * — we want them to stay as they were defined.
-           */
-          const isResolutionsField =
-            pkgJSONPath === MONOREPO_PACKAGE_JSON && key == "resolutions";
-          if (isResolutionsField) return value;
-
           const recursedObj = mapValues(value, editValue);
           return recursedObj;
         }
@@ -107,11 +107,9 @@ const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
         }
 
         if (key in packagesMap) {
-          /** @type {keyof typeof packagesMap} */
-          const packageName = key;
+          // const packageName = key as keyof typeof packagesMap;
 
-          const packageVersion = `npm:@deckstar/${packageName}@${newVersionNumber}`;
-          return packageVersion;
+          return newVersionNumber;
         }
 
         return value;

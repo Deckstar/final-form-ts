@@ -20,10 +20,10 @@
   },
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "devDependencies": {
-    "doctoc": "^1.4.0",
-    "final-form": "npm:@deckstar/final-form@1.0.8"
+    "@deckstar/final-form": "1.0.8",
+    "doctoc": "^1.4.0"
   },
   "peerDependencies": {
-    "final-form": "npm:@deckstar/final-form@1.0.8"
+    "@deckstar/final-form": "1.0.8"
   }
 }
