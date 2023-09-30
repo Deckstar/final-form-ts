@@ -95,7 +95,7 @@ describe("ReactFinalForm", () => {
       return (
         <div>
           {shown && <Form onSubmit={onSubmitMock} render={() => <form />} />}
-          <button type="button" onClick={() => setShown(false)}>
+          <button type="button" onClick={() => act(() => setShown(false))}>
             Unmount
           </button>
         </div>

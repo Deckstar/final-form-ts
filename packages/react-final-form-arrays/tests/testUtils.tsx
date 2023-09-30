@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from "react";
+import { act } from "react-dom/test-utils";
 
 export const onSubmitMock = <T extends any>(
   _values: T,
@@ -26,7 +27,7 @@ export function Toggle({
   return (
     <div>
       {children(on)}
-      <button onClick={() => setOn(!on)}>Toggle</button>
+      <button onClick={() => act(() => setOn(!on))}>Toggle</button>
     </div>
   );
 }

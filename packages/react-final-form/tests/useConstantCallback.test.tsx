@@ -42,13 +42,19 @@ describe("useConstantCallback", () => {
           >
             Call
           </button>
-          <button data-testid="changeName" onClick={() => setName("Paul")}>
+          <button
+            data-testid="changeName"
+            onClick={() => act(() => setName("Paul"))}
+          >
             {name}
           </button>
-          <button data-testid="changeAge" onClick={() => setAge(25)}>
+          <button data-testid="changeAge" onClick={() => act(() => setAge(25))}>
             {age}
           </button>
-          <button data-testid="changeAdmin" onClick={() => setAdmin(true)}>
+          <button
+            data-testid="changeAdmin"
+            onClick={() => act(() => setAdmin(true))}
+          >
             {isAdmin ? "Yes" : "No"}
           </button>
         </div>
