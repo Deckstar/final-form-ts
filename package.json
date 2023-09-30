@@ -7,9 +7,10 @@
     "compile:cjs": "tsc --build --force tsconfig.cjs.json",
     "compile:esm": "tsc --build --force tsconfig.esm.json",
     "compile": "yarn compile:cjs && yarn compile:esm",
-    "clean": "yarn find-dist -exec rm -rf '{}' + && yarn find-build-info -exec rm -rf '{}' +",
+    "clean": "yarn find-dist -exec rm -rf '{}' + && yarn find-build-info -exec rm -rf '{}' + && rm -rf ./dist",
     "find-dist": "find \"./packages\" -type d -name \"dist\" -maxdepth 2",
-    "find-build-info": "find ./packages -name \"*.tsbuildinfo\" -maxdepth 2"
+    "find-build-info": "find ./packages -name \"*.tsbuildinfo\" -maxdepth 2",
+    "increment-version": "node scripts/incrementVersion.js"
   },
   "workspaces": {
     "packages": [
@@ -20,6 +21,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@types/eslint": "^8.44.3",
+    "@types/inquirer": "^8.0.0",
     "@types/jest": "^29.5.1",
     "@types/lodash": "^4.14.194",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
@@ -44,6 +46,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "inquirer": "^8.2.4",
     "lerna": "^6.6.2"
   },
   "resolutions": {

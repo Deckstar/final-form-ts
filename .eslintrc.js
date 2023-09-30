@@ -25,6 +25,7 @@ const eslintConfig = {
       },
     ],
     "no-console": "warn",
+    "no-unreachable": "error",
     "prettier/prettier": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",

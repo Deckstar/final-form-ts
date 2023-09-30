@@ -1,32 +1,12 @@
 const fs = require("fs/promises");
 const path = require("path");
 
-/**
- * @typedef {"final-form" | "final-form-arrays" | "final-form-focus" | "react-final-form" | "react-final-form-arrays"} Package
- * @typedef {"cjs" | "esm"} ModuleKind
- */
-
-/**
- * The list of packages in our app.
- *
- * @type {["final-form", "final-form-arrays", "final-form-focus", "react-final-form", "react-final-form-arrays"]}
- */
-const PACKAGES = [
-  "final-form",
-  "final-form-arrays",
-  "final-form-focus",
-  "react-final-form",
-  "react-final-form-arrays",
-];
-
-/**
- * Our folders, resulting as the output of TypeScript compilation.
- * @type {["cjs", "esm"]}
- */
-const DIST_FOLDERS = ["cjs", "esm"];
-
-const SOURCE = `${__dirname}/../dist`;
-const DESTINATION = `${__dirname}/../packages`;
+const {
+  DESTINATION,
+  DIST_FOLDERS,
+  PACKAGES,
+  TS_OUTPUT_DIR,
+} = require("./_constants");
 
 /**
  *
@@ -80,7 +60,7 @@ async function recursivelyMoveFiles(oldPath, newPath) {
  * @param {ModuleKind} kind
  */
 const movePackage = async (pkg, kind) => {
-  const oldPath = `${SOURCE}/${kind}/packages/${pkg}/src`;
+  const oldPath = `${TS_OUTPUT_DIR}/${kind}/packages/${pkg}/src`;
   const newPath = `${DESTINATION}/${pkg}/dist/${kind}`;
 
   await recursivelyMoveFiles(oldPath, newPath);
@@ -104,5 +84,5 @@ const moveCompiled = async () => {
 (async function main() {
   await moveCompiled();
 
-  await fs.rm(SOURCE, { force: true, recursive: true });
+  await fs.rm(TS_OUTPUT_DIR, { force: true, recursive: true });
 })();
