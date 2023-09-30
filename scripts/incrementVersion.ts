@@ -1,56 +1,43 @@
-const fs = require("fs/promises");
-const inquirer = require("inquirer");
-const {
-  split,
-  map,
-  toNumber,
-  mapValues,
-  invert,
-  isPlainObject,
-} = require("lodash");
+import fs from "fs/promises";
+import inquirer from "inquirer";
+import { invert, isPlainObject, map, mapValues, split, toNumber } from "lodash";
 
-const { DESTINATION, PACKAGES } = require("./_constants");
+import { DESTINATION, PACKAGES, Packages } from "./_constants";
 
-/** @type {`${string}/../package.json`} */
-const MONOREPO_PACKAGE_JSON = `${__dirname}/../package.json`;
+const MONOREPO_PACKAGE_JSON =
+  `${__dirname}/../package.json` as `${string}/../package.json`;
 
-/**
- * @typedef {`${number}.${number}.${number}`} VersionNumber
- */
+type VersionNumber = `${number}.${number}.${number}`;
 
 /**
  * Prompts the user in the terminal for the new version number
  * to set in every package.
- *
- * @returns {Promise<[newVersion: VersionNumber, oldVersion: VersionNumber]>}
  */
-const askForNewVersionNumber = async () => {
-  const pkgJson = await fs.readFile(MONOREPO_PACKAGE_JSON);
+const askForNewVersionNumber = async (): Promise<
+  [newVersion: VersionNumber, oldVersion: VersionNumber]
+> => {
+  const pkgJson = (await fs.readFile(
+    MONOREPO_PACKAGE_JSON,
+  )) as unknown as string;
   const pkgJsonObj = JSON.parse(pkgJson);
 
-  /** @type {VersionNumber} */
-  const currentVersion = pkgJsonObj.version;
+  const currentVersion: VersionNumber = pkgJsonObj.version;
 
   const versionStrings = split(currentVersion, ".");
   const [major, minor, patch] = map(versionStrings, toNumber);
 
-  /** @type {VersionNumber} */
-  const patchIncrement = `${major}.${minor}.${patch + 1}`;
+  const patchIncrement: VersionNumber = `${major}.${minor}.${patch + 1}`;
 
-  /** @type {VersionNumber} */
-  const minorIncrement = `${major}.${minor + 1}.0`;
+  const minorIncrement: VersionNumber = `${major}.${minor + 1}.0`;
 
-  /** @type {VersionNumber} */
-  const majorIncrement = `${major + 1}.0.0`;
+  const majorIncrement: VersionNumber = `${major + 1}.0.0`;
 
   const questionTitle =
     "Select the version that you want to set for all packages";
 
-  /**
-   * @typedef {{ [x: string]: VersionNumber }} PromptResults
-   *  @type {PromptResults}
-   */
-  const results = await inquirer.prompt({
+  type PromptResults = { [title in typeof questionTitle]: VersionNumber };
+
+  const results: PromptResults = await inquirer.prompt({
     name: questionTitle,
     type: "list",
     choices: [
@@ -65,32 +52,43 @@ const askForNewVersionNumber = async () => {
   return [selectedVersion, currentVersion];
 };
 
+type ToPackageJSONPath<PackageName extends Packages[number]> =
+  `${typeof DESTINATION}/${PackageName}/package.json`;
+
+type PackageJSONsForPackages = [
+  ToPackageJSONPath<Packages[0]>,
+  ToPackageJSONPath<Packages[1]>,
+  ToPackageJSONPath<Packages[2]>,
+  ToPackageJSONPath<Packages[3]>,
+  ToPackageJSONPath<Packages[4]>,
+];
+
 /**
  * Sets the new version number in every package.json file.
- *
- * @param {VersionNumber} newVersionNumber
  */
-const setNewVersionNumber = async (newVersionNumber) => {
+const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
   const pkgJSONs = [
     MONOREPO_PACKAGE_JSON,
-    ...map(PACKAGES, (pkg) => {
-      /** @type {`${typeof DESTINATION}/${typeof pkg}/package.json`} */
-      const pkgJSONPath = `${DESTINATION}/${pkg}/package.json`;
+    ...(map(PACKAGES, (pkg) => {
+      const pkgJSONPath =
+        `${DESTINATION}/${pkg}/package.json` as `${typeof DESTINATION}/${typeof pkg}/package.json`;
 
       return pkgJSONPath;
-    }),
+    }) as [...PackageJSONsForPackages]),
   ];
 
-  /** @type {Record<(typeof PACKAGES)[number], number>} */
-  const packagesMap = invert(PACKAGES);
+  const packagesMap = invert(PACKAGES) as unknown as Record<
+    (typeof PACKAGES)[number],
+    number
+  >;
 
   for (const pkgJSONPath of pkgJSONs) {
-    const pkgJson = await fs.readFile(pkgJSONPath);
-    const pkgJsonObj = JSON.parse(pkgJson);
+    const pkgJson = (await fs.readFile(pkgJSONPath)) as unknown as string;
+    const pkgJsonObj = JSON.parse(pkgJson) as { [key: string]: any };
 
     const jsonWithNewPackageVersion = mapValues(
       pkgJsonObj,
-      function editValue(value, key) {
+      function editValue(value, key): (typeof pkgJsonObj)[string] {
         if (isPlainObject(value)) {
           /**
            * Resolutions in our monorepo "package.json" are an exception
@@ -101,7 +99,6 @@ const setNewVersionNumber = async (newVersionNumber) => {
           if (isResolutionsField) return value;
 
           const recursedObj = mapValues(value, editValue);
-          // console.log(`encountered object key: ${_key}.`, recursedObj);
           return recursedObj;
         }
 

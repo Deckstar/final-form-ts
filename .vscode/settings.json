@@ -1,4 +1,7 @@
 {
+  "code-runner.executorMap": {
+    "typescript": "\"$workspaceRoot/node_modules/.bin/ts-node\" $fullFileName"
+  },
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },

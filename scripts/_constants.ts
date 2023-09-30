@@ -1,44 +1,37 @@
-/**
- * @typedef {"final-form" | "final-form-arrays" | "final-form-focus" | "react-final-form" | "react-final-form-arrays"} Package
- * @typedef {"cjs" | "esm"} ModuleKind
- */
+export type Package =
+  | "final-form"
+  | "final-form-arrays"
+  | "final-form-focus"
+  | "react-final-form"
+  | "react-final-form-arrays";
+
+export type ModuleKind = (typeof DIST_FOLDERS)[number];
 
 /**
  * The list of packages in our app.
- *
- * @type {["final-form", "final-form-arrays", "final-form-focus", "react-final-form", "react-final-form-arrays"]}
  */
-const PACKAGES = [
+export const PACKAGES = [
   "final-form",
   "final-form-arrays",
   "final-form-focus",
   "react-final-form",
   "react-final-form-arrays",
-];
+] as const;
+
+export type Packages = typeof PACKAGES;
 
 /**
  * Our folders, resulting as the output of TypeScript compilation.
- * @type {["cjs", "esm"]}
  */
-const DIST_FOLDERS = ["cjs", "esm"];
+export const DIST_FOLDERS = ["cjs", "esm"] as const;
 
 /**
  * Where TS outputs the compiled packages.
- *
- * @type {`${string}/../dist`}
  */
-const TS_OUTPUT_DIR = `${__dirname}/../dist`;
+export const TS_OUTPUT_DIR = `${__dirname}/../dist` as `${string}/../dist`;
 
 /**
  * The folder in which we keep our published packages.
- *
- * @type {`${string}/../packages`}
  */
-const DESTINATION = `${__dirname}/../packages`;
-
-module.exports = {
-  PACKAGES,
-  DIST_FOLDERS,
-  TS_OUTPUT_DIR,
-  DESTINATION,
-};
+export const DESTINATION =
+  `${__dirname}/../packages` as `${string}/../packages`;

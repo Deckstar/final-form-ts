@@ -1,29 +1,26 @@
-const fs = require("fs/promises");
-const path = require("path");
+import fs from "fs/promises";
+import path from "path";
 
-const {
+import {
   DESTINATION,
   DIST_FOLDERS,
+  ModuleKind,
+  Package,
   PACKAGES,
   TS_OUTPUT_DIR,
-} = require("./_constants");
+} from "./_constants";
 
 /**
- *
- * @param {string} directory
- * @param {string} item
+ * Combines a directory with a file into a file path.
  */
-const combinePath = (directory, item) => {
+const combinePath = (directory: string, item: string) => {
   return `${directory}/${item}`;
 };
 
 /**
  * Moves files in a folder to a new destination.
- *
- * @param {string} oldPath
- * @param {string} newPath
  */
-async function recursivelyMoveFiles(oldPath, newPath) {
+async function recursivelyMoveFiles(oldPath: string, newPath: string) {
   const dirItems = await fs.readdir(oldPath);
 
   moverLoop: for (const item of dirItems) {
@@ -56,25 +53,27 @@ async function recursivelyMoveFiles(oldPath, newPath) {
 }
 
 /**
- * @param {Package} pkg
- * @param {ModuleKind} kind
+ * Moves a package's files from "dist" into the package's folder.
  */
-const movePackage = async (pkg, kind) => {
-  const oldPath = `${TS_OUTPUT_DIR}/${kind}/packages/${pkg}/src`;
-  const newPath = `${DESTINATION}/${pkg}/dist/${kind}`;
+const movePackage = async (pkg: Package, kind: ModuleKind) => {
+  const oldPath = `${TS_OUTPUT_DIR}/${kind}/packages/${pkg}/src` as const;
+  const newPath = `${DESTINATION}/${pkg}/dist/${kind}` as const;
 
   await recursivelyMoveFiles(oldPath, newPath);
 };
 
 /**
- *  @param {ModuleKind} kind
+ * One-by-one, moves all the packages in a TS output folder.
  */
-const moveFolder = async (kind) => {
+const moveFolder = async (kind: ModuleKind) => {
   for (const pkg of PACKAGES) {
     await movePackage(pkg, kind);
   }
 };
 
+/**
+ * Moves all TS outputs to their package folders.
+ */
 const moveCompiled = async () => {
   for (const folder of DIST_FOLDERS) {
     await moveFolder(folder);

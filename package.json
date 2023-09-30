@@ -4,14 +4,14 @@
   "packageManager": "yarn@3.5.0",
   "version": "1.0.8",
   "scripts": {
-    "build-files": "yarn clean && yarn compile && node scripts/moveCompiled.js",
+    "build-files": "yarn clean && yarn compile && ts-node scripts/moveCompiled.ts",
     "compile:cjs": "tsc --build --force tsconfig.cjs.json",
     "compile:esm": "tsc --build --force tsconfig.esm.json",
     "compile": "yarn compile:cjs && yarn compile:esm",
     "clean": "yarn find-dist -exec rm -rf '{}' + && yarn find-build-info -exec rm -rf '{}' + && rm -rf ./dist",
     "find-dist": "find \"./packages\" -type d -name \"dist\" -maxdepth 2",
     "find-build-info": "find ./packages -name \"*.tsbuildinfo\" -maxdepth 2",
-    "increment-version": "node scripts/incrementVersion.js"
+    "increment-version": "ts-node scripts/incrementVersion.ts"
   },
   "workspaces": {
     "packages": [

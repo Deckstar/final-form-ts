@@ -119,5 +119,6 @@
     "./packages/*/tests",
     "./packages/*/package.json",
     "./packages/*/README.md",
+    "./scripts"
   ]
 }

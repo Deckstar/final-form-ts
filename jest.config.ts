@@ -1,14 +1,7 @@
 import type { JestConfigWithTsJest } from "ts-jest";
 import { defaultsESM } from "ts-jest/presets";
 
-/** The list of packages in our app. */
-const PACKAGES = [
-  "final-form",
-  "final-form-arrays",
-  "final-form-focus",
-  "react-final-form",
-  "react-final-form-arrays",
-] as const;
+import { PACKAGES } from "./scripts/_constants";
 
 const PROJECTS: JestConfigWithTsJest["projects"] = PACKAGES.map(
   (packageName) => ({
