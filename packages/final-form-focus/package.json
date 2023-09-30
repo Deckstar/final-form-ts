@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/final-form-focus",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Decorator that will attempt to apply focus to the first field with an error upon an attempted form submission in 🏁 Final Form",
   "main": "dist/cjs",
   "module": "dist/esm",
@@ -21,9 +21,9 @@
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "devDependencies": {
     "doctoc": "^1.4.0",
-    "final-form": "workspace:packages/final-form"
+    "final-form": "npm:@deckstar/final-form@1.0.8"
   },
   "peerDependencies": {
-    "final-form": "workspace:packages/final-form"
+    "final-form": "npm:@deckstar/final-form@1.0.8"
   }
 }
