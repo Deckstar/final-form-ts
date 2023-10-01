@@ -13,7 +13,13 @@
     "find-build-info": "find ./packages -name \"*.tsbuildinfo\" -maxdepth 2",
     "increment-version": "ts-node scripts/incrementVersion.ts",
     "prepare-for-publish": "yarn increment-version && yarn build-files",
-    "publish-all": "yarn prepare-for-publish && yarn lerna publish from-package"
+    "publish-all": "yarn prepare-for-publish && yarn lerna publish from-package",
+    "sync-remote": "yarn sync-remote:final-form && yarn sync-remote:final-form-arrays && yarn sync-remote:final-form-focus && yarn sync-remote:react-final-form && yarn sync-remote:react-final-form-arrays",
+    "sync-remote:final-form": "git pull final-form main --no-commit --no-ff",
+    "sync-remote:final-form-arrays": "git pull final-form-arrays master --no-commit --no-ff",
+    "sync-remote:final-form-focus": "git pull final-form-focus master --no-commit --no-ff",
+    "sync-remote:react-final-form": "git pull react-final-form main --no-commit --no-ff",
+    "sync-remote:react-final-form-arrays": "git pull react-final-form-arrays master --no-commit --no-ff"
   },
   "workspaces": {
     "packages": [
