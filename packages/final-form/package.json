@@ -22,12 +22,5 @@
   "bugs": {
     "url": "https://github.com/deckstar/final-form-ts/issues"
   },
-  "homepage": "https://github.com/deckstar/final-form-ts#readme",
-  "devDependencies": {
-    "@types/node": "^16.10.1",
-    "doctoc": "^2.0.1"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.10.0"
-  }
+  "homepage": "https://github.com/deckstar/final-form-ts#readme"
 }

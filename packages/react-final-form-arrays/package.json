@@ -19,12 +19,6 @@
     "url": "https://github.com/deckstar/final-form-ts/issues"
   },
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
-  "devDependencies": {
-    "@deckstar/final-form": "1.0.8",
-    "@deckstar/final-form-arrays": "1.0.8",
-    "@deckstar/react-final-form": "1.0.8",
-    "doctoc": "^2.2.1"
-  },
   "peerDependencies": {
     "@deckstar/final-form": "1.0.8",
     "@deckstar/final-form-arrays": "1.0.8",
