@@ -1,5 +1,5 @@
+import { select } from "@inquirer/prompts";
 import fs from "fs/promises";
-import inquirer from "inquirer";
 import {
   invert,
   isPlainObject,
@@ -43,20 +43,32 @@ const askForNewVersionNumber = async (): Promise<
   const questionTitle =
     "Select the version that you want to set for all packages";
 
-  type PromptResults = { [title in typeof questionTitle]: VersionNumber };
-
-  const results: PromptResults = await inquirer.prompt({
-    name: questionTitle,
-    type: "list",
+  const selectedVersion = await select({
+    message: questionTitle,
     choices: [
-      { name: `${currentVersion} (current)`, value: currentVersion },
-      { name: `${patchIncrement} (patch)`, value: patchIncrement },
-      { name: `${minorIncrement} (minor)`, value: minorIncrement },
-      { name: `${majorIncrement} (major)`, value: majorIncrement },
+      {
+        name: `${currentVersion} (current)`,
+        description: "Leaves the version number the same as it is right now.",
+        value: currentVersion,
+      },
+      {
+        name: `${patchIncrement} (patch)`,
+        description: "Increments by a patch version.",
+        value: patchIncrement,
+      },
+      {
+        name: `${minorIncrement} (minor)`,
+        description: "Increments by a minor version.",
+        value: minorIncrement,
+      },
+      {
+        name: `${majorIncrement} (major)`,
+        description: "Increments by a major version.",
+        value: majorIncrement,
+      },
     ],
   });
 
-  const selectedVersion = results[questionTitle];
   return [selectedVersion, currentVersion];
 };
 
