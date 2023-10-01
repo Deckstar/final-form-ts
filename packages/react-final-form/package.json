@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/react-final-form",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "🏁 High performance subscription-based form state management for React",
   "main": "dist/cjs",
   "module": "dist/esm",
@@ -23,7 +23,7 @@
     "fast-deep-equal": "^3.1.3"
   },
   "peerDependencies": {
-    "@deckstar/final-form": "1.0.8"
+    "@deckstar/final-form": "1.0.9"
   },
   "funding": {
     "type": "opencollective",

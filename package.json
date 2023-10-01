@@ -2,7 +2,7 @@
   "name": "final-form-ts",
   "private": true,
   "packageManager": "yarn@3.5.0",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "scripts": {
     "build-files": "yarn clean && yarn compile && ts-node scripts/moveCompiled.ts",
     "compile:cjs": "tsc --build --force tsconfig.cjs.json",
