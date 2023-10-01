@@ -1,4 +1,5 @@
 import { select } from "@inquirer/prompts";
+import { exec } from "child_process";
 import fs from "fs/promises";
 import {
   invert,
@@ -141,4 +142,7 @@ const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
   if (versionStayedTheSame) return;
 
   await setNewVersionNumber(newVersionNumber);
+
+  const commitMessage = `v${newVersionNumber}`;
+  await exec(`git add . && git commit  -m "${commitMessage}"`);
 })();
