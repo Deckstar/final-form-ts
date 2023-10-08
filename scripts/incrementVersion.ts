@@ -1,5 +1,5 @@
 import { select } from "@inquirer/prompts";
-import { exec } from "child_process";
+import { exec as execSync } from "child_process";
 import fs from "fs/promises";
 import {
   invert,
@@ -10,8 +10,11 @@ import {
   split,
   toNumber,
 } from "lodash";
+import util from "util";
 
 import { DESTINATION, Package, PACKAGES, Packages } from "./_constants";
+
+const exec = util.promisify(execSync);
 
 const MONOREPO_PACKAGE_JSON =
   `${__dirname}/../package.json` as `${string}/../package.json`;
@@ -143,6 +146,13 @@ const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
 
   await setNewVersionNumber(newVersionNumber);
 
-  const commitMessage = `v${newVersionNumber}`;
+  // rerun yarn to update yarn.lock with new package versions
+  await exec("yarn install");
+
+  // commit
+  const commitMessage: `v${VersionNumber}` = `v${newVersionNumber}`;
   await exec(`git add . && git commit  -m "${commitMessage}"`);
+
+  // create a tag
+  await exec(`git tag -a ${commitMessage} -m "${commitMessage}"`);
 })();
