@@ -47,7 +47,7 @@ type KeyOfTypeTest<Shape, Type> = NonNullable<
 export type StateBasedOnSubscription<
   State extends Partial<FormState | FieldState>,
   Subscription extends Partial<FormSubscription | FieldSubscription>,
-  SubscribableType extends Partial<{ [key in keyof State]: any }> = State, // These keys will be ignored and will remain typed as they are on the `State` object. If omitted, the entire `State` could be potentially `undefined`.
+  SubscribableType extends Partial<{ [Key in keyof State]: any }> = State, // These keys will be ignored and will remain typed as they are on the `State` object. If omitted, the entire `State` could be potentially `undefined`.
 > = Partial<State> &
   Pick<State, Exclude<keyof State, keyof SubscribableType>> &
   Required<Pick<State, keyof State & KeyOfTypeTest<Subscription, true>>>;
@@ -55,11 +55,17 @@ export type StateBasedOnSubscription<
 /** A key that can be subscribed to in a form. */
 export type FormSubscriptionItem = ArrayElement<typeof formSubscriptionItems>;
 
+type SubscribableFormState = Pick<FormState, FormSubscriptionItem>;
+
 /** A subscription to all form state keys, i.e. with all keys marked `true`. */
-export type FullFormSubscription = Record<FormSubscriptionItem, true>;
+export type FullFormSubscription = {
+  [Key in keyof SubscribableFormState]: true;
+};
 
 /** The shape of an object that can be used to subscribe to the form state. */
-export type FormSubscription = Partial<Record<FormSubscriptionItem, boolean>>;
+export type FormSubscription = {
+  [Key in keyof SubscribableFormState]?: boolean;
+};
 
 /** The form state that is return depending on the `Subscription` used. */
 export type FormStateBasedOnSubscription<
@@ -406,11 +412,17 @@ export interface FieldState<FieldValue = any> {
 /** A key that can be subscribed to in a field. */
 export type FieldSubscriptionItem = ArrayElement<typeof fieldSubscriptionItems>;
 
+type SubscribableFieldState = Pick<FieldState, FieldSubscriptionItem>;
+
 /** A subscription to all field state keys, i.e. with all keys marked `true`. */
-export type FullFieldSubscription = Record<FieldSubscriptionItem, true>;
+export type FullFieldSubscription = {
+  [Key in keyof SubscribableFieldState]: true;
+};
 
 /** The shape of an object that can be used to subscribe to a field state. */
-export type FieldSubscription = Partial<Record<FieldSubscriptionItem, boolean>>;
+export type FieldSubscription = {
+  [Key in keyof SubscribableFieldState]?: boolean;
+};
 
 /** The form state that is return depending on the `Subscription` used. */
 export type FieldStateBasedOnSubscription<

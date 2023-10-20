@@ -1,3 +1,5 @@
+import { FormState } from "./types";
+
 /**
  * An _à la carte_ list of all the possible things you
  * can subscribe to for a form. Useful for subscribing
@@ -29,6 +31,6 @@ const formSubscriptionItems = [
   "validating",
   "values",
   "visited",
-] as const;
+] as const satisfies readonly (keyof FormState)[];
 
 export default formSubscriptionItems;

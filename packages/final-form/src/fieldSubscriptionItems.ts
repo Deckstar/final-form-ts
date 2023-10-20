@@ -1,3 +1,5 @@
+import { FieldState } from "./types";
+
 /**
  * An _à la carte_ list of all the possible things you
  * can subscribe to for a field. Useful for subscribing
@@ -24,6 +26,6 @@ const fieldSubscriptionItems = [
   "value",
   "visited",
   "validating",
-] as const;
+] as const satisfies readonly (keyof FieldState)[];
 
 export default fieldSubscriptionItems;
