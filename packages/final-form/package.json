@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/final-form",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/cjs",
   "module": "dist/esm",

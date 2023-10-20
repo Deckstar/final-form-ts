@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/react-final-form-arrays",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A component for rendering and editing arrays 🏁 React Final Form",
   "main": "dist/cjs",
   "module": "dist/esm",
@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "peerDependencies": {
-    "@deckstar/final-form": "1.0.9",
-    "@deckstar/final-form-arrays": "1.0.9",
-    "@deckstar/react-final-form": "1.0.9"
+    "@deckstar/final-form": "1.0.10",
+    "@deckstar/final-form-arrays": "1.0.10",
+    "@deckstar/react-final-form": "1.0.10"
   }
 }
