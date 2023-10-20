@@ -14,6 +14,7 @@ import renderComponent from "./renderComponent";
 import type { FieldArrayProps } from "./types";
 import useFieldArray from "./useFieldArray";
 
+/** A component that takes `FieldArrayProps` and renders an array of fields. */
 const FieldArray = <
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,

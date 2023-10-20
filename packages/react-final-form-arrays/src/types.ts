@@ -44,7 +44,14 @@ export type FieldArrayMutators<
   >;
 };
 
-/** Props that get passed into field array items. */
+/**
+ * These are the props that `<FieldArray/>` provides to your render function or component.
+ * This object is divided into a fields object that mimics an iterable (e.g. it has `map()`
+ * and `forEach()` and `length`), and meta data about the field array.
+ *
+ * Keep in mind that the values in `meta` are dependent on you having subscribed to them
+ * with the `subscription` prop.
+ */
 export type FieldArrayRenderProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
@@ -69,6 +76,7 @@ export type FieldArrayRenderProps<
   meta: Omit<FieldMetaState<FieldValue[], Subscription>, "length">;
 };
 
+/** The second parameter of `useFieldArray`, used to configure its behavior. */
 export interface UseFieldArrayConfig<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,
@@ -107,6 +115,10 @@ export interface UseFieldArrayConfig<
   isEqual?: (a: FieldValue[], b: FieldValue[]) => boolean;
 }
 
+/**
+ * These are props that you pass to `<FieldArray/>`. You must
+ * provide one of the ways to render: `component`, `render`, or `children`.
+ */
 export interface FieldArrayProps<
   FieldValue,
   FormValues extends FormValuesShape = FormValuesShape,

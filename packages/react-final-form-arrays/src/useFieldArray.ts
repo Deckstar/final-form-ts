@@ -25,6 +25,13 @@ import type {
 } from "./types";
 import useConstant from "./useConstant";
 
+/**
+ * The `useFieldArray` hook takes two parameters, the first is the name of the field,
+ * and the second is an optional object that looks just like `FieldArrayProps`, except
+ * without the name. It returns an object just like `FieldArrayRenderProps`.
+ *
+ * `useFieldArray` is used internally inside `FieldArray`.
+ */
 const useFieldArray = <
   FieldValue = any,
   FormValues extends FormValuesShape = FormValuesShape,
