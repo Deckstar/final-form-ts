@@ -1,25 +1,36 @@
+import { mapKeys, mapValues } from "lodash";
 import type { JestConfigWithTsJest } from "ts-jest";
 import { defaultsESM } from "ts-jest/presets";
 
-import { PACKAGES } from "./scripts/_constants";
+import { Package, PACKAGES } from "./scripts/_constants";
 
-const PROJECTS: JestConfigWithTsJest["projects"] = PACKAGES.map(
-  (packageName) => ({
-    displayName: packageName,
-    testEnvironment: "jsdom",
-    transform: {
-      "^.*\\.ts?(x)?$": "ts-jest",
-    },
-    testMatch: [`<rootDir>/packages/${packageName}/tests/**/*.test.ts(x)?`],
-    testPathIgnorePatterns: [`<rootDir>/packages/${packageName}/dist`],
-  }),
-);
+/** The list of packages in our app as a type. */
+type Packages = typeof PACKAGES;
 
-const COLLECT_COVERAGE_FROM: JestConfigWithTsJest["collectCoverageFrom"] =
-  PACKAGES.map(
-    (packageName) =>
-      `"<rootDir>/packages/${packageName}/tests/**/*.test.ts(x)?"`,
-  );
+/** Maps a package name to its test locations. */
+type CoverageItem<Pkg extends Package> =
+  `"<rootDir>/packages/${Pkg}/tests/**/*.test.ts(x)?"`;
+
+type CollectCoverageFrom = JestConfigWithTsJest["collectCoverageFrom"] &
+  [
+    CoverageItem<Packages[0]>,
+    CoverageItem<Packages[1]>,
+    CoverageItem<Packages[2]>,
+    CoverageItem<Packages[3]>,
+    CoverageItem<Packages[4]>,
+  ];
+
+const COLLECT_COVERAGE_FROM: CollectCoverageFrom = PACKAGES.map(
+  (packageName): CoverageItem<typeof packageName> =>
+    `"<rootDir>/packages/${packageName}/tests/**/*.test.ts(x)?"`,
+) as CollectCoverageFrom;
+
+const MODULE_NAME_MAPPER = mapValues(
+  mapKeys(PACKAGES, (pkg) => pkg as Package),
+  (pkg) => [`@deckstar/${pkg as Package}`],
+) as {
+  [Pkg in Package]: [`@deckstar/${Pkg}`];
+};
 
 // Sync object
 const config: JestConfigWithTsJest = {
@@ -35,8 +46,8 @@ const config: JestConfigWithTsJest = {
   testPathIgnorePatterns: ["<rootDir>/node_modules"],
   moduleFileExtensions: ["ts", "js"],
   coverageReporters: ["json", "lcov", "html"],
-  projects: PROJECTS,
   passWithNoTests: true,
+  moduleNameMapper: MODULE_NAME_MAPPER,
 };
 
 export default config;

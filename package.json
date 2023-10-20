@@ -19,7 +19,8 @@
     "sync-remote:final-form-arrays": "git pull final-form-arrays master --no-commit --no-ff",
     "sync-remote:final-form-focus": "git pull final-form-focus master --no-commit --no-ff",
     "sync-remote:react-final-form": "git pull react-final-form main --no-commit --no-ff",
-    "sync-remote:react-final-form-arrays": "git pull react-final-form-arrays master --no-commit --no-ff"
+    "sync-remote:react-final-form-arrays": "git pull react-final-form-arrays master --no-commit --no-ff",
+    "test": "yarn jest"
   },
   "workspaces": {
     "packages": [
