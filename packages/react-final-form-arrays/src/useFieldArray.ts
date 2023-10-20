@@ -11,7 +11,6 @@ import type {
 } from "final-form-arrays";
 import { useMemo } from "react";
 import {
-  FieldRenderProps,
   fullFieldSubscription as all,
   useField,
   useForm,
@@ -42,12 +41,6 @@ const useFieldArray = <
       FormValues
     > = DefaultBoundArrayMutators<FormValues>,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<
-    FieldValue[],
-    FieldValue[],
-    Subscription,
-    T
-  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 >(
   name: string,
   {
@@ -56,7 +49,7 @@ const useFieldArray = <
     initialValue,
     isEqual = defaultIsEqual,
     validate: validateProp,
-  }: UseFieldArrayConfig<FieldValue, FormValues, Subscription, T, RP> = {},
+  }: UseFieldArrayConfig<FieldValue, FormValues, Subscription, T> = {},
 ): FieldArrayRenderProps<
   FieldValue,
   FormValues,
@@ -119,17 +112,14 @@ const useFieldArray = <
     meta: { length, ...meta },
     input,
     ...fieldState
-  } = useField<FieldValue[], FieldValue[], FormValues, Subscription, T, RP>(
-    name,
-    {
-      subscription: { ...subscription, length: true },
-      defaultValue,
-      initialValue,
-      isEqual,
-      validate,
-      format: (v) => v,
-    },
-  );
+  } = useField<FieldValue[], FieldValue[], FormValues, Subscription, T>(name, {
+    subscription: { ...subscription, length: true },
+    defaultValue,
+    initialValue,
+    isEqual,
+    validate,
+    format: (v) => v,
+  });
 
   const forEach = (iterator: (name: string, index: number) => void): void => {
     const len = length || 0;

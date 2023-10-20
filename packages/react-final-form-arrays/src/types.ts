@@ -12,7 +12,6 @@ import {
 import {
   FieldInputPropsBasedOnSubscription,
   FieldMetaState,
-  FieldRenderProps,
   RenderableProps,
   UseFieldConfig,
 } from "react-final-form";
@@ -82,33 +81,13 @@ export interface UseFieldArrayConfig<
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<
-    FieldValue[],
-    FieldValue[],
-    Subscription,
-    T
-  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 > extends Omit<
-      UseFieldConfig<
-        FieldValue[],
-        FormValues,
-        FieldValue[],
-        Subscription,
-        T,
-        RP
-      >,
+      UseFieldConfig<FieldValue[], FormValues, FieldValue[], Subscription, T>,
       "children" | "component"
     >,
     Partial<
       Pick<
-        UseFieldConfig<
-          FieldValue[],
-          FormValues,
-          FieldValue[],
-          Subscription,
-          T,
-          RP
-        >,
+        UseFieldConfig<FieldValue[], FormValues, FieldValue[], Subscription, T>,
         "children" | "component"
       >
     > {
@@ -126,14 +105,8 @@ export interface FieldArrayProps<
   MutatorsAfterBinding extends BoundMutators<Mutators<FormValues>, FormValues> &
     DefaultBoundArrayMutators<FormValues> = DefaultBoundArrayMutators<FormValues>,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<
-    FieldValue[],
-    FieldValue[],
-    Subscription,
-    T
-  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 > extends Omit<
-      UseFieldArrayConfig<FieldValue, FormValues, Subscription, T, RP>,
+      UseFieldArrayConfig<FieldValue, FormValues, Subscription, T>,
       keyof RenderableProps
     >,
     RenderableProps<

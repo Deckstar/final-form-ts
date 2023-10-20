@@ -101,7 +101,9 @@ import useFormState from "./useFormState";
 function FormSpy<
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FormSubscription = FullFormSubscription,
->({ onChange, subscription, ...rest }: Props<FormValues, Subscription>) {
+>(props: Props<FormValues, Subscription>) {
+  const { onChange, subscription, ...rest } = props;
+
   const reactFinalForm = useForm<FormValues>("FormSpy");
   const state = useFormState<FormValues, Subscription>({
     onChange,
@@ -113,12 +115,12 @@ function FormSpy<
   }
 
   /** We will be rendering props `lazily` (i.e. non-subscribed items will be `undefined`.) */
-  type LazyRenderProps = FormSpyRenderProps<FormValues, Subscription>;
+  type RenderProps = FormSpyRenderProps<FormValues, Subscription>;
 
   /** Note that `form` must always be passed in. */
-  type NonLazyRenderProps = Pick<LazyRenderProps, "form">;
+  type NonLazyRenderProps = Pick<RenderProps, "form">;
 
-  const renderProps: NonLazyRenderProps = {
+  const renderProps = {
     form: {
       ...reactFinalForm,
       reset: (eventOrValues) => {
@@ -130,13 +132,13 @@ function FormSpy<
         }
       },
     },
-  };
+  } as const satisfies NonLazyRenderProps;
 
-  return renderComponent(
+  return renderComponent<RenderProps>(
     {
       ...rest,
       ...renderProps,
-    } as LazyRenderProps,
+    },
     state,
     "FormSpy",
   );

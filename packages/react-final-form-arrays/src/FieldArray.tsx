@@ -8,7 +8,6 @@ import {
   BoundArrayMutators,
   DefaultBoundArrayMutators,
 } from "final-form-arrays";
-import { FieldRenderProps } from "react-final-form";
 
 import renderComponent from "./renderComponent";
 import type { FieldArrayProps } from "./types";
@@ -25,12 +24,6 @@ const FieldArray = <
       FormValues
     > = DefaultBoundArrayMutators<FormValues>,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<
-    FieldValue[],
-    FieldValue[],
-    Subscription,
-    T
-  > = FieldRenderProps<FieldValue[], FieldValue[], Subscription, T>,
 >({
   name,
   subscription,
@@ -44,16 +37,14 @@ const FieldArray = <
   FormValues,
   Subscription,
   MutatorsAfterBinding,
-  T,
-  RP
+  T
 >) => {
   const { fields, meta } = useFieldArray<
     FieldValue,
     FormValues,
     Subscription,
     MutatorsAfterBinding,
-    T,
-    RP
+    T
   >(name, {
     subscription,
     defaultValue,

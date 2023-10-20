@@ -264,12 +264,12 @@ function ReactFinalForm<
   };
 
   /** We will be rendering props `lazily` (i.e. non-subscribed items will be `undefined`.) */
-  type LazyRenderProps = FormRenderProps<FormValues, Subscription>;
+  type RenderProps = FormRenderProps<FormValues, Subscription>;
 
   /** Note that `form` and `handleSubmit` must always be passed in. */
-  type NonLazyRenderProps = Pick<LazyRenderProps, "form" | "handleSubmit">;
+  type NonLazyRenderProps = Pick<RenderProps, "form" | "handleSubmit">;
 
-  const renderProps: NonLazyRenderProps = {
+  const renderProps = {
     form: {
       ...form,
       reset: (eventOrValues) => {
@@ -282,16 +282,15 @@ function ReactFinalForm<
       },
     },
     handleSubmit,
-  };
+  } as const satisfies NonLazyRenderProps as RenderProps;
 
   // At this point, `renderProps` gets values from `state` and becomes LazyRenderProps
-  addLazyFormState(renderProps as LazyRenderProps, state);
+  addLazyFormState(renderProps, state);
 
   return React.createElement(
     ReactFinalFormContext.Provider,
     { value: form },
-    // @ts-ignore
-    renderComponent(rest, renderProps as LazyRenderProps, "ReactFinalForm"),
+    renderComponent<RenderProps>(rest, renderProps, "ReactFinalForm"),
   );
 }
 

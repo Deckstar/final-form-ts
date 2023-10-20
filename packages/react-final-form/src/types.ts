@@ -178,7 +178,7 @@ export type FormSpyRenderProps<
  * Props that can be used to render content, namely
  * `children`, `component` or `render`.
  *
- * The components will receive `Props` as parameters.
+ * The components will receive `RenderProps` as parameters.
  *
  * ---
  *  * Note that if you specify `render` or `component`
@@ -195,7 +195,7 @@ export type FormSpyRenderProps<
  * </Field>
  * ```
  */
-export interface RenderableProps<Props = {}> {
+export interface RenderableProps<RenderProps extends AnyObject = {}> {
   /**
    * A render function that is given `FieldRenderProps`,
    * as well as any non-API props passed into the
@@ -227,7 +227,11 @@ export interface RenderableProps<Props = {}> {
    * Related:
    * - `FieldRenderProps`
    */
-  children?: ((props: Props) => React.ReactNode) | React.ReactNode;
+  children?:
+    | ((
+        props: RenderProps,
+      ) => React.ReactElement<RenderProps> | React.ReactNode)
+    | (React.ReactElement<RenderProps> | React.ReactNode);
   /**
    * If you are not using `'input'`, `'select`' or
    * `'textarea'`, it is recommended that you use
@@ -255,7 +259,7 @@ export interface RenderableProps<Props = {}> {
    * Related:
    * - `FieldRenderProps`
    */
-  component?: React.ComponentType<Props> | SupportedInputs;
+  component?: React.ComponentType<RenderProps> | SupportedInputs;
   /**
    * A render function that is given `FieldRenderProps`,
    * as well as any non-API props passed into the
@@ -279,7 +283,9 @@ export interface RenderableProps<Props = {}> {
    * Related:
    * - `FieldRenderProps`
    */
-  render?: (props: Props) => React.ReactElement;
+  render?: (
+    props: RenderProps,
+  ) => React.ReactNode | React.ReactElement<RenderProps>;
 }
 
 export type FormProps<
@@ -341,13 +347,12 @@ export interface UseFieldConfig<
   InputValue = any,
   Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<
-    FieldValue,
-    InputValue,
-    Subscription,
-    T
-  > = FieldRenderProps<FieldValue, InputValue, Subscription, T>,
-> extends Pick<RP, "children" | "component">,
+> extends Pick<
+      RenderableProps<
+        FieldRenderProps<FieldValue, InputValue, Subscription, T>
+      >,
+      "children" | "component"
+    >,
     Pick<
       FieldConfig<FieldValue, FormValues>,
       | "afterSubmit"
@@ -502,17 +507,8 @@ export interface FieldProps<
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
-  RP extends FieldRenderProps<
-    FieldValue,
-    InputValue,
-    Subscription,
-    T
-  > = FieldRenderProps<FieldValue, InputValue, Subscription, T>,
-> extends Omit<
-      UseFieldConfig<FieldValue, FormValues, InputValue, Subscription, T, RP>,
-      "children" | "component"
-    >,
-    RenderableProps<RP> {
+> extends UseFieldConfig<FieldValue, FormValues, InputValue, Subscription, T>,
+    RenderableProps<FieldRenderProps<FieldValue, InputValue, Subscription, T>> {
   name: string;
   [otherProp: string]: any;
 }

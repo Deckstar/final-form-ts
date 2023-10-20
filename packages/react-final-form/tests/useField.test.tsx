@@ -6,7 +6,7 @@ import * as React from "react";
 import { act } from "react-dom/test-utils";
 
 import Field from "../src/Field";
-import { RenderableProps, useField } from "../src/index";
+import { useField, UseFieldConfig } from "../src/index";
 import Form from "../src/ReactFinalForm";
 import { ErrorBoundary, onSubmitMock } from "./testUtils";
 
@@ -453,7 +453,7 @@ describe("useField", () => {
 
     type MyFieldProps = {
       name: string;
-      component?: RenderableProps["component"];
+      component?: UseFieldConfig<any, any, any, { value: true }>["component"];
     };
 
     const MyField = ({ name, component }: MyFieldProps) => {
