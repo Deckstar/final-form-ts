@@ -116,6 +116,7 @@ function ReactFinalForm<
     decorators = [],
     destroyOnUnregister,
     form: alternateFormApi,
+    initialStatus,
     initialValues,
     initialValuesEqual,
     keepDirtyOnReinitialize,
@@ -130,6 +131,7 @@ function ReactFinalForm<
   const config: Config<FormValues> = {
     debug,
     destroyOnUnregister,
+    initialStatus,
     initialValues,
     keepDirtyOnReinitialize,
     mutators,
@@ -223,6 +225,9 @@ function ReactFinalForm<
   });
   useWhenValueChanges(keepDirtyOnReinitialize, () => {
     form.setConfig("keepDirtyOnReinitialize", keepDirtyOnReinitialize);
+  });
+  useWhenValueChanges(initialStatus, () => {
+    form.setConfig("initialStatus", initialStatus);
   });
   useWhenValueChanges(
     initialValues,

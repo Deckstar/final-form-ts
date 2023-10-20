@@ -1233,13 +1233,16 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       validationBlocked = false;
     },
 
-    setConfig: (name: string, value: any): void => {
+    setConfig: (name: ConfigKey, value: any): void => {
       switch (name) {
         case "debug":
           debug = value;
           break;
         case "destroyOnUnregister":
           destroyOnUnregister = value;
+          break;
+        case "initialStatus":
+          initialStatus = value;
           break;
         case "initialValues":
           api.initialize(value);
