@@ -22,7 +22,8 @@
   "peerDependencies": {
     "@deckstar/final-form": "1.0.10",
     "@deckstar/final-form-arrays": "1.0.10",
-    "@deckstar/react-final-form": "1.0.10"
+    "@deckstar/react-final-form": "1.0.10",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
   "keywords": [
     "final-form",

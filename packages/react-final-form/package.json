@@ -19,11 +19,9 @@
     "url": "https://github.com/deckstar/final-form-ts/issues"
   },
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
-  "devDependencies": {
-    "fast-deep-equal": "^3.1.3"
-  },
   "peerDependencies": {
-    "@deckstar/final-form": "1.0.10"
+    "@deckstar/final-form": "1.0.10",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
   "funding": {
     "type": "opencollective",
