@@ -20,6 +20,7 @@ import type { FormRenderProps } from "./types";
 import useConstant from "./useConstant";
 import useWhenValueChanges from "./useWhenValueChanges";
 
+/** An object with all form subscriptions set to `true`. */
 export const all = formSubscriptionItems.reduce((result, key) => {
   result[key] = true;
   return result;

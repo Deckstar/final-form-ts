@@ -24,12 +24,16 @@ export interface ReactContext<
   reactFinalForm: FormApi<FormValues>;
 }
 
-/** The field input props that must always be included. */
+/** The field input props from Final Form. */
 interface DefiniteFieldInputProps<
   InputValue = any,
   T extends HTMLElement = HTMLInputElement,
 > {
-  /** The name of the field. */
+  /**
+   * The name of the field.
+   *
+   * Field values may be deeply nested using dot-and-bracket syntax.
+   */
   name: string;
   /**
    * The `onBlur` function can take a synthetic
@@ -538,8 +542,8 @@ export interface FieldProps<
   Subscription extends FieldSubscription = FullFieldSubscription,
   T extends HTMLElement = HTMLInputElement,
 > extends UseFieldConfig<FieldValue, FormValues, InputValue, Subscription, T>,
-    RenderableProps<FieldRenderProps<FieldValue, InputValue, Subscription, T>> {
-  name: string;
+    RenderableProps<FieldRenderProps<FieldValue, InputValue, Subscription, T>>,
+    Pick<DefiniteFieldInputProps<InputValue, T>, "name"> {
   [otherProp: string]: any;
 }
 

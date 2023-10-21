@@ -23,6 +23,7 @@ import useConstantCallback from "./useConstantCallback";
 import useForm from "./useForm";
 import useLatest from "./useLatest";
 
+/** An object with all field subscriptions set to `true`. */
 export const all: FullFieldSubscription = fieldSubscriptionItems.reduce(
   (result, key) => {
     result[key] = true;

@@ -43,11 +43,21 @@ type KeyOfTypeTest<Shape, Type> = NonNullable<
  * Unsubscribed to items will be potentially `undefined`, unless they
  * are not part of the `SubscribableType` (i.e. should always be present
  * on the state).
+ *
+ * ---
+ * @param State
+ * The state that can be subscribed to.
+ *
+ * @param Subscription
+ * An object of booleans. `true` values will be subscribed to, while `false` or missing values will be `undefined`.
+ *
+ * @param [SubscribableType]
+ * (Optional) — Indicates which keys can be subscribed to. Keys in `State` that are not found in `SubscribableType` will remain typed as they are on the `State` object. By default, the whole `State` is treated as subscribable. Thus, if `SubscribableType` is omitted, all keys in `StateBasedOnSubscription` could potentially be `undefined` if they are not marked in `Subscription` as `true`.
  */
 export type StateBasedOnSubscription<
   State extends Partial<FormState | FieldState>,
   Subscription extends Partial<FormSubscription | FieldSubscription>,
-  SubscribableType extends Partial<{ [Key in keyof State]: any }> = State, // These keys will be ignored and will remain typed as they are on the `State` object. If omitted, the entire `State` could be potentially `undefined`.
+  SubscribableType extends Partial<{ [Key in keyof State]: any }> = State,
 > = Partial<State> &
   Pick<State, Exclude<keyof State, keyof SubscribableType>> &
   Required<Pick<State, keyof State & KeyOfTypeTest<Subscription, true>>>;
