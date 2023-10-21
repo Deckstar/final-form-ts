@@ -5,6 +5,7 @@
   "version": "1.0.10",
   "scripts": {
     "build-files": "yarn clean && yarn compile && ts-node scripts/moveCompiled.ts",
+    "check": "yarn lint && yarn test",
     "compile:cjs": "tsc --build --force tsconfig.cjs.json",
     "compile:esm": "tsc --build --force tsconfig.esm.json",
     "compile": "yarn compile:cjs && yarn compile:esm",
@@ -12,6 +13,7 @@
     "find-dist": "find \"./packages\" -type d -name \"dist\" -maxdepth 2",
     "find-build-info": "find ./packages -name \"*.tsbuildinfo\" -maxdepth 2",
     "increment-version": "ts-node scripts/incrementVersion.ts",
+    "lint": "yarn eslint",
     "prepare-for-publish": "yarn increment-version && yarn build-files",
     "publish-all": "yarn prepare-for-publish && yarn lerna publish from-package",
     "sync-remote": "yarn sync-remote:final-form && yarn sync-remote:final-form-arrays && yarn sync-remote:final-form-focus && yarn sync-remote:react-final-form && yarn sync-remote:react-final-form-arrays",
