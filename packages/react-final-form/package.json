@@ -1,7 +1,7 @@
 {
   "name": "@deckstar/react-final-form",
   "version": "1.0.10",
-  "description": "🏁 High performance subscription-based form state management for React",
+  "description": "🏁 High performance subscription-based form state management for React. Made with TypeScript.",
   "main": "dist/cjs",
   "module": "dist/esm",
   "types": "dist/esm/index.d.ts",
@@ -28,5 +28,19 @@
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/final-form"
-  }
+  },
+  "keywords": [
+    "final-form",
+    "final form",
+    "form",
+    "forms",
+    "react",
+    "react-dom",
+    "hooks",
+    "react hooks",
+    "render props",
+    "validation",
+    "form validation",
+    "typescript"
+  ]
 }

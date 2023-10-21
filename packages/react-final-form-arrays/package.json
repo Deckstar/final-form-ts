@@ -1,7 +1,7 @@
 {
   "name": "@deckstar/react-final-form-arrays",
   "version": "1.0.10",
-  "description": "A component for rendering and editing arrays 🏁 React Final Form",
+  "description": "A component for rendering and editing arrays 🏁 React Final Form. Made with TypeScript.",
   "main": "dist/cjs",
   "module": "dist/esm",
   "types": "dist/esm/index.d.ts",
@@ -23,5 +23,21 @@
     "@deckstar/final-form": "1.0.10",
     "@deckstar/final-form-arrays": "1.0.10",
     "@deckstar/react-final-form": "1.0.10"
-  }
+  },
+  "keywords": [
+    "final-form",
+    "final form",
+    "final form arrays",
+    "array fields",
+    "form",
+    "forms",
+    "react",
+    "react-dom",
+    "hooks",
+    "react hooks",
+    "render props",
+    "validation",
+    "form validation",
+    "typescript"
+  ]
 }

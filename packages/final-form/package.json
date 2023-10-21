@@ -1,7 +1,7 @@
 {
   "name": "@deckstar/final-form",
   "version": "1.0.10",
-  "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
+  "description": "🏁 Framework agnostic, high performance, subscription-based form state management. Made with TypeScript.",
   "main": "dist/cjs",
   "module": "dist/esm",
   "types": "dist/esm/index.d.ts",
@@ -22,5 +22,14 @@
   "bugs": {
     "url": "https://github.com/deckstar/final-form-ts/issues"
   },
-  "homepage": "https://github.com/deckstar/final-form-ts#readme"
+  "homepage": "https://github.com/deckstar/final-form-ts#readme",
+  "keywords": [
+    "final-form",
+    "final form",
+    "form",
+    "forms",
+    "validation",
+    "form validation",
+    "typescript"
+  ]
 }

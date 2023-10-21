@@ -1,7 +1,7 @@
 {
   "name": "@deckstar/final-form-arrays",
   "version": "1.0.10",
-  "description": "Array Mutators for 🏁 Final Form",
+  "description": "Array Mutators for 🏁 Final Form. Made with TypeScript.",
   "main": "dist/cjs",
   "module": "dist/esm",
   "types": "dist/esm/index.d.ts",
@@ -21,5 +21,16 @@
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "peerDependencies": {
     "@deckstar/final-form": "1.0.10"
-  }
+  },
+  "keywords": [
+    "final-form",
+    "final form",
+    "final form arrays",
+    "array fields",
+    "form",
+    "forms",
+    "validation",
+    "form validation",
+    "typescript"
+  ]
 }
