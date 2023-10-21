@@ -56,6 +56,11 @@ interface DefiniteFieldInputProps<
    * the field as focused (active).
    */
   onFocus: (event?: React.FocusEvent<T>) => void;
+  /**
+   * If set to `"checkbox"` or `"radio"`, React Final Form will know to manage your values as a checkbox or radio button respectively. Results in a `checked` boolean inside the `input` value given to your render prop.
+   *
+   * It will be added on your input component, or you may retrieve its value inside the "input" property of your custom components.
+   */
   type?: string;
   /**
    * The current value of the field.
@@ -64,7 +69,32 @@ interface DefiniteFieldInputProps<
    * `value`.
    */
   value?: InputValue;
+  /**
+   * **This is only used for checkboxes and radio buttons!**
+   *
+   * You must also include a `type="radio"` or `type="checkbox"` prop. Otherwise, `checked` will be `undefined`.
+   *
+   * ### Radio Buttons
+   *
+   * The radio button will render as `checked` if and only if the value given `===` the value for the field in the form.
+   *
+   * ### Checkboxes
+   *
+   * #### With `value`
+   *
+   * The checkbox will be `checked` if the value given in `value` is contained in the array that is the value for the field for the form. Checking the box will add the value to the array, and unchecking the checkbox will remove the value from the array.
+   *
+   * #### Without `value`
+   *
+   * The checkbox will be `checked` if the value is truthy. Checking the box will set the value to `true`, and unchecking the checkbox will set the value to `false`.
+   *
+   */
   checked?: boolean;
+  /**
+   * Only of use when using `component="select"` and you want a multiselect.
+   *
+   * It will be added on your input component, or you may retrieve its value inside the "input" property of your custom components.
+   */
   multiple?: boolean;
 }
 
