@@ -12,6 +12,8 @@ import {
 import {
   FieldInputPropsBasedOnSubscription,
   FieldMetaState,
+  FieldProps,
+  FieldRenderProps,
   RenderableProps,
   UseFieldConfig,
 } from "react-final-form";
@@ -60,8 +62,25 @@ export type FieldArrayRenderProps<
   > = DefaultBoundArrayMutators<FormValues>,
   Subscription extends FieldSubscription = FullFieldSubscription,
 > = {
+  /**
+   * An object that mimics an iterable (e.g. it has `map()` and `forEach()` and `length`),
+   * and `meta` data about the field array.
+   */
   fields: {
+    /**
+     * Iterates through all of the names of the fields in the
+     * field array in bracket format,
+     * e.g. `foo[0]`, `foo[1]`, `foo[2]`.
+     */
     forEach: (iterator: (name: string, index: number) => void) => void;
+    /**
+     * Iterates through all of the names of the fields in the
+     * field array in bracket format,
+     * e.g. `foo[0]`, `foo[1]`, `foo[2]`,
+     * and collects the results of the iterator function.
+     *
+     * You will use this in almost every implementation.
+     */
     map: (iterator: (name: string, index: number) => any) => any[];
   } & FieldArrayMutators<
     FormValues,
@@ -72,7 +91,11 @@ export type FieldArrayRenderProps<
       "name" | "value"
     > &
     Required<Pick<FieldMetaState<FieldValue[], Subscription>, "length">>;
-  meta: Omit<FieldMetaState<FieldValue[], Subscription>, "length">;
+} & {
+  [Key in keyof Pick<FieldRenderProps, "meta">]: Omit<
+    FieldMetaState<FieldValue[], Subscription>,
+    "length"
+  >;
 };
 
 /** The second parameter of `useFieldArray`, used to configure its behavior. */
@@ -91,6 +114,12 @@ export interface UseFieldArrayConfig<
         "children" | "component"
       >
     > {
+  /**
+   * A function that can be used to compare two arrays of values
+   * (before and after every change) and calculate pristine/dirty checks.
+   *
+   * Defaults to a function that will `===` check each element of the array.
+   */
   isEqual?: (a: FieldValue[], b: FieldValue[]) => boolean;
 }
 
@@ -116,7 +145,10 @@ export interface FieldArrayProps<
         MutatorsAfterBinding,
         Subscription
       >
+    >,
+    Pick<
+      FieldProps<FieldValue, FieldValue, FormValues, Subscription, T>,
+      "name"
     > {
-  name: string;
   [otherProp: string]: any;
 }
