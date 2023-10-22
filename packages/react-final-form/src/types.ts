@@ -173,6 +173,11 @@ export type SubmitEvent = Partial<
   Pick<React.SyntheticEvent, "preventDefault" | "stopPropagation">
 >;
 
+/**
+ * These are the props that `<Form/>` provides to your render function or component.
+ * Keep in mind that the values you receive here are dependent upon which values of
+ * `FormState` you have subscribed to with the `subscription` prop.
+ */
 export type FormRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FormSubscription = FullFormSubscription,
@@ -202,6 +207,14 @@ export type FormRenderProps<
   ) => Promise<AnyObject | undefined> | undefined;
 };
 
+/**
+ * These are the props that `<FormSpy/>` provides to your render function or component.
+ *
+ * Keep in mind that the values you receive here are dependent upon which values of
+ * `FormState` you have subscribed to with the `subscription` prop.
+ *
+ * This object contains everything in Final Form's `FormState` as well as `form`.
+ */
 export type FormSpyRenderProps<
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FormSubscription = FullFormSubscription,
@@ -322,6 +335,12 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
   ) => React.ReactNode | React.ReactElement<RenderProps>;
 }
 
+/**
+ * These are the props that you pass to `<Form/>`.
+ *
+ * You must provide one of the ways to render: `component`, `render`, or `children`.
+ * The rest are mostly just passed along to Final Form's `Config`.
+ */
 export type FormProps<
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FormSubscription = FullFormSubscription,
@@ -557,6 +576,12 @@ export interface UseFormStateParams<
   subscription?: Subscription;
 }
 
+/**
+ * These are the props that you pass to `<FormSpy/>`.
+ *
+ * If you do not provide an `onChange` callback, you must provide one of
+ * the ways to render: `component`, `render`, or `children`.
+ */
 export interface FormSpyProps<
   FormValues extends FormValuesShape = FormValuesShape,
   FS extends FormSubscription = Required<FormSubscription>,
