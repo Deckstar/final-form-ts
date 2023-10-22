@@ -9,6 +9,7 @@ import {
   PACKAGES,
   TS_OUTPUT_DIR,
 } from "./_constants";
+import { makeLogger } from "./_logger";
 
 /**
  * Combines a directory with a file into a file path.
@@ -81,6 +82,9 @@ const moveCompiled = async () => {
 };
 
 (async function main() {
+  const log = makeLogger();
+  log("Moving compiled files...");
+
   await moveCompiled();
 
   await fs.rm(TS_OUTPUT_DIR, { force: true, recursive: true });

@@ -13,6 +13,7 @@ import {
 import util from "util";
 
 import { DESTINATION, Package, PACKAGES, Packages } from "./_constants";
+import { makeLogger } from "./_logger";
 
 const exec = util.promisify(execSync);
 
@@ -123,8 +124,6 @@ const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
         }
 
         if (key in packagesMap) {
-          // const packageName = key as keyof typeof packagesMap;
-
           return newVersionNumber;
         }
 
@@ -138,11 +137,19 @@ const setNewVersionNumber = async (newVersionNumber: VersionNumber) => {
   }
 };
 
+/** Hex code for Node JS logo. */
+const NODE_COLOR = "#82CD2B";
+
+/** Colored `console.log` message, using `chalk`. */
+const log = makeLogger(NODE_COLOR);
+
 (async function main() {
   const [newVersionNumber, oldVersionNumber] = await askForNewVersionNumber();
 
   const versionStayedTheSame = newVersionNumber === oldVersionNumber;
   if (versionStayedTheSame) return;
+
+  log("Incrementing package.json versions...");
 
   await setNewVersionNumber(newVersionNumber);
 
