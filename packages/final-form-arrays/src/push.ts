@@ -16,7 +16,7 @@ export interface Push<FormValues extends FormValuesShape = FormValuesShape>
     FormValues
   > {
   <Key extends keyof FormValues>(
-    ...args: PushArguments<Key, FormValues[Key]>
+    ...args: PushArguments<Key, ArrayElement<FormValues[Key]>>
   ): void;
   <Key extends string>(...args: PushArguments<Key>): void;
 }
