@@ -4,40 +4,41 @@ import { BoundMutator } from "final-form";
 import insert from "./insert";
 import { ArrayElement } from "./types";
 
-export type UnshiftArguments<Key extends any = any, Value extends any = any> = [
+type UnshiftArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+> = [
   name: Key,
-  value: Value,
+  value: FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any,
 ];
 
-export interface Unshift<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
-    UnshiftMutator<FormValues>,
-    UnshiftArguments,
-    void,
-    FormValues
-  > {
-  <Key extends keyof FormValues>(
-    ...args: UnshiftArguments<Key, ArrayElement<FormValues[Key]>>
-  ): void;
-  <Key extends string>(...args: UnshiftArguments<Key>): void;
-}
+type UnshiftResult = void;
 
-export interface UnshiftMutator<
+/** The bound `unshift` function. */
+export type Unshift<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
+    UnshiftMutator<FormValues>,
+    UnshiftArguments<FormValues>,
+    UnshiftResult,
+    FormValues
+  > &
+    (<Key extends string>(
+      ...args: UnshiftArguments<FormValues, Key>
+    ) => UnshiftResult);
+
+/** The unbound `unshift` function. */
+export type UnshiftMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<UnshiftArguments<keyof FormValues>, void, FormValues> {
-  <Key extends keyof FormValues>(
+> = Mutator<UnshiftArguments<FormValues>, UnshiftResult, FormValues> &
+  (<Key extends string & keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
-      UnshiftArguments<Key, ArrayElement<FormValues[Key]>>,
+      UnshiftArguments<FormValues, Key>,
       FormValues
     >
-  ): void;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<UnshiftArguments<Key>, FormValues>
-  ): void;
-}
+  ) => UnshiftResult);
 
 const unshift: UnshiftMutator = (
-  ...mutatorArgs: MutatorArguments<UnshiftArguments<string>>
+  ...mutatorArgs: MutatorArguments<UnshiftArguments>
 ) => {
   const [[name, value], state, tools] = mutatorArgs;
 

@@ -1,4 +1,4 @@
-import type { FormValuesShape } from "final-form";
+import type { BoundMutators, FormValuesShape } from "final-form";
 
 import concat, { Concat, ConcatMutator } from "./concat";
 import insert, { Insert, InsertMutator } from "./insert";
@@ -53,31 +53,34 @@ export type DefaultArrayMutators<
   unshift: UnshiftMutator<FormValues>;
 };
 
+/**
+ * The default mutators if we just convert each of them into a `BoundMutator`.
+ *
+ * Note that, because we're using interfaces, we don't just return this
+ * result for `DefaultBoundArrayMutators` below. But this is still useful
+ * for ensuring that our types conform.
+ *
+ * Conveniently, this mapping also copies over JSDoc comments.
+ */
+type DefaultsBound<FormValues extends FormValuesShape> = BoundMutators<
+  DefaultArrayMutators<FormValues>,
+  FormValues
+>;
+
 /** The shape of the default array mutators once final-form has bound them to state. */
 export type DefaultBoundArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
-> = {
-  /** Inserts a value into the specified index of the field array. */
+> = DefaultsBound<FormValues> & {
   insert: Insert<FormValues>;
-  /** Concatenates an array at the end of the field array. */
   concat: Concat<FormValues>;
-  /** Moves a value from one index to another index in the field array. */
   move: Move<FormValues>;
-  /** Pops a value off the end of an field array. Returns the value. */
   pop: Pop<FormValues>;
-  /** Pushes a value onto the end of an field array. */
   push: Push<FormValues>;
-  /** Removes a value from the specified index of the field array. Returns the removed value. */
   remove: Remove<FormValues>;
-  /** Removes the values at the specified indexes of the field array. */
   removeBatch: RemoveBatch<FormValues>;
-  /** Removes a value from the beginning of the field array. Returns the value. */
   shift: Shift<FormValues>;
-  /** Swaps the position of two values in the field array. */
   swap: Swap<FormValues>;
-  /** Updates a value of the specified index of the field array. */
   update: Update<FormValues>;
-  /** Inserts a value onto the beginning of the field array. */
   unshift: Unshift<FormValues>;
 };
 

@@ -30,35 +30,35 @@ const binarySearch = (list: number[], value: number): number => {
   return ~first;
 };
 
-export type RemoveBatchArguments<Key extends any = any> = [
+type RemoveBatchArguments<Key extends string = string> = [
   name: Key,
   indexes: number[],
 ];
 
-export interface RemoveBatch<
+type RemoveBatchResult<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends BoundMutator<
+  Key extends string = string,
+> = FormValues[Key] extends any[] ? FormValues[Key] : any[];
+
+/** The bound `removeBatch` function. */
+export type RemoveBatch<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
     RemoveBatchMutator<FormValues>,
     RemoveBatchArguments,
-    any[],
+    RemoveBatchResult<FormValues>,
     FormValues
-  > {
-  <Key extends keyof FormValues>(
-    ...args: RemoveBatchArguments<Key>
-  ): FormValues[Key] extends any[] ? FormValues[Key] : any[];
-  <Key extends string>(...args: RemoveBatchArguments<Key>): any[];
-}
+  > &
+    (<Key extends string>(
+      ...args: RemoveBatchArguments<Key>
+    ) => RemoveBatchResult<FormValues, Key>);
 
-export interface RemoveBatchMutator<
+/** The unbound `removeBatch` function. */
+export type RemoveBatchMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<RemoveBatchArguments<keyof FormValues>, any[], FormValues> {
-  <Key extends keyof FormValues>(
+> = Mutator<RemoveBatchArguments, RemoveBatchResult<FormValues>, FormValues> &
+  (<Key extends string & keyof FormValues>(
     ...mutatorArgs: MutatorArguments<RemoveBatchArguments<Key>, FormValues>
-  ): FormValues[Key] extends any[] ? FormValues[Key] : any[];
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<RemoveBatchArguments<Key>, FormValues>
-  ): any[];
-}
+  ) => RemoveBatchResult<FormValues, Key>);
 
 const removeBatch: RemoveBatchMutator = (
   ...mutatorArgs: MutatorArguments<RemoveBatchArguments<string>>

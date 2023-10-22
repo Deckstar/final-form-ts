@@ -3,7 +3,7 @@ import { MutableState, Tools } from "final-form";
 import concat from "../src/concat";
 
 describe("concat", () => {
-  const getOp = <V = any>(value: V) => {
+  const getOp = <V = any>(value: V[]) => {
     const changeValue = jest.fn();
 
     concat(

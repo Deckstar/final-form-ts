@@ -1,40 +1,45 @@
 import type { FormValuesShape, Mutator, MutatorArguments } from "final-form";
 import { BoundMutator } from "final-form";
 
-export type ConcatArguments<
-  Key extends any = any,
-  ArrayValue extends any[] = any[],
-> = [name: Key, value: ArrayValue];
+import { ArrayElement } from "./types";
 
-export interface Concat<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
-    ConcatMutator<FormValues>,
-    ConcatArguments,
-    void,
-    FormValues
-  > {
-  <Key extends keyof FormValues>(
-    ...args: ConcatArguments<Key, FormValues[Key]>
-  ): void;
-  <Key extends string>(...args: ConcatArguments<Key>): void;
-}
-
-export interface ConcatMutator<
+type ConcatArguments<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<ConcatArguments<keyof FormValues>, void, FormValues> {
-  <Key extends keyof FormValues>(
+  Key extends string = string,
+> = [
+  name: Key,
+  value: FormValues[Key] extends any[]
+    ? ArrayElement<FormValues[Key]>[] // use ArrayElement<type>[] to ensure that it's an array (otherwise we get `any` in some cases)
+    : any[],
+];
+
+type ConcatResult = void;
+
+/** The bound `concat` function. */
+export type Concat<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
+    ConcatMutator<FormValues>,
+    ConcatArguments<FormValues>,
+    ConcatResult,
+    FormValues
+  > &
+    (<Key extends string>(
+      ...args: ConcatArguments<FormValues, Key>
+    ) => ConcatResult);
+
+/** The unbound `concat` function. */
+export type ConcatMutator<
+  FormValues extends FormValuesShape = FormValuesShape,
+> = Mutator<ConcatArguments<FormValues>, ConcatResult, FormValues> &
+  (<Key extends string & keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
-      ConcatArguments<Key, FormValues[Key]>,
+      ConcatArguments<FormValues, Key>,
       FormValues
     >
-  ): void;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<ConcatArguments<Key>, FormValues>
-  ): void;
-}
+  ) => ConcatResult);
 
 const concat: ConcatMutator = (
-  ...mutatorArgs: MutatorArguments<ConcatArguments<string>>
+  ...mutatorArgs: MutatorArguments<ConcatArguments>
 ) => {
   const [[name, value], state, { changeValue }] = mutatorArgs;
 

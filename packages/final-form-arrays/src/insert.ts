@@ -5,41 +5,42 @@ import copyField from "./copyField";
 import { ArrayElement } from "./types";
 import { escapeRegexTokens } from "./utils";
 
-export type InsertArguments<Key extends any = any, Value extends any = any> = [
+type InsertArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+> = [
   name: Key,
   index: number,
-  value: Value,
+  value: FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any,
 ];
 
-export interface Insert<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
-    InsertMutator<FormValues>,
-    InsertArguments,
-    void,
-    FormValues
-  > {
-  <Key extends keyof FormValues>(
-    ...args: InsertArguments<Key, ArrayElement<FormValues[Key]>>
-  ): void;
-  <Key extends string>(...args: InsertArguments<Key>): void;
-}
+type InsertResult = void;
 
-export interface InsertMutator<
+/** The bound `insert` function. */
+export type Insert<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
+    InsertMutator<FormValues>,
+    InsertArguments<FormValues>,
+    InsertResult,
+    FormValues
+  > &
+    (<Key extends string>(
+      ...args: InsertArguments<FormValues, Key>
+    ) => InsertResult);
+
+/** The unbound `insert` function. */
+export type InsertMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<InsertArguments<keyof FormValues>, void, FormValues> {
-  <Key extends keyof FormValues>(
+> = Mutator<InsertArguments<FormValues>, InsertResult, FormValues> &
+  (<Key extends string & keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
-      InsertArguments<Key, ArrayElement<FormValues[Key]>>,
+      InsertArguments<FormValues, Key>,
       FormValues
     >
-  ): void;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<InsertArguments<Key>, FormValues>
-  ): void;
-}
+  ) => InsertResult);
 
 const insert: InsertMutator = (
-  ...mutatorArgs: MutatorArguments<InsertArguments<string>>
+  ...mutatorArgs: MutatorArguments<InsertArguments>
 ) => {
   const [[name, index, value], state, { changeValue }] = mutatorArgs;
 

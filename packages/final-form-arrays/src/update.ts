@@ -3,41 +3,42 @@ import { BoundMutator } from "final-form";
 
 import { ArrayElement } from "./types";
 
-export type UpdateArguments<Key extends any = any, Value extends any = any> = [
+type UpdateArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+> = [
   name: Key,
   index: number,
-  value: Value,
+  value: FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any,
 ];
 
-export interface Update<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
-    UpdateMutator<FormValues>,
-    UpdateArguments,
-    void,
-    FormValues
-  > {
-  <Key extends keyof FormValues>(
-    ...args: UpdateArguments<Key, ArrayElement<FormValues[Key]>>
-  ): void;
-  <Key extends string>(...args: UpdateArguments<Key>): void;
-}
+type UpdateResult = void;
 
-export interface UpdateMutator<
+/** The bound `update` function. */
+export type Update<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
+    UpdateMutator<FormValues>,
+    UpdateArguments<FormValues>,
+    UpdateResult,
+    FormValues
+  > &
+    (<Key extends string>(
+      ...args: UpdateArguments<FormValues, Key>
+    ) => UpdateResult);
+
+/** The unbound `update` function. */
+export type UpdateMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<UpdateArguments<keyof FormValues>, void, FormValues> {
-  <Key extends keyof FormValues>(
+> = Mutator<UpdateArguments<FormValues>, UpdateResult, FormValues> &
+  (<Key extends string & keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
-      UpdateArguments<Key, ArrayElement<FormValues[Key]>>,
+      UpdateArguments<FormValues, Key>,
       FormValues
     >
-  ): void;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<UpdateArguments<Key>, FormValues>
-  ): void;
-}
+  ) => UpdateResult);
 
 const update: UpdateMutator = (
-  ...mutatorArgs: MutatorArguments<UpdateArguments<string>>
+  ...mutatorArgs: MutatorArguments<UpdateArguments>
 ) => {
   const [[name, index, value], state, { changeValue }] = mutatorArgs;
 

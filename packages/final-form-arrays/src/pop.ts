@@ -4,28 +4,45 @@ import { BoundMutator } from "final-form";
 import remove from "./remove";
 import { ArrayElement } from "./types";
 
-export type PopArguments<Key extends any = any> = [name: Key];
+type PopArguments<Key extends string = string> = [name: Key];
 
-export interface Pop<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<PopMutator<FormValues>, PopArguments, any, FormValues> {
-  <Key extends keyof FormValues>(...args: PopArguments<Key>):
-    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
-    | undefined;
-  <Key extends string>(...args: PopArguments<Key>): any | undefined;
-}
-
-export interface PopMutator<
+type PopResult<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<PopArguments<keyof FormValues>, unknown, FormValues> {
-  <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<PopArguments<Key>, FormValues>
-  ):
-    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
-    | undefined;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<PopArguments<Key>, FormValues>
-  ): any | undefined;
-}
+  Key extends string = string,
+> =
+  | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
+  | undefined;
+
+/** The bound `pop` function. */
+export type Pop<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
+    PopMutator<FormValues>,
+    PopArguments,
+    PopResult<FormValues>,
+    FormValues
+  > &
+    /**
+     * Note that
+     *  - `Key extends string` for the bound mutator, and
+     *  - `Key extends string & keyof FormValues` for the unbound one
+     * is the sweet-spot for overloading our mutators.
+     *
+     * This way:
+     *  - `pop(correctKey)` strictly only accepts `FormValues[Key]` as an argument, and returns a typed result
+     *  - `pop(wrongKey)` is still allowed, and both accepts `any` as an argument, and returns `any`
+     *
+     * Best of both worlds!
+     */
+    (<Key extends string>(
+      ...args: PopArguments<Key>
+    ) => PopResult<FormValues, Key>);
+
+/** The unbound `pop` function. */
+export type PopMutator<FormValues extends FormValuesShape = FormValuesShape> =
+  Mutator<PopArguments, PopResult<FormValues>, FormValues> &
+    (<Key extends string & keyof FormValues>(
+      ...mutatorArgs: MutatorArguments<PopArguments<Key>, FormValues>
+    ) => PopResult<FormValues, Key>);
 
 const pop: PopMutator = (
   ...mutatorArgs: MutatorArguments<PopArguments<string>>

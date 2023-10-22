@@ -10,7 +10,9 @@ const onSubmit = async (values: any) => {
   console.log(values);
 };
 
-type FormValues = { customers: { firstName: string; lastName: string }[] };
+type FormValues = {
+  customers: ({ firstName: string; lastName: string } | undefined)[];
+};
 
 const basic = () => (
   <Form<FormValues>
@@ -45,7 +47,7 @@ const basic = () => (
               Remove Customer
             </button>
           </div>
-          <FieldArray name="customers">
+          <FieldArray<FormValues["customers"], FormValues> name="customers">
             {({ fields }) =>
               fields.map((name, index) => (
                 <div key={name}>

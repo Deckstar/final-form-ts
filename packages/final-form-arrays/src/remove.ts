@@ -10,33 +10,34 @@ import copyField from "./copyField";
 import { ArrayElement } from "./types";
 import { escapeRegexTokens } from "./utils";
 
-export type RemoveArguments<Key extends any = any> = [name: Key, index: number];
+type RemoveArguments<Key extends string = string> = [name: Key, index: number];
 
-export interface Remove<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
+type RemoveResult<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+> =
+  | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
+  | undefined;
+
+/** The bound `remove` function. */
+export type Remove<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
     RemoveMutator<FormValues>,
     RemoveArguments,
-    any,
+    RemoveResult<FormValues>,
     FormValues
-  > {
-  <Key extends keyof FormValues>(...args: RemoveArguments<Key>):
-    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
-    | undefined;
-  <Key extends string>(...args: RemoveArguments<Key>): any | undefined;
-}
+  > &
+    (<Key extends string>(
+      ...args: RemoveArguments<Key>
+    ) => RemoveResult<FormValues, Key>);
 
-export interface RemoveMutator<
+/** The unbound `remove` function. */
+export type RemoveMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<RemoveArguments<keyof FormValues>, any, FormValues> {
-  <Key extends keyof FormValues>(
+> = Mutator<RemoveArguments, RemoveResult<FormValues>, FormValues> &
+  (<Key extends string & keyof FormValues>(
     ...mutatorArgs: MutatorArguments<RemoveArguments<Key>, FormValues>
-  ):
-    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
-    | undefined;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<RemoveArguments<Key>, FormValues>
-  ): any | undefined;
-}
+  ) => RemoveResult<FormValues, Key>);
 
 const remove: RemoveMutator = (
   ...mutatorArgs: MutatorArguments<RemoveArguments<string>>

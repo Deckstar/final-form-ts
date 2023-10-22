@@ -4,33 +4,33 @@ import { BoundMutator } from "final-form";
 import remove from "./remove";
 import { ArrayElement } from "./types";
 
-export type ShiftArguments<Key extends any = any> = [name: Key];
+type ShiftArguments<Key extends string = string> = [name: Key];
 
-export interface Shift<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
+type ShiftResult<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+> =
+  | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
+  | undefined;
+
+/** The bound `shift` function. */
+export type Shift<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
     ShiftMutator<FormValues>,
     ShiftArguments,
-    any,
+    ShiftResult<FormValues>,
     FormValues
-  > {
-  <Key extends keyof FormValues>(...args: ShiftArguments<Key>):
-    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
-    | undefined;
-  <Key extends string>(...args: ShiftArguments<Key>): any | undefined;
-}
+  > &
+    (<Key extends string>(
+      ...args: ShiftArguments<Key>
+    ) => ShiftResult<FormValues, Key>);
 
-export interface ShiftMutator<
-  FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<ShiftArguments<keyof FormValues>, unknown, FormValues> {
-  <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<ShiftArguments<Key>, FormValues>
-  ):
-    | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
-    | undefined;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<ShiftArguments<Key>, FormValues>
-  ): any | undefined;
-}
+/** The unbound `shift` function. */
+export type ShiftMutator<FormValues extends FormValuesShape = FormValuesShape> =
+  Mutator<ShiftArguments, ShiftResult<FormValues>, FormValues> &
+    (<Key extends string & keyof FormValues>(
+      ...mutatorArgs: MutatorArguments<ShiftArguments<Key>, FormValues>
+    ) => ShiftResult<FormValues, Key>);
 
 const shift: ShiftMutator = (
   ...mutatorArgs: MutatorArguments<ShiftArguments<string>>

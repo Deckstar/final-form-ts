@@ -7,33 +7,25 @@ import type {
 
 import copyField from "./copyField";
 
-export type SwapArguments<Key extends any = any> = [
+type SwapArguments<Key extends string = string> = [
   name: Key,
   indexA: number,
   indexB: number,
 ];
 
-export interface Swap<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
-    SwapMutator<FormValues>,
-    SwapArguments,
-    void,
-    FormValues
-  > {
-  <Key extends keyof FormValues>(...args: SwapArguments<Key>): void;
-  <Key extends string>(...args: SwapArguments<Key>): void;
-}
+type SwapResult = void;
 
-export interface SwapMutator<
-  FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<SwapArguments<keyof FormValues>, void, FormValues> {
-  <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<SwapArguments<Key>, FormValues>
-  ): void;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<SwapArguments<Key>, FormValues>
-  ): void;
-}
+/** The bound `swap` function. */
+export type Swap<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<SwapMutator<FormValues>, SwapArguments, SwapResult, FormValues> &
+    (<Key extends string>(...args: SwapArguments<Key>) => SwapResult);
+
+/** The unbound `swap` function. */
+export type SwapMutator<FormValues extends FormValuesShape = FormValuesShape> =
+  Mutator<SwapArguments, SwapResult, FormValues> &
+    (<Key extends string & keyof FormValues>(
+      ...mutatorArgs: MutatorArguments<SwapArguments<Key>, FormValues>
+    ) => SwapResult);
 
 const swap: SwapMutator = (
   ...mutatorArgs: MutatorArguments<SwapArguments<string>>

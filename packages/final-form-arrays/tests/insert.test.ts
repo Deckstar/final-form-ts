@@ -1,10 +1,19 @@
-import { getIn, MutableState, setIn, Tools } from "final-form";
+import { ChangeValue, getIn, MutableState, setIn, Tools } from "final-form";
 
 import insert from "../src/insert";
+import { ArrayElement } from "../src/types";
 
 describe("insert", () => {
-  const getOp = (index: number, value: any) => {
-    const changeValue = jest.fn();
+  const getOp = <Values extends any[] | undefined>(
+    index: number,
+    value: ArrayElement<Values>,
+  ) => {
+    type MockChangeValue = ChangeValue<{ [Key: string]: Values }>;
+
+    type Return = ReturnType<MockChangeValue>;
+    type Args = Parameters<MockChangeValue>;
+
+    const changeValue = jest.fn<Return, Args>();
     const resetFieldState = jest.fn();
 
     const state = {
@@ -77,8 +86,8 @@ describe("insert", () => {
   });
 
   it("should treat undefined like an empty array", () => {
-    const op = getOp(0, "bar");
-    const result = op(undefined);
+    const op = getOp<string[] | undefined>(0, "bar");
+    const result = op(undefined)!;
 
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBe(1);
@@ -86,7 +95,7 @@ describe("insert", () => {
   });
 
   it("should insert value into the specified index", () => {
-    const op = getOp(1, "d");
+    const op = getOp<string[]>(1, "d");
     const array = ["a", "b", "c"];
     const result = op(array);
 

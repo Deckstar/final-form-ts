@@ -330,16 +330,18 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     }
   };
 
+  /** Shorthand for getting a bound mutator type based on its name in `PassedInMutators`. */
+  type BoundPassedInMutator<Key extends string & keyof PassedInMutators> =
+    BoundMutator<
+      PassedInMutators[Key],
+      Parameters<PassedInMutators[Key]>[0],
+      ReturnType<PassedInMutators[Key]>,
+      FormValues
+    >;
+
   // bind state to mutators
   const getMutatorApi =
-    (
-      key: keyof PassedInMutators,
-    ): BoundMutator<
-      PassedInMutators[typeof key],
-      Parameters<PassedInMutators[typeof key]>[0],
-      ReturnType<PassedInMutators[typeof key]>,
-      FormValues
-    > =>
+    (key: string & keyof PassedInMutators): BoundPassedInMutator<typeof key> =>
     (...args) => {
       if (mutatorsProp) {
         const mutableState: MutableState<FormValues> = {
@@ -374,12 +376,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
   const mutatorsApi: BoundMutators<PassedInMutators, FormValues> = mutatorsProp
     ? Object.keys(mutatorsProp).reduce((result, key) => {
-        type CurrentMutatorBound = BoundMutator<
-          PassedInMutators[typeof key],
-          Parameters<PassedInMutators[typeof key]>[0],
-          ReturnType<PassedInMutators[typeof key]>,
-          FormValues
-        >;
+        type CurrentMutatorBound = BoundPassedInMutator<typeof key>;
 
         result[key] = getMutatorApi(key) as CurrentMutatorBound;
         return result;

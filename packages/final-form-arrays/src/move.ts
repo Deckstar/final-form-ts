@@ -4,33 +4,25 @@ import { BoundMutator } from "final-form";
 import copyField from "./copyField";
 import { escapeRegexTokens } from "./utils";
 
-export type MoveArguments<Key extends any = any> = [
+type MoveArguments<Key extends string = string> = [
   name: Key,
   from: number,
   to: number,
 ];
 
-export interface Move<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
-    MoveMutator<FormValues>,
-    MoveArguments,
-    void,
-    FormValues
-  > {
-  <Key extends keyof FormValues>(...args: MoveArguments<Key>): void;
-  <Key extends string>(...args: MoveArguments<Key>): void;
-}
+type MoveResult = void;
 
-export interface MoveMutator<
-  FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<MoveArguments<keyof FormValues>, void, FormValues> {
-  <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<MoveArguments<Key>, FormValues>
-  ): void;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<MoveArguments<Key>, FormValues>
-  ): void;
-}
+/** The bound `move` function. */
+export type Move<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<MoveMutator<FormValues>, MoveArguments, MoveResult, FormValues> &
+    (<Key extends string>(...args: MoveArguments<Key>) => MoveResult);
+
+/** The unbound `move` function. */
+export type MoveMutator<FormValues extends FormValuesShape = FormValuesShape> =
+  Mutator<MoveArguments, MoveResult, FormValues> &
+    (<Key extends string & keyof FormValues>(
+      ...mutatorArgs: MutatorArguments<MoveArguments<Key>, FormValues>
+    ) => MoveResult);
 
 const move: MoveMutator = (
   ...mutatorArgs: MutatorArguments<MoveArguments<string>>

@@ -3,41 +3,39 @@ import { BoundMutator } from "final-form";
 
 import { ArrayElement } from "./types";
 
-export type PushArguments<Key extends any = any, Value extends any = any> = [
+type PushArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+> = [
   name: Key,
-  value: Value,
+  value: FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any,
 ];
 
-export interface Push<FormValues extends FormValuesShape = FormValuesShape>
-  extends BoundMutator<
+type PushResult = void;
+
+/** The bound `push` function. */
+export type Push<FormValues extends FormValuesShape = FormValuesShape> =
+  BoundMutator<
     PushMutator<FormValues>,
-    PushArguments,
-    void,
+    PushArguments<FormValues>,
+    PushResult,
     FormValues
-  > {
-  <Key extends keyof FormValues>(
-    ...args: PushArguments<Key, ArrayElement<FormValues[Key]>>
-  ): void;
-  <Key extends string>(...args: PushArguments<Key>): void;
-}
+  > &
+    (<Key extends string>(
+      ...args: PushArguments<FormValues, Key>
+    ) => PushResult);
 
-export interface PushMutator<
-  FormValues extends FormValuesShape = FormValuesShape,
-> extends Mutator<PushArguments<keyof FormValues>, void, FormValues> {
-  <Key extends keyof FormValues>(
-    ...mutatorArgs: MutatorArguments<
-      PushArguments<Key, ArrayElement<FormValues[Key]>>,
-      FormValues
-    >
-  ): void;
-  <Key extends string>(
-    ...mutatorArgs: MutatorArguments<PushArguments<Key>, FormValues>
-  ): void;
-}
+/** The unbound `push` function. */
+export type PushMutator<FormValues extends FormValuesShape = FormValuesShape> =
+  Mutator<PushArguments<FormValues>, PushResult, FormValues> &
+    (<Key extends string & keyof FormValues>(
+      ...mutatorArgs: MutatorArguments<
+        PushArguments<FormValues, Key>,
+        FormValues
+      >
+    ) => PushResult);
 
-const push: PushMutator = (
-  ...mutatorArgs: MutatorArguments<PushArguments<string>>
-) => {
+const push: PushMutator = (...mutatorArgs: MutatorArguments<PushArguments>) => {
   const [[name, value], state, { changeValue }] = mutatorArgs;
 
   changeValue(state, name, (array: any[] | null | undefined): any[] =>
