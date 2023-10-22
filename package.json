@@ -2,7 +2,7 @@
   "name": "final-form-ts",
   "private": true,
   "packageManager": "yarn@3.5.0",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "scripts": {
     "build-files": "yarn clean && yarn compile && yarn move-compiled",
     "check": "yarn lint && yarn test",
