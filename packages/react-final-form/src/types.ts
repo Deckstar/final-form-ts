@@ -306,7 +306,9 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
    * Related:
    * - `FieldRenderProps`
    */
-  component?: React.ComponentType<RenderProps> | SupportedInputs;
+  component?:
+    | React.ComponentType<React.PropsWithChildren<RenderProps>>
+    | SupportedInputs;
   /**
    * A render function that is given `FieldRenderProps`,
    * as well as any non-API props passed into the
@@ -331,7 +333,7 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
    * - `FieldRenderProps`
    */
   render?: (
-    props: RenderProps,
+    props: React.PropsWithChildren<RenderProps>,
   ) => React.ReactNode | React.ReactElement<RenderProps>;
 }
 

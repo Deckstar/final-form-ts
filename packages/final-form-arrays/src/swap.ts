@@ -7,13 +7,15 @@ import type {
 
 import copyField from "./copyField";
 
-type SwapArguments<Key extends string = string> = [
+/** Arguments for the `swap` mutator. */
+export type SwapArguments<Key extends string = string> = [
   name: Key,
   indexA: number,
   indexB: number,
 ];
 
-type SwapResult = void;
+/** Return type for the `swap` mutator. */
+export type SwapResult = void;
 
 /** The bound `swap` function. */
 export type Swap<FormValues extends FormValuesShape = FormValuesShape> =

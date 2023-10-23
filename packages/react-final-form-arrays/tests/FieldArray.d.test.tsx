@@ -14,6 +14,8 @@ type FormValues = {
   customers: ({ firstName: string; lastName: string } | undefined)[];
 };
 
+type Customer = FormValues["customers"][number];
+
 const basic = () => (
   <Form<FormValues>
     onSubmit={onSubmit}
@@ -47,7 +49,7 @@ const basic = () => (
               Remove Customer
             </button>
           </div>
-          <FieldArray<FormValues["customers"], FormValues> name="customers">
+          <FieldArray<Customer, FormValues> name="customers">
             {({ fields }) =>
               fields.map((name, index) => (
                 <div key={name}>

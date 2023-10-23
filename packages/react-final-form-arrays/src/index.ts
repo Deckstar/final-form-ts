@@ -3,7 +3,6 @@ export type {
   FieldArrayMutators,
   FieldArrayProps,
   FieldArrayRenderProps,
-  RenderableProps,
   UseFieldArrayConfig,
 } from "./types";
 export { default as useFieldArray } from "./useFieldArray";

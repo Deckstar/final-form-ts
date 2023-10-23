@@ -3,16 +3,20 @@ import { BoundMutator } from "final-form";
 
 import { ArrayElement } from "./types";
 
-type UpdateArguments<
+type UpdateValue<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
-> = [
-  name: Key,
-  index: number,
-  value: FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any,
-];
+> = FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any;
 
-type UpdateResult = void;
+/** Arguments for the `update` mutator. */
+export type UpdateArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+  Value extends any = UpdateValue<FormValues, Key>,
+> = [name: Key, index: number, value: Value];
+
+/** Return type for the `update` mutator. */
+export type UpdateResult = void;
 
 /** The bound `update` function. */
 export type Update<FormValues extends FormValuesShape = FormValuesShape> =

@@ -7,7 +7,29 @@ import type {
 } from "final-form";
 import {
   BoundArrayMutators,
+  ConcatArguments,
+  ConcatResult,
   DefaultBoundArrayMutators,
+  InsertArguments,
+  InsertResult,
+  MoveArguments,
+  MoveResult,
+  PopArguments,
+  PopResult,
+  PushArguments,
+  PushResult,
+  RemoveArguments,
+  RemoveBatchArguments,
+  RemoveBatchResult,
+  RemoveResult,
+  ShiftArguments,
+  ShiftResult,
+  SwapArguments,
+  SwapResult,
+  UnshiftArguments,
+  UnshiftResult,
+  UpdateArguments,
+  UpdateResult,
 } from "final-form-arrays";
 import {
   FieldInputPropsBasedOnSubscription,
@@ -18,8 +40,6 @@ import {
   UseFieldConfig,
 } from "react-final-form";
 
-export type { RenderableProps };
-
 /** Drops the first item from a tuple type. */
 type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 
@@ -27,6 +47,49 @@ type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 type DropFirstArg<Func extends (...args: any[]) => any> = (
   ...argsWithoutFirst: DropFirst<Parameters<Func>>
 ) => ReturnType<Func>;
+
+/**
+ * For our own mutators, we can narrow down the types to make
+ * them more accurate, based on the `FieldValue`.
+ *
+ * Userland mutators, unfortunately, will lose their generics.
+ */
+type FieldDefaultBoundArrayMutators<
+  FormValues extends FormValuesShape = FormValuesShape,
+  FieldValue extends any = any,
+> = {
+  insert: (
+    ...args: DropFirst<InsertArguments<FormValues, string, FieldValue>>
+  ) => InsertResult;
+  concat: (
+    ...args: DropFirst<ConcatArguments<FormValues, string, FieldValue[]>>
+  ) => ConcatResult;
+  move: (...args: DropFirst<MoveArguments>) => MoveResult;
+  pop: (
+    ...args: DropFirst<PopArguments>
+  ) => PopResult<FormValues, string, FieldValue>;
+  push: (
+    ...args: DropFirst<PushArguments<FormValues, string, FieldValue>>
+  ) => PushResult;
+  remove: (
+    ...args: DropFirst<RemoveArguments>
+  ) => RemoveResult<FormValues, string, FieldValue>;
+  removeBatch: (
+    ...args: DropFirst<RemoveBatchArguments>
+  ) => RemoveBatchResult<FormValues, string, FieldValue[]>;
+  shift: (
+    ...args: DropFirst<ShiftArguments>
+  ) => ShiftResult<FormValues, string, FieldValue>;
+  swap: (...args: DropFirst<SwapArguments>) => SwapResult;
+  update: (
+    ...args: DropFirst<UpdateArguments<FormValues, string, FieldValue>>
+  ) => UpdateResult;
+  unshift: (
+    ...args: DropFirst<UnshiftArguments<FormValues, string, FieldValue>>
+  ) => UnshiftResult;
+} & {
+  [Func in keyof DefaultBoundArrayMutators<FormValues>]: unknown;
+}; // copies over the documentation comments without the overloads;
 
 /**
  * Mutators for an array item in the field render props.
@@ -39,10 +102,13 @@ export type FieldArrayMutators<
     Mutators<FormValues>,
     FormValues
   > = DefaultBoundArrayMutators<FormValues>,
+  FieldValue = any,
 > = {
-  [Func in keyof MutatorsAfterBinding]: DropFirstArg<
-    MutatorsAfterBinding[Func]
-  >;
+  [Func in keyof MutatorsAfterBinding]: Func extends keyof DefaultBoundArrayMutators
+    ? MutatorsAfterBinding[Func] extends DefaultBoundArrayMutators<FormValues>[Func]
+      ? FieldDefaultBoundArrayMutators<FormValues, FieldValue>[Func]
+      : DropFirstArg<MutatorsAfterBinding[Func]>
+    : DropFirstArg<MutatorsAfterBinding[Func]>;
 };
 
 /**
@@ -84,7 +150,8 @@ export type FieldArrayRenderProps<
     map: (iterator: (name: string, index: number) => any) => any[];
   } & FieldArrayMutators<
     FormValues,
-    MutatorsAfterBinding & DefaultBoundArrayMutators<FormValues>
+    MutatorsAfterBinding & DefaultBoundArrayMutators<FormValues>,
+    FieldValue
   > &
     Pick<
       FieldInputPropsBasedOnSubscription<FieldValue[], Subscription>,

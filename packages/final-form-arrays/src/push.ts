@@ -3,15 +3,20 @@ import { BoundMutator } from "final-form";
 
 import { ArrayElement } from "./types";
 
-type PushArguments<
+type PushValue<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
-> = [
-  name: Key,
-  value: FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any,
-];
+> = FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any;
 
-type PushResult = void;
+/** Arguments for the `push` mutator. */
+export type PushArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+  Value extends any = PushValue<FormValues, Key>,
+> = [name: Key, value: Value];
+
+/** Return type for the `push` mutator. */
+export type PushResult = void;
 
 /** The bound `push` function. */
 export type Push<FormValues extends FormValuesShape = FormValuesShape> =

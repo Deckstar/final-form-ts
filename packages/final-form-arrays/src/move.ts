@@ -4,13 +4,15 @@ import { BoundMutator } from "final-form";
 import copyField from "./copyField";
 import { escapeRegexTokens } from "./utils";
 
-type MoveArguments<Key extends string = string> = [
+/** Arguments for the `move` mutator. */
+export type MoveArguments<Key extends string = string> = [
   name: Key,
   from: number,
   to: number,
 ];
 
-type MoveResult = void;
+/** Return type for the `move` mutator. */
+export type MoveResult = void;
 
 /** The bound `move` function. */
 export type Move<FormValues extends FormValuesShape = FormValuesShape> =

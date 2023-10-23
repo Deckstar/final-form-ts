@@ -12,18 +12,48 @@ import swap, { Swap, SwapMutator } from "./swap";
 import unshift, { Unshift, UnshiftMutator } from "./unshift";
 import update, { Update, UpdateMutator } from "./update";
 
-export type { Concat, ConcatMutator } from "./concat";
-export type { Insert, InsertMutator } from "./insert";
-export type { Move, MoveMutator } from "./move";
-export type { Pop, PopMutator } from "./pop";
-export type { Push, PushMutator } from "./push";
-export type { Remove, RemoveMutator } from "./remove";
-export type { RemoveBatch, RemoveBatchMutator } from "./removeBatch";
-export type { Shift, ShiftMutator } from "./shift";
-export type { Swap, SwapMutator } from "./swap";
+export type {
+  Concat,
+  ConcatArguments,
+  ConcatMutator,
+  ConcatResult,
+} from "./concat";
+export type {
+  Insert,
+  InsertArguments,
+  InsertMutator,
+  InsertResult,
+} from "./insert";
+export type { Move, MoveArguments, MoveMutator, MoveResult } from "./move";
+export type { Pop, PopArguments, PopMutator, PopResult } from "./pop";
+export type { Push, PushArguments, PushMutator, PushResult } from "./push";
+export type {
+  Remove,
+  RemoveArguments,
+  RemoveMutator,
+  RemoveResult,
+} from "./remove";
+export type {
+  RemoveBatch,
+  RemoveBatchArguments,
+  RemoveBatchMutator,
+  RemoveBatchResult,
+} from "./removeBatch";
+export type { Shift, ShiftArguments, ShiftMutator, ShiftResult } from "./shift";
+export type { Swap, SwapArguments, SwapMutator, SwapResult } from "./swap";
 export type { ArrayMutator, ArrayMutators, BoundArrayMutators } from "./types";
-export type { Unshift, UnshiftMutator } from "./unshift";
-export type { Update, UpdateMutator } from "./update";
+export type {
+  Unshift,
+  UnshiftArguments,
+  UnshiftMutator,
+  UnshiftResult,
+} from "./unshift";
+export type {
+  Update,
+  UpdateArguments,
+  UpdateMutator,
+  UpdateResult,
+} from "./update";
 
 /** The shape of the default array mutators as passed in to the final-form config. */
 export type DefaultArrayMutators<

@@ -5,16 +5,20 @@ import copyField from "./copyField";
 import { ArrayElement } from "./types";
 import { escapeRegexTokens } from "./utils";
 
-type InsertArguments<
+type InsertValue<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
-> = [
-  name: Key,
-  index: number,
-  value: FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any,
-];
+> = FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any;
 
-type InsertResult = void;
+/** Arguments for the `insert` mutator. */
+export type InsertArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+  Value extends any = InsertValue<FormValues, Key>,
+> = [name: Key, index: number, value: Value];
+
+/** Return type for the `insert` mutator. */
+export type InsertResult = void;
 
 /** The bound `insert` function. */
 export type Insert<FormValues extends FormValuesShape = FormValuesShape> =

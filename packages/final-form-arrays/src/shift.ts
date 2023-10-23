@@ -4,14 +4,22 @@ import { BoundMutator } from "final-form";
 import remove from "./remove";
 import { ArrayElement } from "./types";
 
-type ShiftArguments<Key extends string = string> = [name: Key];
-
-type ShiftResult<
+type ShiftValue<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
 > =
   | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
   | undefined;
+
+/** Arguments for the `shift` mutator. */
+export type ShiftArguments<Key extends string = string> = [name: Key];
+
+/** Return type for the `shift` mutator. */
+export type ShiftResult<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+  Value extends any = ShiftValue<FormValues, Key>,
+> = Value;
 
 /** The bound `shift` function. */
 export type Shift<FormValues extends FormValuesShape = FormValuesShape> =

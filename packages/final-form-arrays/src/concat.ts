@@ -3,37 +3,46 @@ import { BoundMutator } from "final-form";
 
 import { ArrayElement } from "./types";
 
-type ConcatArguments<
+type ConcatValue<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
-> = [
-  name: Key,
-  value: FormValues[Key] extends any[]
-    ? ArrayElement<FormValues[Key]>[] // use ArrayElement<type>[] to ensure that it's an array (otherwise we get `any` in some cases)
-    : any[],
-];
+> = FormValues[Key] extends any[]
+  ? ArrayElement<FormValues[Key]>[] // use ArrayElement<type>[] to ensure that it's an array (otherwise we get `any` in some cases)
+  : any[];
 
-type ConcatResult = void;
+/** Arguments for the `concat` mutator. */
+export type ConcatArguments<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+  ValueList extends any[] = ConcatValue<FormValues, Key>,
+> = [name: Key, value: ValueList];
+
+/** Return type for the `concat` mutator. */
+export type ConcatResult = void;
 
 /** The bound `concat` function. */
 export type Concat<FormValues extends FormValuesShape = FormValuesShape> =
   BoundMutator<
     ConcatMutator<FormValues>,
-    ConcatArguments<FormValues>,
+    ConcatArguments<ConcatValue<FormValues>>,
     ConcatResult,
     FormValues
   > &
     (<Key extends string>(
-      ...args: ConcatArguments<FormValues, Key>
+      ...args: ConcatArguments<ConcatValue<FormValues, Key>>
     ) => ConcatResult);
 
 /** The unbound `concat` function. */
 export type ConcatMutator<
   FormValues extends FormValuesShape = FormValuesShape,
-> = Mutator<ConcatArguments<FormValues>, ConcatResult, FormValues> &
+> = Mutator<
+  ConcatArguments<ConcatValue<FormValues>>,
+  ConcatResult,
+  FormValues
+> &
   (<Key extends string & keyof FormValues>(
     ...mutatorArgs: MutatorArguments<
-      ConcatArguments<FormValues, Key>,
+      ConcatArguments<ConcatValue<FormValues, Key>>,
       FormValues
     >
   ) => ConcatResult);

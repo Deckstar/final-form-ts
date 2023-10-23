@@ -30,15 +30,23 @@ const binarySearch = (list: number[], value: number): number => {
   return ~first;
 };
 
-type RemoveBatchArguments<Key extends string = string> = [
+type RemoveBatchValue<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+> = FormValues[Key] extends any[] ? FormValues[Key] : any[];
+
+/** Arguments for the `removeBatch` mutator. */
+export type RemoveBatchArguments<Key extends string = string> = [
   name: Key,
   indexes: number[],
 ];
 
-type RemoveBatchResult<
+/** Return type for the `removeBatch` mutator. */
+export type RemoveBatchResult<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
-> = FormValues[Key] extends any[] ? FormValues[Key] : any[];
+  ValueList extends any[] = RemoveBatchValue<FormValues, Key>,
+> = ValueList;
 
 /** The bound `removeBatch` function. */
 export type RemoveBatch<FormValues extends FormValuesShape = FormValuesShape> =

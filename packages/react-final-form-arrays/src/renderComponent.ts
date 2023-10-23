@@ -1,7 +1,6 @@
 import { AnyObject } from "final-form";
 import * as React from "react";
-
-import type { RenderableProps } from "./types";
+import { RenderableProps } from "react-final-form";
 
 type OptionalRefProp = {
   /** An optional `ref` for this node. */

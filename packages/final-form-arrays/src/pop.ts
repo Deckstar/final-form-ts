@@ -4,14 +4,22 @@ import { BoundMutator } from "final-form";
 import remove from "./remove";
 import { ArrayElement } from "./types";
 
-type PopArguments<Key extends string = string> = [name: Key];
-
-type PopResult<
+type PopValue<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
 > =
   | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
   | undefined;
+
+/** Arguments for the `pop` mutator. */
+export type PopArguments<Key extends string = string> = [name: Key];
+
+/** Return type for the `pop` mutator. */
+export type PopResult<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+  Value extends any = PopValue<FormValues, Key>,
+> = Value;
 
 /** The bound `pop` function. */
 export type Pop<FormValues extends FormValuesShape = FormValuesShape> =

@@ -58,7 +58,11 @@ const useFieldArray = <
 > => {
   const form = useForm<FormValues>("useFieldArray");
 
-  type FieldMutatorsObj = FieldArrayMutators<FormValues, MutatorsAfterBinding>;
+  type FieldMutatorsObj = FieldArrayMutators<
+    FormValues,
+    MutatorsAfterBinding,
+    FieldValue
+  >;
 
   const formMutators = form.mutators as MutatorsAfterBinding;
 
@@ -80,7 +84,7 @@ const useFieldArray = <
 
         type FieldMutator = FieldMutatorsObj[typeof key];
 
-        const fieldMutator = ((...args) =>
+        const fieldMutator = ((...args: any[]) =>
           boundMutator(name, ...args)) as FieldMutator;
 
         result[key] = fieldMutator;

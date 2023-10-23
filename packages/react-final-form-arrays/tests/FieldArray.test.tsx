@@ -691,9 +691,8 @@ describe("FieldArray", () => {
       >
         {() => (
           <form>
-            <FieldArray
+            <FieldArray<string | undefined>
               name="names"
-              // @ts-ignore
               render={({ fields, children }) => (
                 <div>
                   {children}
@@ -792,7 +791,7 @@ describe("FieldArray", () => {
       });
     });
     const { getByTestId, getByText } = render(
-      <Form
+      <Form<{ names: string[] }, { values: true }>
         onSubmit={onSubmit}
         mutators={arrayMutators}
         subscription={{ values: true }}
@@ -800,7 +799,7 @@ describe("FieldArray", () => {
         {({ handleSubmit, values }) => (
           <form onSubmit={handleSubmit} data-testid="form">
             <pre data-testid="values">{JSON.stringify(values)}</pre>
-            <FieldArray
+            <FieldArray<string>
               name="names"
               render={({ fields }) => (
                 <div>
@@ -856,58 +855,61 @@ describe("FieldArray", () => {
     expect(renderArray.mock.calls[0][0].fields.value).toEqual(["a", "b", "c"]);
   });
 
-  // it('should respect record-level validation', () => {
-  //   // https://github.com/final-form/react-final-form-arrays/pull/84
-  //   const { getByTestId, getByText } = render(
-  //     <Form
-  //       onSubmit={onSubmitMock}
-  //       mutators={arrayMutators}
-  //       subscription={{}}
-  //       validate={values => {
-  //         const errors = {}
-  //         console.info('values.names', values.names)
-  //         debugger
-  //         if (values.names && values.names.length > 1) {
-  //           errors.names = 'Too many'
-  //         }
-  //         return errors
-  //       }}
-  //     >
-  //       {({ handleSubmit }) => (
-  //         <form onSubmit={handleSubmit} data-testid="form">
-  //           <FieldArray
-  //             name="names"
-  //             render={({ fields, meta }) => (
-  //               <div>
-  //                 {fields.map(field => (
-  //                   <Field
-  //                     name={field}
-  //                     key={field}
-  //                     component="input"
-  //                     data-testid={field}
-  //                   />
-  //                 ))}
-  //                 <span data-testid="error">{meta.error}</span>
-  //                 <button type="button" onClick={() => fields.push('erikras')}>
-  //                   Add Erik
-  //                 </button>
-  //                 <button
-  //                   type="button"
-  //                   onClick={() => fields.push('jaredpalmer')}
-  //                 >
-  //                   Add Jared
-  //                 </button>
-  //               </div>
-  //             )}
-  //           />
-  //         </form>
-  //       )}
-  //     </Form>
-  //   )
-  //   expect(getByTestId('error')).toHaveTextContent('')
-  //   fireEvent.click(getByText('Add Erik'))
-  //   expect(getByTestId('error')).toHaveTextContent('')
-  //   fireEvent.click(getByText('Add Jared'))
-  //   expect(getByTestId('error')).toHaveTextContent('Too many')
-  // })
+  it("should respect record-level validation", () => {
+    type FormValues = {
+      names: string[];
+    };
+
+    // https://github.com/final-form/react-final-form-arrays/pull/84
+    const { getByTestId, getByText } = render(
+      <Form<FormValues, {}>
+        onSubmit={onSubmitMock}
+        mutators={arrayMutators}
+        subscription={{}}
+        validate={(values) => {
+          const errors: Partial<Record<keyof FormValues, string>> = {};
+
+          if (values.names && values.names.length > 1) {
+            errors.names = "Too many";
+          }
+          return errors;
+        }}
+      >
+        {({ handleSubmit }) => (
+          <form onSubmit={handleSubmit} data-testid="form">
+            <FieldArray<FormValues["names"][number]>
+              name="names"
+              render={({ fields, meta }) => (
+                <div>
+                  {fields.map((field) => (
+                    <Field
+                      name={field}
+                      key={field}
+                      component="input"
+                      data-testid={field}
+                    />
+                  ))}
+                  <span data-testid="error">{meta.error}</span>
+                  <button type="button" onClick={() => fields.push("erikras")}>
+                    Add Erik
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fields.push("jaredpalmer")}
+                  >
+                    Add Jared
+                  </button>
+                </div>
+              )}
+            />
+          </form>
+        )}
+      </Form>,
+    );
+    expect(getByTestId("error")).toHaveTextContent("");
+    fireEvent.click(getByText("Add Erik"));
+    expect(getByTestId("error")).toHaveTextContent("");
+    fireEvent.click(getByText("Add Jared"));
+    expect(getByTestId("error")).toHaveTextContent("Too many");
+  });
 });

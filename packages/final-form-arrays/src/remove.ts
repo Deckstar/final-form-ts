@@ -10,14 +10,25 @@ import copyField from "./copyField";
 import { ArrayElement } from "./types";
 import { escapeRegexTokens } from "./utils";
 
-type RemoveArguments<Key extends string = string> = [name: Key, index: number];
-
-type RemoveResult<
+type RemoveValue<
   FormValues extends FormValuesShape = FormValuesShape,
   Key extends string = string,
 > =
   | (FormValues[Key] extends any[] ? ArrayElement<FormValues[Key]> : any)
   | undefined;
+
+/** Arguments for the `remove` mutator. */
+export type RemoveArguments<Key extends string = string> = [
+  name: Key,
+  index: number,
+];
+
+/** Return type for the `remove` mutator. */
+export type RemoveResult<
+  FormValues extends FormValuesShape = FormValuesShape,
+  Key extends string = string,
+  Value extends any = RemoveValue<FormValues, Key>,
+> = Value;
 
 /** The bound `remove` function. */
 export type Remove<FormValues extends FormValuesShape = FormValuesShape> =
