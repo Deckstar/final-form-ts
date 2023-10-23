@@ -1,4 +1,4 @@
-import { mapKeys, mapValues } from "lodash";
+import { reduce } from "lodash";
 import type { JestConfigWithTsJest } from "ts-jest";
 import { defaultsESM } from "ts-jest/presets";
 
@@ -25,12 +25,18 @@ const COLLECT_COVERAGE_FROM: CollectCoverageFrom = PACKAGES.map(
     `"<rootDir>/packages/${packageName}/tests/**/*.test.ts(x)?"`,
 ) as CollectCoverageFrom;
 
-const MODULE_NAME_MAPPER = mapValues(
-  mapKeys(PACKAGES, (pkg) => pkg as Package),
-  (pkg) => [`@deckstar/${pkg as Package}`],
-) as {
-  [Pkg in Package]: [`@deckstar/${Pkg}`];
-};
+const MODULE_NAME_MAPPER = reduce(
+  PACKAGES,
+  (accumulated, pkg) => {
+    const key: `"${Package}"` = `"${pkg}"`;
+    const src: `@deckstar/${Package}` = `@deckstar/${pkg}`;
+
+    const option = { [key]: src };
+
+    return { ...accumulated, ...option };
+  },
+  {} as { [Pkg in Package as `"${Pkg}"`]: `@deckstar/${Pkg}` },
+);
 
 // Sync object
 const config: JestConfigWithTsJest = {
@@ -39,12 +45,13 @@ const config: JestConfigWithTsJest = {
   testEnvironment: "jsdom",
   rootDir: "./",
   transform: {
-    "^.*\\.ts?$": ["ts-jest", { isolatedModules: true }],
+    "^.*\\.(ts|tsx)?$": ["ts-jest", { isolatedModules: true, useESM: true }],
   },
   coverageDirectory: "<rootDir>/coverage",
   collectCoverageFrom: COLLECT_COVERAGE_FROM,
   testPathIgnorePatterns: ["<rootDir>/node_modules"],
-  moduleFileExtensions: ["ts", "js"],
+  moduleDirectories: ["node_modules", "<rootDir>/packages"],
+  moduleFileExtensions: ["ts", "tsx", "js"],
   coverageReporters: ["json", "lcov", "html"],
   passWithNoTests: true,
   moduleNameMapper: MODULE_NAME_MAPPER,
