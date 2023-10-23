@@ -867,10 +867,23 @@ describe("FieldArray", () => {
         mutators={arrayMutators}
         subscription={{}}
         validate={(values) => {
-          const errors: Partial<Record<keyof FormValues, string>> = {};
+          /**
+           * Array fields need to have error arrays, or else `setInRecursor`
+           * will throw an error:
+           * ```
+           * "Cannot set a non-numeric property on an array"
+           * ```
+           */
+          type ErrorsForFieldArray = Partial<{
+            [K in keyof FormValues]: FormValues[K] extends any[]
+              ? string[]
+              : string;
+          }>;
+
+          const errors: ErrorsForFieldArray = {};
 
           if (values.names && values.names.length > 1) {
-            errors.names = "Too many";
+            errors.names = ["Too many"];
           }
           return errors;
         }}
@@ -889,7 +902,7 @@ describe("FieldArray", () => {
                       data-testid={field}
                     />
                   ))}
-                  <span data-testid="error">{meta.error}</span>
+                  <span data-testid="error">{meta.error?.[0]}</span>
                   <button type="button" onClick={() => fields.push("erikras")}>
                     Add Erik
                   </button>
