@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { AnyObject, Config, createForm, Mutator } from "../src/index";
+import { AnyObject, Config, createForm, Mutator } from "../../src/index";
 
 interface FormValues {
   foo: string;
@@ -160,4 +160,4 @@ const mutators = form2.mutators as Form2BoundMutators;
 mutators.setValue("firstName", "Kevin");
 
 // To get around the "Your test suite must contain at least one test." error
-it("passes", () => {});
+it("Passes TypeScript compilation", () => {});

@@ -1,7 +1,7 @@
 import { Config, createForm } from "final-form";
 
-import arrayMutators from "../src/index";
-import { DefaultBoundArrayMutators } from "../src/index";
+import arrayMutators from "../../src/index";
+import { DefaultBoundArrayMutators } from "../../src/index";
 
 type CustomersForm = {
   customers: {
@@ -38,4 +38,4 @@ mutators.update("customers", 0, { firstName: "", lastName: "" });
 mutators.unshift("customers", { firstName: "", lastName: "" });
 
 // To get around the "Your test suite must contain at least one test." error
-it("passes", () => {});
+it("Passes TypeScript compilation", () => {});

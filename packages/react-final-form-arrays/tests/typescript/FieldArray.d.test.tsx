@@ -3,7 +3,7 @@ import arrayMutators, { DefaultBoundArrayMutators } from "final-form-arrays";
 import * as React from "react";
 import { Field, Form } from "react-final-form";
 
-import { FieldArray } from "../src/index";
+import { FieldArray } from "../../src/index";
 
 const onSubmit = async (values: any) => {
   // eslint-disable-next-line no-console
@@ -95,4 +95,4 @@ const basic = () => (
 );
 
 // To get around the "Your test suite must contain at least one test." error
-it("passes", () => {});
+it("Passes TypeScript compilation", () => {});

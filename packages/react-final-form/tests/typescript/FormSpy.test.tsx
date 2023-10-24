@@ -18,4 +18,4 @@ function submitButtonSpy() {
 }
 
 // To get around the "Your test suite must contain at least one test." error
-it("passes", () => {});
+it("Passes TypeScript compilation", () => {});
