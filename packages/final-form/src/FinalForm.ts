@@ -1311,13 +1311,13 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
       const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises);
       if (asyncValidationPromisesKeys.length) {
         // still waiting on async validation to complete...
-        Promise.all(
+        const submissionPromise = Promise.all(
           asyncValidationPromisesKeys.map(
             (key) => asyncValidationPromises[Number(key)],
           ),
           // eslint-disable-next-line no-console
-        ).then(api.submit, console.error);
-        return;
+        ).then(api.submit, console.error) as Promise<ValidationErrorsShape>;
+        return submissionPromise;
       }
       const submitIsBlocked = beforeSubmit();
       if (submitIsBlocked) {
