@@ -114,7 +114,7 @@ function ReactFinalForm<
 >(props: Props<FormValues, Subscription>) {
   const {
     debug,
-    decorators = [],
+    decorators,
     destroyOnUnregister,
     form: alternateFormApi,
     initialStatus,
@@ -181,12 +181,7 @@ function ReactFinalForm<
           setState(formState);
         }
       }, subscription as Subscription),
-      ...(decorators
-        ? decorators.map((decorator) =>
-            // this noop ternary is to appease the flow gods
-            decorator(form),
-          )
-        : []),
+      ...(decorators || []).map((decorator) => decorator(form)),
     ];
 
     return () => {
