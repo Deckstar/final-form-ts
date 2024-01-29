@@ -31,13 +31,17 @@ export type Pop<FormValues extends FormValuesShape = FormValuesShape> =
   > &
     /**
      * Note that
-     *  - `Key extends string` for the bound mutator, and
-     *  - `Key extends string & keyof FormValues` for the unbound one
-     * is the sweet-spot for overloading our mutators.
+     *
+     * - `Key extends string` for the bound mutator, and
+     * - `Key extends string & keyof FormValues` for the unbound one is the
+     *   sweet-spot for overloading our mutators.
      *
      * This way:
-     *  - `pop(correctKey)` strictly only accepts `FormValues[Key]` as an argument, and returns a typed result
-     *  - `pop(wrongKey)` is still allowed, and both accepts `any` as an argument, and returns `any`
+     *
+     * - `pop(correctKey)` strictly only accepts `FormValues[Key]` as an argument,
+     *   and returns a typed result
+     * - `pop(wrongKey)` is still allowed, and both accepts `any` as an argument,
+     *   and returns `any`
      *
      * Best of both worlds!
      */

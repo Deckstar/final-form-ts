@@ -40,10 +40,9 @@ const defaultParse = (value: any, _name: string) =>
 const defaultIsEqual = (a: any, b: any): boolean => a === b;
 
 /**
- * `useField()` returns `FieldRenderProps`. It will
- * manage the rerendering of any component you use it in,
- * i.e. the component will only rerender if the field
- * state subscribed to via `useField()` changes.
+ * `useField()` returns `FieldRenderProps`. It will manage the rerendering of
+ * any component you use it in, i.e. the component will only rerender if the
+ * field state subscribed to via `useField()` changes.
  *
  * `useField()` is used internally inside `<Field/>`.
  */
@@ -56,10 +55,7 @@ function useField<
 >(
   /** The name of the field. */
   name: string,
-  /**
-   * An object that looks just like `FieldProps`, except
-   * without the name.
-   */
+  /** An object that looks just like `FieldProps`, except without the name. */
   config: UseFieldConfig<
     FieldValue,
     FormValues,
@@ -91,10 +87,7 @@ function useField<
 
   const configRef = useLatest(config);
 
-  /**
-   * Handles registering the field in the form
-   * subscriptions.
-   */
+  /** Handles registering the field in the form subscriptions. */
   const register = (
     callback: FieldSubscriber<FormValues[string], Subscription>,
     silent: FieldConfig<FieldValue, FormValues>["silent"],
@@ -248,11 +241,11 @@ function useField<
 
       if (formatOnBlur) {
         /**
-         * Here we must fetch the value directly from Final Form because we cannot
-         * trust that our `state` closure has the most recent value. This is a problem
-         * if-and-only-if the library consumer has called `onChange()` immediately
-         * before calling `onBlur()`, but before the field has had a chance to receive
-         * the value update from Final Form.
+         * Here we must fetch the value directly from Final Form because we
+         * cannot trust that our `state` closure has the most recent value. This
+         * is a problem if-and-only-if the library consumer has called
+         * `onChange()` immediately before calling `onBlur()`, but before the
+         * field has had a chance to receive the value update from Final Form.
          */
         const fieldState = form.getFieldState(state.name);
         state.change(

@@ -27,29 +27,26 @@ export const all = formSubscriptionItems.reduce((result, key) => {
 }, {} as FormSubscription) as FullFormSubscription;
 
 /**
+ * A component that surrounds your entire form and manages the form state. It
+ * can inject form state and functionality, e.g. a `handleSubmit` function for
+ * you to pass to your `<form>` element, via render props.
  *
- * A component that surrounds your entire form and
- * manages the form state. It can inject form state and
- * functionality, e.g. a `handleSubmit` function for you
- * to pass to your `<form>` element, via render props.
+ * On mount, `<Form/>` creates a Final Form `form` instance, subscribes to
+ * changes on that `form`, and places it into the [React
+ * Context](https://reactjs.org/docs/context.html) so that the `<Field/>` and
+ * `<FormSpy/>` components can see it.
  *
- * On mount, `<Form/>` creates a Final Form `form`
- * instance, subscribes to changes on that `form`, and
- * places it into the [React Context](https://reactjs.org/docs/context.html)
- * so that the `<Field/>` and `<FormSpy/>` components can
- * see it.
- *
- * The `<Form/>` will rerender any time the form state it
- * is subscribed to changes. By default it subscribes to
- * _all_ form state. You can control which form state it
- * subscribes to with the `subscription` prop.
+ * The `<Form/>` will rerender any time the form state it is subscribed to
+ * changes. By default it subscribes to _all_ form state. You can control which
+ * form state it subscribes to with the `subscription` prop.
  *
  * ## Props
  *
- * `<Form/>` accepts `FormProps` and will call the render
- * function with `FormRenderProps`.
+ * `<Form/>` accepts `FormProps` and will call the render function with
+ * `FormRenderProps`.
  *
- * The only two required props are `onSubmit` and one of `component`, `render`, or `children`.
+ * The only two required props are `onSubmit` and one of `component`, `render`,
+ * or `children`.
  *
  * ## Basic Usage
  *
@@ -57,10 +54,9 @@ export const all = formSubscriptionItems.reduce((result, key) => {
  *
  * ### 1. Provide an `onSubmit` prop
  *
- * `onSubmit` is a function that will be called with the
- * values of your form when the user submits the form
- * _and_ all validation passes. Your `onSubmit` function
- * will not be called if there are validation errors.
+ * `onSubmit` is a function that will be called with the values of your form
+ * when the user submits the form _and_ all validation passes. Your `onSubmit`
+ * function will not be called if there are validation errors.
  *
  * ### 2. Provide a way to render the form
  *
@@ -72,40 +68,37 @@ export const all = formSubscriptionItems.reduce((result, key) => {
  * | `<Form render/>`    | `Function`            |
  * | `<Form children/>`  | `Function`            |
  *
- * The only important distinction is that if you pass a
- * `component` prop, it will be rendered with
+ * The only important distinction is that if you pass a `component` prop, it
+ * will be rendered with
  * [`React.createElement()`](https://reactjs.org/docs/react-api.html#createelement),
- * resulting in your component actually being in the
- * React node tree, i.e. inspectable in [DevTools](https://github.com/facebook/react-devtools#react-developer-tools-).
+ * resulting in your component actually being in the React node tree, i.e.
+ * inspectable in
+ * [DevTools](https://github.com/facebook/react-devtools#react-developer-tools-).
  *
- * While using `component` might feel easiest if you are
- * migrating from [Redux Form's Higher Order Component](https://redux-form.com/8.2.2/docs/api/reduxform.md/)
- * model, best practice recommends using a render prop.
+ * While using `component` might feel easiest if you are migrating from [Redux
+ * Form's Higher Order
+ * Component](https://redux-form.com/8.2.2/docs/api/reduxform.md/) model, best
+ * practice recommends using a render prop.
  *
  * ### 3. Do something with `handleSubmit`
  *
- * The most important thing that `<Form/>` will pass to
- * your render function is the `handleSubmit` function.
- * `handleSubmit` is a convenience method designed to be
- * passed as the `onSubmit` prop to an HTML `<form>`
- * component. `handleSubmit` will call `event. preventDefault()`
- * to stop the default browser submission process.
+ * The most important thing that `<Form/>` will pass to your render function is
+ * the `handleSubmit` function. `handleSubmit` is a convenience method designed
+ * to be passed as the `onSubmit` prop to an HTML `<form>` component.
+ * `handleSubmit` will call `event. preventDefault()` to stop the default
+ * browser submission process.
  *
- * In practice, your form will always look something like
- * this:
+ * In practice, your form will always look something like this:<!-- prettier-ignore -->
  *
- * <!-- prettier-ignore -->
  * ```tsx
  * <Form onSubmit={onSubmit}>
- *   {props => (
+ *   {(props) => (
  *     <form onSubmit={props.handleSubmit}>
- *
  *       ... fields go here...
- *
  *       <button type="submit">Submit</button>
  *     </form>
  *   )}
- * </Form>
+ * </Form>;
  * ```
  */
 function ReactFinalForm<
@@ -259,7 +252,10 @@ function ReactFinalForm<
     return form.submit();
   };
 
-  /** We will be rendering props `lazily` (i.e. non-subscribed items will be `undefined`.) */
+  /**
+   * We will be rendering props `lazily` (i.e. non-subscribed items will be
+   * `undefined`.)
+   */
   type RenderProps = FormRenderProps<FormValues, Subscription>;
 
   /** Note that `form` and `handleSubmit` must always be passed in. */

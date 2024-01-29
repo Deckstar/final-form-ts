@@ -15,13 +15,15 @@ type DecoratorSubscription = { errors: true; submitErrors: true };
 const noop = () => {};
 
 /**
- * A function that takes an optional function to collect a list of focusable inputs
- * on the page and provides a 🏁 Final Form `Decorator` that will focus on the top-most input
- * on the page with an error when a form submission fails.
+ * A function that takes an optional function to collect a list of focusable
+ * inputs on the page and provides a 🏁 Final Form `Decorator` that will focus
+ * on the top-most input on the page with an error when a form submission
+ * fails.
  *
- * If no `getInputs` parameter is provided, it will use a generic one that will return all inputs
- * that appear in `document.forms`. If no `findInput` parameter is provided, it will use a generic one
- * that matches the name attribute of the focusable input with the path in the error object.
+ * If no `getInputs` parameter is provided, it will use a generic one that will
+ * return all inputs that appear in `document.forms`. If no `findInput`
+ * parameter is provided, it will use a generic one that matches the name
+ * attribute of the focusable input with the path in the error object.
  */
 const createDecorator =
   <FormValues extends FormValuesShape = FormValuesShape>(

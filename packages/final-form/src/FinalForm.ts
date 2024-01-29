@@ -94,10 +94,7 @@ type ManuallyAddedKeys =
   | "touched"
   | "visited";
 
-/**
- * Converts an `InternalFormState` to an almost full
- * `FormState`.
- */
+/** Converts an `InternalFormState` to an almost full `FormState`. */
 function convertToExternalFormState<
   FormValues extends FormValuesShape = FormValuesShape,
 >(
@@ -330,7 +327,10 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     }
   };
 
-  /** Shorthand for getting a bound mutator type based on its name in `PassedInMutators`. */
+  /**
+   * Shorthand for getting a bound mutator type based on its name in
+   * `PassedInMutators`.
+   */
   type BoundPassedInMutator<Key extends string & keyof PassedInMutators> =
     BoundMutator<
       PassedInMutators[Key],
@@ -727,8 +727,8 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     /**
      * The `FormState` that will be returned.
      *
-     * Note that we add the `ManuallyAddedKeys` below,
-     * based on the `lastFormState`.
+     * Note that we add the `ManuallyAddedKeys` below, based on the
+     * `lastFormState`.
      */
     const nextFormState = convertToExternalFormState(
       formState,
@@ -1178,7 +1178,8 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     },
 
     /**
-     * Resets all field flags (e.g. touched, visited, etc.) to their initial state
+     * Resets all field flags (e.g. touched, visited, etc.) to their initial
+     * state.
      */
     resetFieldState: (name: string) => {
       state.fields[name] = {
@@ -1201,6 +1202,7 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
 
     /**
      * Returns the form to a clean slate; that is:
+     *
      * - Clear all values
      * - Resets all fields to their initial state
      */

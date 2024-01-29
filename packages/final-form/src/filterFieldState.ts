@@ -5,9 +5,7 @@ import type { FieldState, FieldSubscription } from "./types";
 
 const shallowEqualKeys = ["data"];
 
-/**
- * Filters items in a FieldState based on a FieldSubscription
- */
+/** Filters items in a FieldState based on a FieldSubscription. */
 const filterFieldState: StateFilter<FieldState> = (
   state: FieldState,
   previousState: FieldState | null | undefined,

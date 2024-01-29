@@ -4,13 +4,12 @@ import * as React from "react";
 import ReactFinalFormContext from "./context";
 
 /**
- * The `useForm()` hook plucks the `FormApi` out of the
- * React context for you. It will throw an exception if
- * you try to use it outside of a `<Form/>` component.
+ * The `useForm()` hook plucks the `FormApi` out of the React context for you.
+ * It will throw an exception if you try to use it outside of a `<Form/>`
+ * component.
  *
- * `useForm()` is used internally inside `useField()`,
- * `<Field/>`, and `<FormSpy/>`.
- *
+ * `useForm()` is used internally inside `useField()`, `<Field/>`, and
+ * `<FormSpy/>`.
  */
 function useForm<FormValues extends FormValuesShape = FormValuesShape>(
   componentName?: string,

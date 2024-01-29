@@ -55,7 +55,10 @@ export type {
   UpdateResult,
 } from "./update";
 
-/** The shape of the default array mutators as passed in to the final-form config. */
+/**
+ * The shape of the default array mutators as passed in to the final-form
+ * config.
+ */
 export type DefaultArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
 > = {
@@ -69,7 +72,10 @@ export type DefaultArrayMutators<
   pop: PopMutator<FormValues>;
   /** Pushes a value onto the end of an field array. */
   push: PushMutator<FormValues>;
-  /** Removes a value from the specified index of the field array. Returns the removed value. */
+  /**
+   * Removes a value from the specified index of the field array. Returns the
+   * removed value.
+   */
   remove: RemoveMutator<FormValues>;
   /** Removes the values at the specified indexes of the field array. */
   removeBatch: RemoveBatchMutator<FormValues>;
@@ -86,9 +92,9 @@ export type DefaultArrayMutators<
 /**
  * The default mutators if we just convert each of them into a `BoundMutator`.
  *
- * Note that, because we're using interfaces, we don't just return this
- * result for `DefaultBoundArrayMutators` below. But this is still useful
- * for ensuring that our types conform.
+ * Note that, because we're using interfaces, we don't just return this result
+ * for `DefaultBoundArrayMutators` below. But this is still useful for ensuring
+ * that our types conform.
  *
  * Conveniently, this mapping also copies over JSDoc comments.
  */
@@ -97,7 +103,10 @@ type DefaultsBound<FormValues extends FormValuesShape> = BoundMutators<
   FormValues
 >;
 
-/** The shape of the default array mutators once final-form has bound them to state. */
+/**
+ * The shape of the default array mutators once final-form has bound them to
+ * state.
+ */
 export type DefaultBoundArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
 > = DefaultsBound<FormValues> & {

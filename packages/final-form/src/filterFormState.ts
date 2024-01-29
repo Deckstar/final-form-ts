@@ -4,10 +4,7 @@ import type { FormState, FormSubscription, FormValuesShape } from "./types";
 
 const shallowEqualKeys = ["touched", "visited"];
 
-/**
- * Filters items in a `FormState` based on a
- * `FormSubscription`.
- */
+/** Filters items in a `FormState` based on a `FormSubscription`. */
 export default function filterFormState<
   FormValues extends FormValuesShape = FormValuesShape,
   Subscription extends FormSubscription = {},

@@ -13,12 +13,11 @@ import type { UseFormStateParams } from "./types";
 import useForm from "./useForm";
 
 /**
- * The `useFormState()` hook takes one optional
- * parameter, which matches the exact shape of
- * `FormSpyProps` (except without the render props). It
- * returns a `FormState`.
+ * The `useFormState()` hook takes one optional parameter, which matches the
+ * exact shape of `FormSpyProps` (except without the render props). It returns a
+ * `FormState`.
  *
- *`useFormState()` is used internally inside `<FormSpy/>`.
+ * `useFormState()` is used internally inside `<FormSpy/>`.
  */
 function useFormState<
   FormValues extends FormValuesShape = FormValuesShape,

@@ -65,13 +65,15 @@ const toPath = (key: string): string[] => {
     /**
      * The following patch fixes issue 456, introduced since v4.20.3:
      *
-     * Before v4.20.3, i.e. in v4.20.2, a `key` like 'choices[]' would map to ['choices']
-     * (e.g. an array of choices used where 'choices[]' is name attribute of an input of type checkbox).
+     * Before v4.20.3, i.e. in v4.20.2, a `key` like 'choices[]' would map to
+     * ['choices'] (e.g. an array of choices used where 'choices[]' is name
+     * attribute of an input of type checkbox).
      *
-     * Since v4.20.3, a `key` like 'choices[]' would map to ['choices', ''] which is wrong and breaks
-     * this kind of inputs e.g. in React.
+     * Since v4.20.3, a `key` like 'choices[]' would map to ['choices', '']
+     * which is wrong and breaks this kind of inputs e.g. in React.
      *
-     * v4.20.3 introduced an unwanted breaking change, this patch fixes it, see the issue at the link below.
+     * V4.20.3 introduced an unwanted breaking change, this patch fixes it, see
+     * the issue at the link below.
      *
      * @see https://github.com/final-form/final-form/issues/456
      */

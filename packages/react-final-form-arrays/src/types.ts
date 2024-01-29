@@ -49,8 +49,8 @@ type DropFirstArg<Func extends (...args: any[]) => any> = (
 ) => ReturnType<Func>;
 
 /**
- * For our own mutators, we can narrow down the types to make
- * them more accurate, based on the `FieldValue`.
+ * For our own mutators, we can narrow down the types to make them more
+ * accurate, based on the `FieldValue`.
  *
  * Userland mutators, unfortunately, will lose their generics.
  */
@@ -94,7 +94,8 @@ type FieldDefaultBoundArrayMutators<
 /**
  * Mutators for an array item in the field render props.
  *
- * These have the `name` argument dropped, as it is already bound by the component.
+ * These have the `name` argument dropped, as it is already bound by the
+ * component.
  */
 export type FieldArrayMutators<
   FormValues extends FormValuesShape = FormValuesShape,
@@ -112,12 +113,13 @@ export type FieldArrayMutators<
 };
 
 /**
- * These are the props that `<FieldArray/>` provides to your render function or component.
- * This object is divided into a fields object that mimics an iterable (e.g. it has `map()`
- * and `forEach()` and `length`), and meta data about the field array.
+ * These are the props that `<FieldArray/>` provides to your render function or
+ * component. This object is divided into a fields object that mimics an
+ * iterable (e.g. it has `map()` and `forEach()` and `length`), and meta data
+ * about the field array.
  *
- * Keep in mind that the values in `meta` are dependent on you having subscribed to them
- * with the `subscription` prop.
+ * Keep in mind that the values in `meta` are dependent on you having subscribed
+ * to them with the `subscription` prop.
  */
 export type FieldArrayRenderProps<
   FieldValue,
@@ -129,21 +131,19 @@ export type FieldArrayRenderProps<
   Subscription extends FieldSubscription = FullFieldSubscription,
 > = {
   /**
-   * An object that mimics an iterable (e.g. it has `map()` and `forEach()` and `length`),
-   * and `meta` data about the field array.
+   * An object that mimics an iterable (e.g. it has `map()` and `forEach()` and
+   * `length`), and `meta` data about the field array.
    */
   fields: {
     /**
-     * Iterates through all of the names of the fields in the
-     * field array in bracket format,
-     * e.g. `foo[0]`, `foo[1]`, `foo[2]`.
+     * Iterates through all of the names of the fields in the field array in
+     * bracket format, e.g. `foo[0]`, `foo[1]`, `foo[2]`.
      */
     forEach: (iterator: (name: string, index: number) => void) => void;
     /**
-     * Iterates through all of the names of the fields in the
-     * field array in bracket format,
-     * e.g. `foo[0]`, `foo[1]`, `foo[2]`,
-     * and collects the results of the iterator function.
+     * Iterates through all of the names of the fields in the field array in
+     * bracket format, e.g. `foo[0]`, `foo[1]`, `foo[2]`, and collects the
+     * results of the iterator function.
      *
      * You will use this in almost every implementation.
      */
@@ -182,8 +182,8 @@ export interface UseFieldArrayConfig<
       >
     > {
   /**
-   * A function that can be used to compare two arrays of values
-   * (before and after every change) and calculate pristine/dirty checks.
+   * A function that can be used to compare two arrays of values (before and
+   * after every change) and calculate pristine/dirty checks.
    *
    * Defaults to a function that will `===` check each element of the array.
    */
@@ -191,8 +191,8 @@ export interface UseFieldArrayConfig<
 }
 
 /**
- * These are props that you pass to `<FieldArray/>`. You must
- * provide one of the ways to render: `component`, `render`, or `children`.
+ * These are props that you pass to `<FieldArray/>`. You must provide one of the
+ * ways to render: `component`, `render`, or `children`.
  */
 export interface FieldArrayProps<
   FieldValue,

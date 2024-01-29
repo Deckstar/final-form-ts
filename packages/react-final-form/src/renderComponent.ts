@@ -25,8 +25,8 @@ type NonLazyProps<RenderProps extends AnyObject> =
   RenderableProps<RenderProps> & OptionalRefProp;
 
 /**
- * Shared logic between components that use either `render` prop,
- * `children` render function, or `component` prop.
+ * Shared logic between components that use either `render` prop, `children`
+ * render function, or `component` prop.
  */
 function renderComponent<RenderProps extends AnyObject>(
   props: NonLazyProps<RenderProps>,
