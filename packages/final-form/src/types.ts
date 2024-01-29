@@ -44,7 +44,7 @@ type KeyOfTypeTest<Shape, Type> = NonNullable<
  * are not part of the `SubscribableType` (i.e. should always be present
  * on the state).
  *
- * ---
+ *     ---
  * @param State
  * The state that can be subscribed to.
  *
@@ -693,7 +693,9 @@ type NonOptionalKeys<T> = {
 export interface GetFieldState<
   FormValues extends FormValuesShape = FormValuesShape,
 > {
-  <F extends keyof FormValues>(field: F): F extends NonOptionalKeys<FormValues>
+  <F extends keyof FormValues>(
+    field: F,
+  ): F extends NonOptionalKeys<FormValues>
     ? FieldState<FormValues[F]>
     : FieldState<FormValues[F]> | undefined;
   <F extends string>(field: F): FieldState<unknown> | undefined;

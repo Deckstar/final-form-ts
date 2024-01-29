@@ -375,12 +375,15 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     };
 
   const mutatorsApi: BoundMutators<PassedInMutators, FormValues> = mutatorsProp
-    ? Object.keys(mutatorsProp).reduce((result, key) => {
-        type CurrentMutatorBound = BoundPassedInMutator<typeof key>;
+    ? Object.keys(mutatorsProp).reduce(
+        (result, key) => {
+          type CurrentMutatorBound = BoundPassedInMutator<typeof key>;
 
-        result[key] = getMutatorApi(key) as CurrentMutatorBound;
-        return result;
-      }, {} as BoundMutators<PassedInMutators, FormValues>)
+          result[key] = getMutatorApi(key) as CurrentMutatorBound;
+          return result;
+        },
+        {} as BoundMutators<PassedInMutators, FormValues>,
+      )
     : {};
 
   const runRecordLevelValidation = (
@@ -404,13 +407,16 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
   const getValidators = <FieldValue = any>(
     field: InternalFieldState<FieldValue, FormValues>,
   ) =>
-    Object.keys(field.validators).reduce((result, index) => {
-      const validator = field.validators[Number(index)]();
-      if (validator) {
-        result.push(validator);
-      }
-      return result;
-    }, [] as FieldValidator<FieldValue, FormValues>[]);
+    Object.keys(field.validators).reduce(
+      (result, index) => {
+        const validator = field.validators[Number(index)]();
+        if (validator) {
+          result.push(validator);
+        }
+        return result;
+      },
+      [] as FieldValidator<FieldValue, FormValues>[],
+    );
 
   const runFieldLevelValidation = <FieldValue = any>(
     field: InternalFieldState<FieldValue, FormValues>,
@@ -778,10 +784,13 @@ function createForm<FormValues extends FormValuesShape = FormValuesShape>(
     process.env.NODE_ENV !== "production" &&
     debug(
       calculateNextFormState(),
-      Object.keys(state.fields).reduce((result, key: string) => {
-        result[key] = state.fields[key];
-        return result;
-      }, {} as typeof state.fields),
+      Object.keys(state.fields).reduce(
+        (result, key: string) => {
+          result[key] = state.fields[key];
+          return result;
+        },
+        {} as typeof state.fields,
+      ),
     );
 
   let notifying: boolean = false;

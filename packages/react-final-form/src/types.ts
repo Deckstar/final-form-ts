@@ -227,7 +227,7 @@ export type FormSpyRenderProps<
  *
  * The components will receive `RenderProps` as parameters.
  *
- * ---
+ *     ---
  *  * Note that if you specify `render` or `component`
  * _and_ `children`, `render` will be called, with
  * `children` injected as if it were an additional
