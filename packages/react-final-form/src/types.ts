@@ -223,7 +223,7 @@ export type FormSpyRenderProps<
 
 /**
  * Props that can be used to render content, namely
- * `children`, `component` or `render`.
+ *  {@linkcode RenderableProps.children | children} {@linkcode RenderableProps.component | component} or {@linkcode RenderableProps.render | render}.
  *
  * The components will receive `RenderProps` as parameters.
  *
@@ -244,7 +244,7 @@ export type FormSpyRenderProps<
  */
 export interface RenderableProps<RenderProps extends AnyObject = {}> {
   /**
-   * A render function that is given `FieldRenderProps`,
+   * A render function that is given {@linkcode FieldRenderProps},
    * as well as any non-API props passed into the
    * `<Field/>` component. For example, if you did...
    *
@@ -257,7 +257,7 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
    * </Field>
    * ```
    *
-   * Note that if you specify `render` or `component`
+   * Note that if you specify {@linkcode RenderableProps.render | render} or {@linkcode RenderableProps.component | component}
    * _and_ `children`, `render` will be called, with
    * `children` injected as if it were an additional
    * prop. This can be especially useful for doing
@@ -272,7 +272,7 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
    * ```
    *
    * Related:
-   * - `FieldRenderProps`
+   * - {@linkcode FieldRenderProps}
    */
   children?:
     | ((
@@ -282,11 +282,11 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
   /**
    * If you are not using `'input'`, `'select`' or
    * `'textarea'`, it is recommended that you use
-   * `children` or `render`.
+   * {@linkcode RenderableProps.children | children} or {@linkcode RenderableProps.render | render}.
    *
    * Either the `string` name of one of the default HTML
    * inputs, or a component that is given
-   * `FieldRenderProps` as props, children and render
+   * {@linkcode FieldRenderProps} as props, children and render
    * props, as well as any non-API props passed into the
    * `<Field/>` component. For example, if you did...
    *
@@ -304,13 +304,13 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
    * ```
    *
    * Related:
-   * - `FieldRenderProps`
+   * - {@linkcode FieldRenderProps}
    */
   component?:
     | React.ComponentType<React.PropsWithChildren<RenderProps>>
     | SupportedInputs;
   /**
-   * A render function that is given `FieldRenderProps`,
+   * A render function that is given {@linkcode FieldRenderProps},
    * as well as any non-API props passed into the
    * `<Field/>` component. For example, if you did...
    *
@@ -325,12 +325,12 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
    * />
    * ```
    *
-   * Note that if you specify `render` _and_ `children`,
+   * Note that if you specify `render` _and_ {@linkcode RenderableProps.children | children},
    * `render` will be called, with `children` injected as
    * if it were an additional prop.
    *
    * Related:
-   * - `FieldRenderProps`
+   * - {@linkcode FieldRenderProps}
    */
   render?: (
     props: React.PropsWithChildren<RenderProps>,
@@ -340,7 +340,7 @@ export interface RenderableProps<RenderProps extends AnyObject = {}> {
 /**
  * These are the props that you pass to `<Form/>`.
  *
- * You must provide one of the ways to render: `component`, `render`, or `children`.
+ * You must provide one of the ways to render: {@linkcode RenderableProps.component | component}, {@linkcode RenderableProps.render | render}, or {@linkcode RenderableProps.children | children}.
  * The rest are mostly just passed along to Final Form's `Config`.
  */
 export type FormProps<
@@ -554,7 +554,7 @@ export interface UseFieldConfig<
  * These are props that you pass to `<Field/>`.
  *
  * You must provide one of the ways to render:
- * `component`, `render`, or `children`.
+ * {@linkcode RenderableProps.component | component}, {@linkcode RenderableProps.render | render}, or {@linkcode RenderableProps.children | children}.
  */
 export interface FieldProps<
   FieldValue = any,
@@ -581,8 +581,8 @@ export interface UseFormStateParams<
 /**
  * These are the props that you pass to `<FormSpy/>`.
  *
- * If you do not provide an `onChange` callback, you must provide one of
- * the ways to render: `component`, `render`, or `children`.
+ * If you do not provide an {@linkcode UseFormStateParams.onChange | onChange} callback, {@linkcode RenderableProps.render | render}, or {@linkcode RenderableProps.children | children} callback, you must provide one of
+ * the ways to render: {@linkcode RenderableProps.component | component}, {@linkcode RenderableProps.render | render}, or {@linkcode RenderableProps.children | children}.
  */
 export interface FormSpyProps<
   FormValues extends FormValuesShape = FormValuesShape,

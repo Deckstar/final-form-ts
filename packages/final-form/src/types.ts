@@ -206,7 +206,7 @@ export interface FormState<
   modified: FormBooleanState<FormValues>;
   /**
    * `true` if the form values have ever been changed
-   * since the last submission. false otherwise.
+   * since the last submission. `false` otherwise.
    */
   modifiedSinceLastSubmit: boolean;
   /**
@@ -229,7 +229,7 @@ export interface FormState<
   status: any; // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Status` type. Probably easier for everyone involved to just cast it with `as Type`.
   /**
    * The whole-form submission error returned by
-   * `onSubmit` under the `FORM_ERROR` key.
+   * {@linkcode Config.onSubmit | onSubmit} under the `FORM_ERROR` key.
    */
   submitError: any | undefined;
   /**
@@ -300,7 +300,7 @@ export type FormSubscriber<
 /**
  * `FieldState` is an object containing the following
  * values. **Depending on your subscription when calling
- * `form.registerField()`, some of the values may not be
+ * {@linkcode FormApi.registerField | form.registerField()}, some of the values may not be
  * present.**
  */
 export interface FieldState<FieldValue = any> {
@@ -318,14 +318,14 @@ export interface FieldState<FieldValue = any> {
   data: AnyObject | undefined; // // This could be made generic, but it would cause a huge ripple as suddenly many other types would also have to be made generic to prop-drill the `Data` type.
   /**
    * `true` when the value of the field is not equal to
-   * the initial value (using the `isEqual` comparator
+   * the initial value (using the {@linkcode FieldConfig.isEqual | isEqual} comparator
    * provided at field registration), `false` if the
    * values are equal.
    */
   dirty: boolean;
   /**
    * `true` when the value of the field is not equal to
-   * the value last submitted (using the `isEqual`
+   * the value last submitted (using the {@linkcode FieldConfig.isEqual | isEqual}
    * comparator provided at field registration), `false`
    * if the values are equal.
    */
@@ -355,7 +355,8 @@ export interface FieldState<FieldValue = any> {
    * `true` if this field's value has ever been changed.
    * `false` otherwise.
    *
-   * Once `true`, it will remain `true` for the lifetime * of the field, or until the form or field state is
+   * Once `true`, it will remain `true` for the lifetime
+   * of the field, or until the form or field state is
    * reset.
    */
   modified: boolean;
@@ -495,7 +496,7 @@ export interface FieldConfig<
    */
   afterSubmit?: () => void;
   /**
-   * A function to call just before calling `onSubmit`.
+   * A function to call just before calling {@linkcode Config.onSubmit | onSubmit}.
    *
    * If `beforeSubmit` returns `false`, the submission
    * will be aborted. If one of your fields returns
@@ -511,8 +512,8 @@ export interface FieldConfig<
   data?: FormValues;
   /**
    * The value of the field upon creation only if both
-   * the field's `initialValue` is `undefined` and the
-   * value from the form's `initialValues` is also
+   * the field's {@linkcode FieldConfig.initialValue | initialValue} is `undefined` and the
+   * value from the form's {@linkcode Config.initialValues | initialValues} is also
    * `undefined`. The field will be `dirty` when
    * `defaultValue` is used.
    */
@@ -531,7 +532,7 @@ export interface FieldConfig<
    * comparing it to the current value of the field. If
    * you want field to be `dirty` upon creation, you can
    * set one value with `initialValue` and set the value
-   * of the field with `defaultValue`.
+   * of the field with {@linkcode FieldConfig.defaultValue | defaultValue}.
    *
    * The value given here will override any
    * `initialValues` given to the entire form.
@@ -665,7 +666,7 @@ export interface InternalFormState<
   lastSubmittedValues?: FormValues;
   /**
    * Whether the form was reset while in the process
-   * of being submitted (i.e. while `submitting` was
+   * of being submitted (i.e. while {@linkcode FormState.submitting | submitting} was
    * `true`).
    */
   resetWhileSubmitting: boolean;
@@ -722,14 +723,14 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
   change: Change<FormValues>;
   /**
    * A read/write property to get and set the
-   * `destroyOnUnregister` config setting.
+   * {@linkcode Config.destroyOnUnregister | destroyOnUnregister} config setting.
    */
   destroyOnUnregister: boolean;
   /** Focuses (marks active) the given field. */
   focus: (name: string) => void;
   /**
    * Returns the state of a specific field, of type
-   * `FieldState`, as it was last reported to its
+   * {@linkcode FieldState}, as it was last reported to its
    * listeners, or `undefined` if the field has not been
    * registered.
    */
@@ -764,12 +765,12 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
   isValidationPaused: () => boolean;
   /**
    * The state-bound versions of the mutators provided to
-   * `Config`.
+   * {@linkcode Config}.
    */
   mutators: BoundMutators<Mutators<FormValues>, FormValues>;
   /**
    * If called, validation will be paused until
-   * `resumeValidation()` is called.
+   * {@linkcode FormApi.resumeValidation | resumeValidation()} is called.
    *
    * By default, `pauseValidation` also prevents all
    * notifications being fired to their subscribers. This
@@ -792,17 +793,17 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
    * (not rejects) to `undefined` or an error.
    *
    * Related:
-   * - [`FieldState`](FieldState)
-   * - [`FieldConfig`](FieldConfig)
-   * - [`Unsubscribe`](Unsubscribe)
+   * - {@linkcode FieldState}
+   * - {@linkcode FieldConfig}
+   * - {@linkcode Unsubscribe}
    */
   registerField: RegisterField<FormValues>;
   /**
    * Resets the values back to the initial values the
    * form was initialized with. Or empties all the values
    * if the form was not initialized. If you provide
-   * `initialValues` they will be used as the new initial
-   * values.
+   * {@linkcode Config.initialValues | initialValues}
+   * they will be used as the new initial values.
    *
    * Note that if you are calling `reset()` and not
    * specify new initial values, you must call it with no
@@ -820,18 +821,18 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
   /**
    * Resets all form and field state. Same as calling
    * `reset(initialValues)` on the form and
-   * `resetFieldState()` for each field. Form should be
+   * {@linkcode FormApi.resetFieldState | resetFieldState()} for each field. Form should be
    * just as it was when it was first created.
    */
   restart: (initialValues?: InitialFormValues<FormValues>) => void;
   /**
-   * Resumes validation paused by `pauseValidation()`. If
+   * Resumes validation paused by {@linkcode FormApi.pauseValidation | pauseValidation()}. If
    * validation was blocked while it was paused,
    * validation will be run.
    */
   resumeValidation: () => void;
   /**
-   * Sets fields on the `Config` object.
+   * Sets fields on the {@linkcode Config} object.
    */
   setConfig: <K extends ConfigKey>(
     name: K,
@@ -851,7 +852,7 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
   /**
    * Submits the form if there are currently no
    * validation errors. It may return `undefined` or a
-   * `Promise` depending on the nature of the `onSubmit`
+   * `Promise` depending on the nature of the {@linkcode Config.onSubmit | onSubmit}
    * configuration value given to the form when it was
    * created.
    */
@@ -863,8 +864,8 @@ export interface FormApi<FormValues extends FormValuesShape = FormValuesShape> {
    * have many subscribers.
    *
    * Related:
-   * - [`FormState`](FormState)
-   * - [`Unsubscribe`](Unsubscribe)
+   * - {@linkcode FormState}
+   * - {@linkcode Unsubscribe}
    */
   subscribe: <Subscription extends FormSubscription = {}>(
     subscriber: FormSubscriber<FormValues, Subscription>,
@@ -880,7 +881,7 @@ export type DebugFunction<
 ) => void;
 
 /**
- * Unless you're writing a `Mutator`, ignore this.
+ * Unless you're writing a {@linkcode Mutator}, ignore this.
  */
 export interface MutableState<
   FormValues extends FormValuesShape = FormValuesShape,
@@ -888,7 +889,7 @@ export interface MutableState<
   /** An object of field subscribers. */
   fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> };
   /**
-   * An object of values very similar to `FieldState`.
+   * An object of values very similar to {@linkcode FieldState}.
    *
    * Note that the fields are kept in a flat structure,
    * so a "deep" field like `"shipping.address.street"`
@@ -898,11 +899,11 @@ export interface MutableState<
   fields: {
     [key: string]: InternalFieldState<any, FormValues>;
   };
-  /** An object very similar to `FormState`. */
+  /** An object very similar to {@linkcode FormState}. */
   formState: InternalFormState<FormValues>;
   /**
    * The last form state sent to form subscribers. The
-   * object very similar to `FormState`.
+   * object is very similar to {@linkcode FormState}.
    */
   lastFormState?: FormState<FormValues>;
 }
@@ -929,7 +930,7 @@ export type RenameField<FormValues extends FormValuesShape = FormValuesShape> =
 /**
  * Converts an unbound mutator type to its bound version.
  *
- * This is the bound version of the mutator that's available from the `FormApi`.
+ * This is the bound version of the mutator that's available from the {@linkcode FormApi}.
  */
 export type BoundMutator<
   UnboundMutator extends Mutator<Arguments, Result, FormValues>,
@@ -941,7 +942,7 @@ export type BoundMutator<
 /**
  * Converts a map of unbound mutators to their bound versions.
  *
- * These are the bound versions of the mutators that are available from the `FormApi`.
+ * These are the bound versions of the mutators that are available from the {@linkcode FormApi}.
  */
 export type BoundMutators<
   UnboundMutators extends Mutators<FormValues> = {},
@@ -955,7 +956,7 @@ export type BoundMutators<
   >;
 };
 
-/** Tools that will be passed into the functions used as `mutators`. */
+/** Tools that will be passed into the functions used as {@linkcode Config.mutators | mutators}. */
 export interface Tools<FormValues extends FormValuesShape = FormValuesShape>
   extends Pick<FormApi, "resetFieldState" | "setStatus"> {
   /**
@@ -964,7 +965,7 @@ export interface Tools<FormValues extends FormValuesShape = FormValuesShape>
    * returns the new value.
    *
    * Related:
-   * - `MutableState`
+   * - {@linkcode MutableState}
    */
   changeValue: ChangeValue<FormValues>;
   /**
@@ -982,7 +983,7 @@ export interface Tools<FormValues extends FormValuesShape = FormValuesShape>
    * only_.
    *
    * Related:
-   * - `MutableState`
+   * - {@linkcode MutableState}
    */
   renameField: RenameField<FormValues>;
   /**
@@ -1056,8 +1057,8 @@ export interface Config<FormValues extends FormValuesShape = FormValuesShape> {
    * A typical thing to pass in might be `console.log`.
    *
    * Related:
-   * - [`FormState`](FormState)
-   * - [`FieldState`](FieldState)
+   * - {@linkcode FormState}
+   * - {@linkcode FieldState}
    */
   debug?: DebugFunction<FormValues>;
   /**
@@ -1079,7 +1080,7 @@ export interface Config<FormValues extends FormValuesShape = FormValuesShape> {
    *
    * If you are using Typescript, these values must be
    * the same type as the object given to your
-   * `onSubmit` function.
+   * {@linkcode Config.onSubmit | onSubmit} function.
    */
   initialValues?: InitialFormValues<FormValues>;
   /**
@@ -1092,13 +1093,13 @@ export interface Config<FormValues extends FormValuesShape = FormValuesShape> {
    * to `false`.
    */
   keepDirtyOnReinitialize?: boolean;
-  /** Named `Mutator` functions. */
+  /** Named {@linkcode Mutator} functions. */
   mutators?:
     | Mutators // Note: these mutators are purposefully flexible regarding the generic parameters. This is so the input could be easier, and so it would accept constant values.
     | Mutators<FormValues>;
   /**
    * Function to call when the form is submitted. There
-   * are three possible ways to write an `onSubmit`
+   * are three possible ways to write an {@linkcode Config.onSubmit | onSubmit}
    * function:
    *
    * ### 1. Synchronous
@@ -1129,7 +1130,7 @@ export interface Config<FormValues extends FormValuesShape = FormValuesShape> {
    * string key.
    *
    * Related:
-   * - `FormApi`
+   * - {@linkcode FormApi}
    */
   onSubmit: (
     values: FormValues,
@@ -1178,13 +1179,13 @@ export interface Config<FormValues extends FormValuesShape = FormValuesShape> {
  * `Decorator` is a function that
  * [decorates](https://en.wikipedia.org/wiki/Decorator_pattern)
  * a form by subscribing to it and making changes as the
- * form state changes, and returns an `Unsubscribe`
+ * form state changes, and returns an {@linkcode Unsubscribe}
  * function to detach itself from the form. e.g.
  * [Final Form Calculate](https://github.com/final-form/final-form-calculate).
  *
  * Related:
- * - `FormApi`
- * - `Unsubscribe`
+ * - {@linkcode FormApi}
+ * - {@linkcode Unsubscribe}
  *
  * ## Example Usage
  *

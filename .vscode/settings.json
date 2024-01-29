@@ -3,7 +3,7 @@
     "typescript": "\"$workspaceRoot/node_modules/.bin/ts-node\" $fullFileName"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "flow.pathToFlow": "${workspaceFolder}/node_modules/.bin/flow",
   "javascript.validate.enable": false,
