@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/react-final-form",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "🏁 High performance subscription-based form state management for React. Made with TypeScript.",
   "main": "dist/cjs",
   "module": "dist/esm",
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "peerDependencies": {
-    "@deckstar/final-form": "1.0.12",
+    "@deckstar/final-form": "1.0.13",
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
   "funding": {
