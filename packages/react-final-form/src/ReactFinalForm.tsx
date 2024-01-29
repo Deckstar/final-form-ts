@@ -88,7 +88,8 @@ export const all = formSubscriptionItems.reduce((result, key) => {
  * `handleSubmit` will call `event. preventDefault()` to stop the default
  * browser submission process.
  *
- * In practice, your form will always look something like this:<!-- prettier-ignore -->
+ * In practice, your form will always look something like this:<!--
+ * prettier-ignore -->
  *
  * ```tsx
  * <Form onSubmit={onSubmit}>
@@ -107,7 +108,7 @@ function ReactFinalForm<
 >(props: Props<FormValues, Subscription>) {
   const {
     debug,
-    decorators,
+    decorators = [],
     destroyOnUnregister,
     form: alternateFormApi,
     initialStatus,
