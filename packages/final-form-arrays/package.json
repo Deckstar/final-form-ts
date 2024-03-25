@@ -1,6 +1,6 @@
 {
   "name": "@deckstar/final-form-arrays",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Array Mutators for 🏁 Final Form. Made with TypeScript.",
   "main": "dist/cjs",
   "module": "dist/esm",
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/deckstar/final-form-ts#readme",
   "peerDependencies": {
-    "@deckstar/final-form": "1.0.13"
+    "@deckstar/final-form": "1.0.14"
   },
   "keywords": [
     "final-form",
